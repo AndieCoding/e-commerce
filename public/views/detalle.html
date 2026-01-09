@@ -1,0 +1,73 @@
+<<!DOCTYPE html>
+    <html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Detalle del Producto - Fan del Mate</title>
+        <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+        <link rel="stylesheet" href="/css/front.css">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+    </head>
+
+    <body>
+        <header>
+            <menu-del-mate></menu-del-mate>
+        </header>
+
+        <main>
+            <div class="ubicacion-producto">
+                <span>Yerbas > </span>
+                <a href="#">
+                    Actual
+                </a>
+            </div>
+
+            <div class="producto-detalle">
+
+                <div class="img-detalle">
+                    <img src="/img/img/products/mate/mate1.png" alt="mate 1" id="product-image" class="product-image"
+                        data-index="0">
+                </div>
+                <div class="detalles-producto">
+                    <h2>Mate 1</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sed posuere mauris. Nulla facilisi.
+                    </p>
+                    <div class="cantidad-container">
+                        <label for="cantidad">Cantidad:</label>
+                        <input type="number" id="cantidad" name="cantidad" value="1" min="1" class="cantidad-producto">
+                        <span class="disponible-producto">(Disponible: <span id="disponible">20</span>)</span>
+                    </div>
+                    <div class="buttons-detalle">
+                        <a href="#" class="agregar-detalle">Agregar al carrito</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="main">
+            <section class="categorias">
+
+                <div class="round">
+                    <img src="/img/categorias/mates.png" alt="mates">
+                </div>
+                <div class="round">
+                    <img src="/img/categorias/termos.png" alt="termos">
+                </div>
+                <div class="round">
+                    <img src="/img/categorias/yerbas.png" alt="yerbas">
+                </div>
+
+
+            </section>
+        </div>
+
+        <footer>
+            <footer-del-mate></footer-del-mate>
+        </footer>
+        <script type="module" src="/js/front/detalle.js"></script>
+    </body>
+
+    </html>

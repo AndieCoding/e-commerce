@@ -1,0 +1,140 @@
+
+CREATE TABLE `compras_usuario` (
+  `ID_US` int NOT NULL,
+  `FACT_US` varchar(120) NOT NULL,
+  `LINK` varchar(90) DEFAULT NULL,
+  `HORA` datetime DEFAULT CURRENT_TIMESTAMP,
+  `N_FACTURA` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `facturas` (
+  `FECHA` date NOT NULL,
+  `EMPRESA` varchar(45) DEFAULT NULL,
+  `TIPO` varchar(45) NOT NULL,
+  `N_FACTURA` int NOT NULL,
+  `TOTAL` int NOT NULL,
+  `PDF` varchar(120) DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `facturas_compras` (
+  `N_FACTURA` int NOT NULL,
+  `C_CANTIDAD` int NOT NULL,
+  `C_PRECIO` int DEFAULT NULL,
+  `ID_PROD` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `facturas_ventas` (
+  `N_FACTURA` int NOT NULL,
+  `V_CANTIDAD` int NOT NULL,
+  `V_PRECIO` int DEFAULT NULL,
+  `ID_PROD` int NOT NULL,
+  `V_PDF` varchar(120) DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
+
+CREATE TABLE `ficha_stock_mates` (
+  `F_FECHA` date NOT NULL,
+  `TIPO` varchar(45) NOT NULL,
+  `N_FACTURA` int NOT NULL,
+  `C_CANTIDAD` int DEFAULT NULL,
+  `C_PRECIO` int DEFAULT NULL,
+  `V_CANTIDAD` int DEFAULT NULL,
+  `V_PRECIO` int DEFAULT NULL,
+  `SUBIDA` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `ficha_stock_termos` (
+  `F_FECHA` date NOT NULL,
+  `TIPO` varchar(45) NOT NULL,
+  `N_FACTURA` int NOT NULL,
+  `C_CANTIDAD` int DEFAULT NULL,
+  `C_PRECIO` int DEFAULT NULL,
+  `V_CANTIDAD` int DEFAULT NULL,
+  `V_PRECIO` int DEFAULT NULL,
+  `SUBIDA` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `ficha_stock_yerbas` (
+  `F_FECHA` date NOT NULL,
+  `TIPO` varchar(45) NOT NULL,
+  `N_FACTURA` int NOT NULL,
+  `C_CANTIDAD` int DEFAULT NULL,
+  `C_PRECIO` int DEFAULT NULL,
+  `V_CANTIDAD` int DEFAULT NULL,
+  `V_PRECIO` int DEFAULT NULL,
+  `SUBIDA` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `productos` (
+  `ID_PROD` int NOT NULL AUTO_INCREMENT,
+  `P_TIPO` varchar(45) NOT NULL,
+  `P_NOMBRE` varchar(45) NOT NULL,
+  `P_MARCA` varchar(45) DEFAULT '""',
+  `P_DESCRIPCION` varchar(200) NOT NULL,
+  `PR_COMPRA` int DEFAULT '0',
+  `P_PRECIO` int DEFAULT '0',
+  `P_CANTIDAD` int DEFAULT '0',
+  `P_IMG` varchar(120) DEFAULT NULL,
+  PRIMARY KEY (`ID_PROD`),
+  KEY `PRECIO_idx` (`P_PRECIO`)
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `remitos` (
+  `N_FACTURA` int NOT NULL,
+  `N_REMITO` int NOT NULL AUTO_INCREMENT,
+  `PDF` varchar(145) DEFAULT NULL,
+  PRIMARY KEY (`N_REMITO`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='	';
+
+CREATE TABLE `saldos` (
+  `N_FACTURA` int NOT NULL,
+  `ID_PROD` varchar(45) NOT NULL,
+  `S_CANTIDAD` varchar(45) NOT NULL,
+  `S_PRECIO` varchar(45) NOT NULL,
+  `S_TOTAL` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `saldos_mates` (
+  `N_FACTURA` int NOT NULL,
+  `S_CANTIDAD` varchar(45) NOT NULL,
+  `S_PRECIO` varchar(45) NOT NULL,
+  `S_TOTAL` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `saldos_termos` (
+  `N_FACTURA` int NOT NULL,
+  `S_CANTIDAD` varchar(45) NOT NULL,
+  `S_PRECIO` varchar(45) NOT NULL,
+  `S_TOTAL` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `saldos_yerbas` (
+  `N_FACTURA` int NOT NULL,
+  `S_CANTIDAD` varchar(45) NOT NULL,
+  `S_PRECIO` varchar(45) NOT NULL,
+  `S_TOTAL` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `usuarios` (
+  `ID_US` int NOT NULL AUTO_INCREMENT,
+  `NOMBRE` varchar(45) NOT NULL,
+  `DOMICILIO` varchar(45) NOT NULL,
+  `CIUDAD` varchar(45) NOT NULL,
+  `APELLIDO` varchar(45) NOT NULL,
+  `EMAIL` varchar(45) NOT NULL,
+  `PASS` varchar(45) NOT NULL,
+  `DNI` int NOT NULL,
+  `FOTO` varchar(120) DEFAULT 'null',
+  PRIMARY KEY (`ID_US`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-----triggers-----
+---- triggers para ficha de stock hacer uno para cada tabla de las fichas
+
+CREATE DEFINER=`root`@`localhost` TRIGGER `ficha_stock_mates_BEFORE_INSERT` BEFORE INSERT ON `ficha_stock_mates` FOR EACH ROW BEGIN
+ IF NEW.TIPO = 'duplicado' THEN
+        UPDATE productos
+        SET P_CANTIDAD = P_CANTIDAD - NEW.V_CANTIDAD
+        WHERE productos.p_precio = NEW.v_precio; 
+    END IF;
+END
+

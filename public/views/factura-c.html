@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>FACTURA</title>
+	<link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+	<link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+	<div class="container p-40px font-weight-600 p-top-5em">
+		<div class="p-relative flex gap-5px m-bottom-5px">
+			<div class="encabezado-izquierda border-2px border-radius-5px ">
+				<div class="logo"> LOGO/NOMBRE </div>
+
+				<div class="ivaInscripto flex justify-center">
+					<p> RESPONSABLE MONOTRIBUTO </p>
+				</div>
+			</div>
+			<div class="encabezado-derecha p-inline-2em border-2px border-radius-5px">
+				<h2 class="m-0 text-center">FACTURA</h2>
+				<h3 class="m-0 text-left line-height-01em">Nº0001 - 00000851</h3>
+				<div class="fecha flex">
+					<p> Fecha: </p>
+					<input type="date" />
+				</div>
+				<div class="encabezado-tres-filas">
+					<div class="flex space-between font-size-12px">
+						<p>CUIT</p>
+						<p>30-00000000000-2</p>
+					</div>
+					<div class="flex space-between font-size-12px">
+						<p>Ing. Brutos C.M</p>
+						<p>901-0000000-1</p>
+					</div>
+					<div class="flex space-between font-size-12px">
+						<p>Inicio Actividades</p>
+						<p>07/03/73</p>
+					</div>
+				</div>
+
+			</div>
+			<div class="marca-documento border-2px border-radius-10px">
+				<h1 class="m-0">C</h1>
+			</div>
+		</div>
+
+		<fieldset class="border-2px m-bottom-5px border-radius-5px">
+			<div class="flex space-between align-end m-bottom-5px">
+				<label for="sr"> Señores: </label>
+				<input class="w-95porciento" type="text" id="sr" />
+			</div>
+			<div class="flex space-between">
+				<div class="flex space-between align-end w-60porciento">
+					<label for="domicilio"> Dirección: </label>
+					<input class="w-90porciento" type="text" id="domicilio" />
+				</div>
+				<div class="flex space-between align-end w-40porciento">
+					<label for="localidad"> Loc.: </label>
+					<input class="w-90porciento" type="text" id="localidad" />
+				</div>
+			</div>
+		</fieldset>
+		<fieldset class="flex space-between border-2px-sinbottom border-radius-5px p-0 border-bottom-noradius">
+			<div class="flex space-between  w-100porciento">
+				<div class="w-10porciento border-right-2px flex justify-center align-center">
+					<p>IVA</p>
+				</div>
+				<div class=" w-60porciento border-right-2px flex column justify-center align-center">
+					<div>
+						<label for="ri"> Responsable Inscripto </label>
+						<input class="" type="checkbox" id="ri" />
+						<label for="rm"> Responsable Monotributo </label>
+					</div>
+					<p>
+						<input class="" type="checkbox" id="rm" />
+						<label for="ex"> Exento </label>
+						<input class="" type="checkbox" id="ex" />
+						<label for="nr"> No Responsable </label>
+						<input class="" type="checkbox" id="nr" />
+						<label for="cf"> Cons. Final </label>
+						<input class="" type="checkbox" id="cf" />
+					</p>
+				</div>
+				<div class="flex space-between align-center w-40porciento p-02em">
+					<label for="cuit"> C.U.I.T. N°: </label>
+					<input class="w-90porciento b-none" type="text" id="cuit" />
+				</div>
+			</div>
+		</fieldset>
+		<fieldset class="flex space-between border-2px m-bottom-5px border-radius-5px p-0 border-top-noradius">
+			<div class=" w-30porciento border-right-2px p-02em ">
+				<b>Condiciones de Venta</b>
+
+			</div>
+			<div class="flex space-around w-40porciento border-right-2px p-02em">
+				<div>
+					<label for="contado"> Contado </label>
+					<input type="radio" id="contado" />
+				</div>
+				<div>
+					<label for="cta-cte"> Cta. Cte. </label>
+					<input type="radio" id="cta-cte" />
+				</div>
+			</div>
+
+			<div class="flex space-between align-end w-40porciento p-02em">
+				<label for="cuit"> REMITO Nº </label>
+				<input class="w-70porciento b-none" type="text" id="cuit" />
+			</div>
+		</fieldset>
+		<fieldset class="p-0 m-bottom-5px border-radius-5px border-2px">
+			<table class="b-none border-radius-5px">
+				<tr class="b-none border-radius-5px">
+					<th class="b-top-none border-left-0 b-bottom-2px border-radius-5px">CANTIDAD</th>
+					<th class="b-top-none border-left-2px b-bottom-2px w-55porciento">DETALLE</th>
+					<th class="b-top-none border-left-2px b-bottom-2px">Precio Unit.</th>
+					<th class="b-top-none b-right-0 border-left-2px b-bottom-2px ">IMPORTE</th>
+
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr>
+					<td class="border-left-0"><input type="number" /></td>
+					<td><input type="text" /></td>
+					<td><input type="number" /></td>
+					<td class="border-right-0 "><input type="number" /></td>
+				</tr>
+				<tr class="b-none">
+					<td class="border-radius-5px border-left-0 b-bottom-0"><input class="border-radius-5px"
+							type="number" /></td>
+					<td class="b-bottom-0"><input type="text" /></td>
+					<td class="b-bottom-0"><input type="number" /></td>
+					<td class="border-radius-5px border-right-0 b-bottom-0"><input class="border-radius-5px"
+							type="number" /></td>
+				</tr>
+			</table>
+		</fieldset>
+
+		<footer class="p-bottom-5em">
+			<div class="w-100porciento flex gap-5px">
+				<div class="border-2px border-radius-5px flex font-size-10px  w-80porciento">
+					<div class="w-80porciento p-02em p-inline-1em flex column space-between">
+						<p>ORIGINAL BLANCO - DUPLICADO COLOR</p>
+						<br>
+						<p class="font-weight-700 letter-spacing-largo">147 Teléfono gratuito CABA. Área de defensa y
+							protección al consumidor</p>
+					</div>
+					<div class="w-20porciento p-inline-1em flex justify-center align-center">
+						<h1 class="m-0 font-weight-600" for="total">TOTAL $</h1>
+					</div>
+				</div>
+
+				<div class="box-shadow justify-end flex w-20porciento border-radius-5px border-2px align-center">
+					<input class="w-95porciento font-size-16px b-bottom-none" type="number" />
+				</div>
+			</div>
+
+		</footer>
+		<div class="flex justify-center m-top-2em">
+			<button class="font-size-14px" onclick="window.print()">Imprimir</button>
+		</div>
+	</div>
+	<script>
+		const cuitInputs = document.querySelectorAll("#cuit");
+
+		cuitInputs.forEach((input) => {
+			input.addEventListener("input", function (e) {
+				let cuit = e.target.value.replace(/\D/g, "");
+				if (cuit.length > 2) {
+					cuit = cuit.substring(0, 2) + "-" + cuit.substring(2);
+				}
+				if (cuit.length > 11) {
+					cuit = cuit.substring(0, 11) + "-" + cuit.substring(11, 12);
+				}
+				e.target.value = cuit;
+			});
+		});
+	</script>
+</body>
+
+</html>

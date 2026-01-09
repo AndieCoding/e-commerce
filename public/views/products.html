@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - El fan del Mate</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+    <link rel="stylesheet" href="/css/front.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Parkinsans:wght@300..800&family=PT+Sans+Narrow:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Tangerine&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <menu-del-mate></menu-del-mate>
+
+    <header class="productos">
+        <section class="categorias product-card">
+
+            <circulo-categoria img="/img/categorias/mates.png" name="Mates"></circulo-categoria>
+            <circulo-categoria img="/img/categorias/termos.png" name="termos"></circulo-categoria>
+            <circulo-categoria img="/img/categorias/yerbas.png" name="yerbas"></circulo-categoria>
+
+        </section>
+    </header>
+
+    <main>
+        <div class="busquedas">
+            <aside>
+                <div class="contenedor-boton-filtro" id="boton-filtro">
+                    <span>Filtrar</span>
+                    <img class="filtrar-icon" src="../img/icons/filtros.svg" alt="Filtrar">
+                </div>
+                <div class="filtros">
+                    <filtros-del-mate></filtros-del-mate>
+                </div>
+            </aside>
+            <div class="resultados">
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <footer-del-mate></footer-del-mate>
+    </footer>
+
+    <script type="module" src="/js/front/products.js"></script>
+</body>
+
+</html>

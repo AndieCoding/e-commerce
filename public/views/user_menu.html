@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+    <link rel="stylesheet" href="/css/front.css">
+    <link rel="stylesheet" href="/css/props.css" />
+    <script type="module" src="/js/front/user-menu.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <menu-del-mate></menu-del-mate>
+
+    <main class="user-panel">
+        <div class="accesos">
+            <img id="acceso-mis-datos" class="icon edit-user active" src="../img/icons/edit-user.svg" alt="accesos">
+            <img id="acceso-historial-facturas" class="icon" src="../img/icons/doc.svg" alt="accesos">
+        </div>
+        <historial-facturas></historial-facturas>
+        <div id="editar-usuario" class="main-user-config open">
+            <div class="titular-pantalla-grande">
+                <img id="user-icon-pantalla-grande" class="icon edit-user icon-titulo" src="../img/icons/edit-user.svg"
+                    alt="accesos">
+            </div>
+            <form id="editar" class="registro">
+                <div class="container">
+                    <article class="imageSection">
+                        <div class="previewImage">
+                            <input class="saveBtn" id="saveBtn" type="file" name="image" />
+                        </div>
+
+                    </article>
+                    <article>
+                        <user-tools name="NOMBRE">
+                            <label slot="label">Usuario</label>
+                        </user-tools>
+                    </article>
+
+                </div>
+
+                <div id="configLine" class="line"></div>
+
+                <section>
+                    <user-tools name="CIUDAD">
+                        <label slot="label">Localidad</label>
+                    </user-tools>
+                </section>
+
+                <section>
+                    <user-tools name="EMAIL">
+                        <label slot="label">Correo</label>
+                    </user-tools>
+                </section>
+
+                <section class="sectionPass">
+                    <user-tools name="PASSWORD">
+                        <label slot="label">Contraseña</label>
+                    </user-tools>
+                </section>
+
+                <div id="displayError"></div>
+                <div id="configLine" class="line"></div>
+
+                <section class="sectionAccDel">
+                    <a id="eliminar_cuenta" class="deleteAcc">Eliminar cuenta</a>
+                </section>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <footer-del-mate></footer-del-mate>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    font-family: 'Roboto Condensed', Arial, sans-serif;
+}
+
+confirmar-compra {
+    margin: 5em 0;
+
+    @media (max-width: 768px) {
+        margin: 0.5em;
+    }
+}
+
+.carrito-container {
+    min-height: 95vh;
+}
+
+main.mi-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin: 5px 20px;
+    max-width: 1000px;
+    margin: auto;
+
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+    }
+}
+
+.carrito {
+    width: 65%;
+    background-color: white;
+    padding: 5px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+
+    @media (max-width: 768px) {
+        width: 90%;
+        margin: auto;
+        margin-top: 10px;
+    }
+}
+
+.carrito h3 {
+    margin: 25px 0;
+    color: white;
+}
+
+.carrito-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.carrito-header {
+    display: grid;
+    grid-template-columns: 4fr 1fr 1fr;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    color: #8da382ff;
+}
+
+.carrito-items {
+    border-top: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.carrito-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.carrito-item-imagen {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.carrito-item-detalles {
+    flex-grow: 0.3;
+}
+
+.carrito-item-nombre {
+    margin: 0;
+    font-size: 18px;
+    text-align: left;
+}
+
+.carrito-item-controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.cantidad-restar,
+.cantidad-sumar {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.carrito-item-cantidad {
+    width: 30px;
+    text-align: center;
+}
+
+.carrito-item-subtotal {
+    width: 100px;
+    text-align: center;
+}
+
+.carrito-item-precio {
+    font-size: 18px;
+    color: #333;
+    text-align: right;
+}
+
+.eliminar-item {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.eliminar-item img {
+    width: 40px;
+    height: 40px;
+}
+
+.detalle-pedido {
+    width: 25%;
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.cantidad-productos {
+    font-size: 42px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    color: blue;
+}
+
+@media (max-width: 768px) {
+    .mi-carrito {
+        margin: 0;
+    }
+
+    .carrito h1 {
+        margin: 0;
+        margin-bottom: 10px;
+    }
+
+    .carrito-item {
+        grid-template-columns: 1fr 1fr;
+        grid-row-gap: 10px;
+    }
+
+    .carrito-item-imagen {
+        width: 60px;
+        height: 60px;
+    }
+
+    .carrito-item-precio,
+    .carrito-item-subtotal,
+    .carrito-item-controles {
+        text-align: left;
+    }
+
+    .carrito-item-detalles {
+        grid-column: 1 / -1;
+        margin-bottom: 10px;
+    }
+
+    .carrito-item-precio {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .carrito-item-imagen {
+        width: 80px;
+        height: 80px;
+    }
+
+    .carrito-item-nombre {
+        font-size: 14px;
+    }
+
+    .cantidad-restar,
+    .cantidad-sumar,
+    .carrito-item-cantidad {
+        width: 30px;
+    }
+
+    .carrito-comprar,
+    .boton-vaciar-carrito {
+        width: 100%;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+}

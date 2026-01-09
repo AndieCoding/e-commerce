@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Fan del Mate</title>
+    <link rel="icon" type="image/x-icon" href="../img/icons/favicon.png">
+    <link rel="stylesheet" href="/css/front.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Parkinsans:wght@300..800&family=PT+Sans+Narrow:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Tangerine&display=swap"
+        rel="stylesheet">
+    <script type="module" src="/js/front/index.js"></script>
+</head>
+
+<body>
+    <div class="loader">Cargando...
+        <div class="spinner"></div>
+    </div>
+    <header class="index">
+
+        <menu-del-mate></menu-del-mate>
+
+        <portada-img class="hidden"></portada-img>
+
+    </header>
+
+
+
+    <section class="sommelier">
+        <div class="contenedor-imagen-sommelier">
+            <img class="imagen-sommelier" src="/img/img/sommelier-valeria.jpg" alt="sommelier Valeria Trápaga">
+        </div>
+        <div class="tip 1">
+            <h4>Valeria Trápaga - Sommelier</h4>
+            <h3>Para sebar un buen mate</h3>
+            <p> La temperatura del agua es clave: el máximo aceptable para que la yerba mate se pueda expresar
+                correctamente y no nos resulte demasiado intensa o amarga.</p>
+        </div>
+    </section>
+
+    <div class="banner-conoce">
+        <h1>Conoce nuestros productos</h1>
+    </div>
+    <main class="hidden">
+        <div class="main">
+
+            <section class="destacados">
+            </section>
+
+            <section class="categorias">
+                <circulo-categoria img="/img/categorias/mates.png" name="Mates"></circulo-categoria>
+                <circulo-categoria img="/img/categorias/termos.png" name="Termos"></circulo-categoria>
+                <circulo-categoria img="/img/categorias/yerbas.png" name="Yerbas"></circulo-categoria>
+            </section>
+
+        </div>
+    </main>
+
+
+    <section class="sommelier reverse">
+        <div class="contenedor-imagen-sommelier">
+            <img class="imagen-sommelier" src="/img/img/sommelier-maria.jpg" alt="sommelier Valeria Trápaga">
+        </div>
+        <div class="tip">
+            <h4>María Consuelo Sastre - Sommelier</h4>
+            <h3>¿Qué yerba usar?</h3>
+            <p>Debe tener una yerba mate que te guste y que vos puedas elegir no por el precio sino que elijas la marca
+                o el producto en sí. Desde una perspectiva más técnica, se dice que una yerba de calidad va a tener
+                mejores resultados porque no se va a lavar rápidamente</p>
+        </div>
+    </section>
+
+    <h3 class="contacto-titular">¿Ya hiciste tu pedido?</h3>
+    <section class="contacto">
+
+        <div class="wa">
+            <a href="https://api.whatsapp.com/send?phone=+543462336880&text=Hola%20soy%20una%20persona%20interesada%20en%20los%20mates%20de%20Fan%20del%20Mate"
+                target="_blank">
+                <img class="icon" src="/img/icons/redes/whatsapp.png" alt="Whatsapp">
+                <p>Whatsapp</p>
+                <p>+54 3462 336880</p>
+            </a>
+
+        </div>
+        <div class="email">
+
+            <a href="mailto:federicoa.gigena@gmail.com?Subject=MATES">
+                <img class="icon" src="/img/icons/redes/email.png" alt="email">
+                <p>pedidos@elfandelmate.com</p>
+            </a>
+
+        </div>
+
+    </section>
+    <div class="banner-contacto">
+        <img src="/img/banner/contacto.png" alt="Whatsapp icon">
+    </div>
+
+    <footer>
+        <footer-del-mate></footer-del-mate>
+    </footer>
+
+</body>
+
+</html>

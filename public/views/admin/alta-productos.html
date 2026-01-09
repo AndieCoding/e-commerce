@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Alta de productos</title>
+		<link rel="stylesheet" href="/css/props.css" />
+		<link rel="stylesheet" href="/css/ficha-de-stock.css" />
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <script type="module" src="./js/altas.js"></script>
+	</head>
+	<body>
+		<menu-del-mate></menu-del-mate>
+		<div class="main">
+			<admin-nav></admin-nav>
+			
+			<div class="flex column color-main">
+
+				<h2 class="text-center">Alta de productos</h2>
+				
+				<form autocomplete="off" action="" class="nuevaFactura flex column align-center m-bottom-3em justify-center w-100porciento" id="nfacturaForm">					
+				
+					<p class="nota"> Ingresar en orden mate-termo-yerba</p>
+					<div class="flex m-top-1em"><!-- align-center h-150px justify-center gap-2em-->
+						
+						<table class="tabla-carga">
+							<thead class='tabla-carga-head altas'>
+								<tr>
+									<th>Tipo</th>
+									<th>Nombre</th>
+									<th>Marca</th>
+									<th>Descripción</th>
+									<th>Imagen</th>
+								</tr>
+							</thead>
+							<tbody class="tabla-carga-body altas">								
+								<!-- Mostrará las celdas para ingresar la compra -->
+							</tbody>
+						</table>						
+							
+						<table class="renderizada">
+							<thead class='renderizada-head'>
+								<tr>
+									
+								</tr>
+							</thead>
+							<tbody class="renderizada-body"></tbody>									
+                                <!-- Mostrará los productos y sus respectivos stock -->
+							</tbody>
+							<!--<label for="nuevaf-imagen">Image:</label>
+							<input type="file" id="nuevaf-imagen" name="product-image" accept="image/*" required>
+							<div class="preview"></div>-->
+						</table>
+							
+					</div>
+				</form>
+				<h4 id="total-facturado"></h4>
+				<!--<p class="stock text-center"></p>-->
+				<div class="guardar flex justify-center m-top-3em relative">
+					<button class="formButton enviar w-140px" disabled>Guardar</button>
+					<!--<button class="formButton font-size-14px w-140px m-left-1em" onclick="window.print()" class="">Imprimir</button>-->
+				</div>
+			</div>
+		</div>
+
+		<footer-del-mate></footer-del-mate>
+		
+		<script>
+		</script>
+	</body>
+</html>

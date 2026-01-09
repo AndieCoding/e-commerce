@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Informes</title>
+		<link rel="stylesheet" href="/css/props.css" />
+		<link rel="stylesheet" href="/css/ficha-de-stock.css" />
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+		<script type="module" src="./js/informes.js"></script> 
+	</head>
+	<body>		
+		<menu-del-mate></menu-del-mate>
+		<admin-nav></admin-nav>
+		<div class="main color-main pantalla-informes">
+			
+			<h2 class="text-center">Informes</h2>
+		
+			<div class="informes-y-tabla grid maxw-85porc m-auto">
+				<h3>General</h3>
+				<div style="width:100%">
+						<canvas id="myBarChart"></canvas>
+				</div>
+				<div style="width:100%">
+						<canvas id="myLineChart"></canvas>
+				</div>
+				<h3>Por Unidad</h3>
+				<!-- Ventas mates -->
+				<div style="width:100%">
+					<canvas id="MateVentasDiariasChart"></canvas>
+				</div>
+				<!-- Ventas termos -->
+				<div style="width:100%">
+					<canvas id="TermoVentasDiariasChart"></canvas>
+				</div>
+				<!-- Ventas yerbas -->
+				<div style="width:100%">
+					<canvas id="YerbaVentasDiariasChart"></canvas>
+				</div>
+				<!-- Ingresos-egresos mates -->
+				<div style="width:90%">
+					<canvas id="MateIng-EgresosChart"></canvas>
+				</div>
+				<!-- Ingresos-egresos termos -->
+				<div style="width:90%">
+					<canvas id="TermoIng-EgresosChart"></canvas>
+				</div>
+				<!-- Ingresos-egresos yerbas -->
+				<div style="width:90%">
+					<canvas id="YerbaIng-EgresosChart"></canvas>
+				</div>
+				<div class="flex align-center gap-1em select-mes-informes">
+					<p class="m-bottom-15em">Mes seleccionado: </p>
+					<select class="m-bottom-1em" name="mes" id="select-impuestos-mes">
+						<option value="">Seleccione el mes</option>
+						<option value="1">Enero</option>
+						<option value="2">Febrero</option>
+						<option value="3">Marzo</option>
+						<option value="4">Abril</option>
+						<option value="5">Mayo</option>
+						<option value="6">Junio</option>
+						<option value="7">Julio</option>
+						<option value="8">Agosto</option>
+						<option value="9">Septiembre</option>
+						<option value="10">Octubre</option>
+						<option value="11">Noviembre</option>
+						<option value="12">Diciembre</option>
+					</select>
+				</div>	
+				<section id="i-brutos" class="m-bottom-4em">
+						<h3>INGRESOS BRUTOS - DRI</h3>
+						
+
+						<div class="div-total mw-380px flex align-center">
+							<p>Total facturado: </p>
+							<span class="p-left-02em" id="total-facturado"></span>
+						</div>
+
+						<table class="mw-380px informes">
+							<thead class="impuestos">
+								<tr>
+									<th>Impuesto</th>
+									<th>Alicuota</th>
+									<th>Monto a pagar</th>
+								</tr>
+							</thead>
+							<tbody class="">
+								<tr>
+									<td>Ing. Brutos</td>
+									<td>2.76</td>
+									<td id="ingresos-pagar">-</td>
+								</tr>
+								<tr>
+									<td>DRI</td>
+									<td>0.63</td>
+									<td id="dri-pagar">-</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<section id="monotributo" class="">
+							<div class="categoria-monotributo">
+								<h3 class="">CATEGORIA DE MONOTRIBUTO</h3>
+								<p class="self-start">1/7/2024 hasta 30/6/2025</p>
+							</div>
+							<table class="monotributo">
+								<thead class="impuestos">
+									<tr>
+										<th>Total facturado</th>
+										<th>Categoría</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td id="total-periodo">-</td>
+										<td id="categoria">-</td>
+									</tr>
+								</tbody>
+							</table>
+					</section>
+				</section>
+				<div class="ficha-facturas">
+						<div class="color-main">
+							<div>
+								<h3>FACTURAS</h3>
+							</div>
+						<!--<div>
+								<label for="select-producto">Tipo de documento: </label>
+								<select name="lista" id="select-producto" class="w-160px">
+									<option value="">Tipo de Documento</option>
+								</select>				
+							</div>-->
+							<label for="checkbox-facturas">Todas
+							<input type="checkbox" value="todas" id="checkbox-facturas"></label>
+			
+							<div class="contenedor-tabla-facturas">
+								<table id="fecha" class="tableFecha">
+									<thead class="ficha facturacion">
+										<tr>
+											<th>FECHA</th>										
+											<th class="w-100px">NUM</th>
+											<th class="w-100px">TOTAL</th>
+											<th class="w-100px">FACT.</th>
+											<th class="w-100px">REMITO</th>
+										</tr>
+									</thead>
+									<tbody id="body-facturas"></tbody>
+								</table>
+							</div>
+						</div>
+				</div>
+				<section id="ganancias-netas" class="sector-ganancias">
+					<div class="ganancias-brutas">
+						<h3 class="">GANANCIAS BRUTAS</h3>
+						<p class="valor-ganancias" id="ganancias-brutas-valor">000.000</p>
+					</div>
+					
+					<div class="ganancias-netas">
+						<h3 class="">GANANCIAS NETAS</h3>
+						<p class="valor-ganancias" id="ganancias-netas-valor">000.000</p>
+					</div>
+					
+					<div class="gastos-a-restar">
+						<div class="gasto">
+							<label for="alquiler">Alquiler:</label>
+							<input type="number" id="alquiler" value="235000" /> 
+						</div>
+						<div class="gasto">
+							<label for="">Luz:</label>
+							<input type="number" id="luz" value="85000" />
+						</div>
+						<div class="gasto">
+							<label for="">Otros:</label>
+							<input type="number" id="otros" value="10000" />
+						</div>
+						<div class="gasto">
+							<label for="gastos-ingresos-brutos">Ing. Brutos:</label>
+							<input type="number" id="gastos-ingresos-brutos" value="" required disabled/> 
+						</div>
+						<div class="gasto">
+							<label for="gastos-dri">Ing. Brutos:</label>
+							<input type="number" id="gastos-dri" value="" required disabled/> 
+						</div>
+						<button id="calcula-ganancias">Calcular ganancias netas</button>
+
+						
+					</div>
+					
+			</section>
+				
+			</div>
+		</div>
+
+		 
+		<footer-del-mate></footer-del-mate>
+		 
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		  
+		<script>
+			
+
+		</script>
+    </body>
+</html>
