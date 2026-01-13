@@ -2,186 +2,321 @@ export class Filtros extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.categoria = localStorage.getItem('categoria');
-        this.filtrosActivos = {};
-    }    
+        this.filtrosActivos = {
+            marcas: [], // Store multiple selected brands
+            precio: null // Store single selected price range
+        };
+        // Mock Data for Demo
+        this.mockBrands = ['Playadito', 'Taragui', 'Mañanita', 'Amanda', 'La Merced', 'Rosamonte'];
+        this.mockPrices = [
+            { value: 'precio<5000', label: 'Menos de $5.000', id: 'price-1' },
+            { value: 'precio>=5000 && precio<=10000', label: '$5.000 - $10.000', id: 'price-2' },
+            { value: 'precio>10000', label: 'Más de $10.000', id: 'price-3' }
+        ];
+    }
+
+    connectedCallback() {
+        this.render();
+    }
+
     getStyles() {
         return `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap');
+            
             :host {
-                background-color: #81bb7c;                
-                border-radius: 10px;
-                outline: 2px solid #056f05;  
-                font-family: Roboto Condensed;              
-                @media (width<900px){                
-                    display: flex;
-                    width: 400px;
-                    justify-content: center;
-                    margin: auto;
-                    gap: 1em;
-                }
-                    @media (width<600px){
-                    width: 100%;
+                display: block;
+                font-family: 'Roboto Condensed', sans-serif;
+                background-color: #ffffff;
+                border-radius: 12px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+                width: 100%;
+                box-sizing: border-box;
+                color: #333;
+            }
 
-                }
+            h3 {
+                font-size: 18px;
+                font-weight: 700;
+                margin-top: 0;
+                margin-bottom: 20px;
+                color: #1a1a1a;
+                border-bottom: 2px solid #f0f0f0;
+                padding-bottom: 10px;
             }
-            .precios, .marcas {
-                margin-top: 20px
-                @media (width<900px){
-                   margin-top: 5px;
-                }
+
+            h4 {
+                font-size: 14px;
+                font-weight: 700;
+                text-transform: uppercase;
+                margin: 20px 0 10px 0;
+                color: #555;
             }
-            h3{
+
+            /* Active Filters (Chips) */
+            .active-filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-bottom: 20px;
+            }
+
+            .chip {
+                background-color: #e8f5e9;
+                color: #2e7d32;
+                border: 1px solid #c8e6c9;
+                border-radius: 16px;
+                padding: 4px 10px;
+                font-size: 12px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.2s;
+            }
+
+            .chip:hover {
+                background-color: #c8e6c9;
+            }
+
+            .chip button {
+                background: none;
+                border: none;
+                color: #2e7d32;
+                font-weight: bold;
+                cursor: pointer;
+                font-size: 14px;
+                padding: 0;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+            }
+
+            /* Filter Groups */
+            .filter-group {
+                margin-bottom: 20px;
+            }
+
+            .option-row {
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+                cursor: pointer;
+                font-size: 14px;
+                color: #444;
+                transition: color 0.2s;
+            }
+
+            .option-row:hover {
+                color: #2e7d32;
+            }
+
+            input[type="checkbox"], input[type="radio"] {
+                accent-color: #2e7d32;
+                margin-right: 10px;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+            }
+
+            label {
+                cursor: pointer;
+                user-select: none;
+                flex: 1;
+            }
+
+            /* Clear Button */
+            .btn-clear {
+                width: 100%;
+                padding: 10px;
+                background-color: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-family: inherit;
+                font-weight: 600;
+                color: #666;
+                cursor: pointer;
+                transition: all 0.2s;
+                margin-top: 10px;
                 text-transform: uppercase;
                 font-size: 12px;
-                margin: 0;
-                @media (width<900px){
-                    font-size: 8px;
+                letter-spacing: 0.5px;
+            }
+
+            .btn-clear:hover {
+                background-color: #f5f5f5;
+                color: #333;
+                border-color: #ccc;
+            }
+
+            /* Responsive */
+            @media (max-width: 900px) {
+                :host {
+                    padding: 15px;
                 }
             }
-            label {                
-                margin-right: 10px;  
-                font-size: 14px;      
-                
-                 @media (width<900px){
-                    font-size:8px;
-                    margin:0;
-                }        
-            }
-            input[type="radio"] {
-                margin-right: 5px;    
-                border-radius: 50%;
-                @media (width<900px){
-                    margin: 0;
-                }                
-            }    
-            input[type="radio"]:checked {
-                outline: 2px solid #056f05;  
-            }
-            .reset {
-                margin-top: 30px;
-                text-align: center;
-                @media (width<900px){
-                    width: 80px;
-                    margin-top: 0;
-                    align-self: center;
-                }
-                @media (width<600px){
-                    width: 50px;                    
-                }
-            }
-            .btn-clear {
-                padding: 5px 10px;
-                background-color:rgb(253, 253, 253);
-                color: #66daff;
-                outline: 2px solid lightblue;
-                border: none;
-                cursor: pointer;
-                border-radius: 5px;
-                &:hover {
-                    background-color: lightblue;
-                    outline: 2px solid #96e0eb;
-                    color: #052f9f;
-                }
-                @media (width<900px){
-                    font-size: 10px;
-                    padding: 5px;
-                }
-            }
-                .contenedor-input-radio {
-                    display: flex;
-                    justify-content: start;
-                    align-items: center;
-                    gap: 0.5em;
-                    margin: 5px 0;
-                    @media (width<900px){
-                        gap: 0.3em;
-                    }
-                }
         </style>
         `;
     }
 
-    template(){
-        const template = document.createElement('template');
-        template.innerHTML = this.getStyles() + `
-           <div class="precios">
-                <h3>Precios</h3>
-            </div>
-            <div class="marcas">
-                <h3>Marcas</h3>                
-            </div>
-            <div class="reset">
-                <button class="btn-clear">Limpiar Filtros</button>
-            </div>
-        `
-        return template.content.cloneNode(true);
+    render() {
+        this.shadowRoot.innerHTML = this.getStyles();
+
+        // Container
+        const container = document.createElement('div');
+        container.className = 'container';
+
+        // Title
+        const title = document.createElement('h3');
+        title.textContent = 'Filtrar por';
+        container.appendChild(title);
+
+        // Active Filters Section
+        const activeFiltersContainer = document.createElement('div');
+        activeFiltersContainer.className = 'active-filters';
+        this.renderActiveFilters(activeFiltersContainer);
+        container.appendChild(activeFiltersContainer);
+
+        // Price Section
+        const priceGroup = document.createElement('div');
+        priceGroup.className = 'filter-group';
+        priceGroup.innerHTML = `<h4>Precio</h4>`;
+        this.mockPrices.forEach(price => {
+            const row = document.createElement('div');
+            row.className = 'option-row';
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'precio';
+            input.value = price.value;
+            input.id = price.id;
+            if (this.filtrosActivos.precio === price.value) {
+                input.checked = true;
+            }
+            input.addEventListener('change', (e) => this.handlePriceChange(e.target.value));
+
+            const label = document.createElement('label');
+            label.htmlFor = price.id;
+            label.textContent = price.label;
+
+            row.appendChild(input);
+            row.appendChild(label);
+            priceGroup.appendChild(row);
+        });
+        container.appendChild(priceGroup);
+
+        // Brands Section
+        const brandGroup = document.createElement('div');
+        brandGroup.className = 'filter-group';
+        brandGroup.innerHTML = `<h4>Marcas</h4>`;
+        this.mockBrands.forEach(brand => {
+            const row = document.createElement('div');
+            row.className = 'option-row';
+
+            const input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = 'marca';
+            input.value = brand;
+            input.id = `brand-${brand}`;
+            if (this.filtrosActivos.marcas.includes(brand)) {
+                input.checked = true;
+            }
+            input.addEventListener('change', (e) => this.handleBrandChange(e.target.value, e.target.checked));
+
+            const label = document.createElement('label');
+            label.htmlFor = `brand-${brand}`;
+            label.textContent = brand;
+
+            row.appendChild(input);
+            row.appendChild(label);
+            brandGroup.appendChild(row);
+        });
+        container.appendChild(brandGroup);
+
+        // Clear Button
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'btn-clear';
+        clearBtn.textContent = 'Limpiar Filtros';
+        clearBtn.addEventListener('click', () => this.clearFilters());
+        container.appendChild(clearBtn);
+
+        this.shadowRoot.appendChild(container);
     }
 
-    async connectedCallback() {
-        this.shadowRoot.appendChild(this.template());     
-        await this.loadFilters();
-        this.addEventListeners();
-    }
-    addEventListeners() {
-        this.shadowRoot.querySelectorAll('input[type="radio"]').forEach(element => {
-            element.addEventListener('change', (e) => {                                
-                this.filtrosActivos[e.target.name] = e.target.value;
-                this.dispatchEvent(new CustomEvent('filtrar', { detail:  this.filtrosActivos }));
+    renderActiveFilters(container) {
+        container.innerHTML = '';
+
+        // Price Chip
+        if (this.filtrosActivos.precio) {
+            const priceLabel = this.mockPrices.find(p => p.value === this.filtrosActivos.precio)?.label || 'Precio';
+            const chip = this.createChip(priceLabel, () => {
+                this.filtrosActivos.precio = null;
+                this.notifyChange();
+                this.render();
             });
-        })
-        this.shadowRoot.querySelector('.btn-clear').addEventListener('click', () => {
-            this.clearFilters();
+            container.appendChild(chip);
+        }
+
+        // Brand Chips
+        this.filtrosActivos.marcas.forEach(brand => {
+            const chip = this.createChip(brand, () => {
+                this.filtrosActivos.marcas = this.filtrosActivos.marcas.filter(b => b !== brand);
+                this.notifyChange();
+                this.render();
+            });
+            container.appendChild(chip);
         });
     }
 
-    async loadFilters() {
-        const precios = [
-            { value: 'precio<5001', label: "Hasta $5.000", rel: 'price-1' }, 
-            { value: 'precio>4999 && precio<10000', label: "Entre $5.000 y $10.000", rel: 'price-2' }, 
-            { value: 'precio>10000', label: "Más de $10.000", rel: 'price-3' }
-        ];
-        let marcas = [];
-        if (this.categoria !== 'mates') {
-            marcas = await this.loadBrands() ;
+    createChip(text, onClose) {
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+
+        const span = document.createElement('span');
+        span.textContent = text;
+
+        const btn = document.createElement('button');
+        btn.innerHTML = '&times;';
+        btn.onclick = onClose;
+
+        chip.appendChild(span);
+        chip.appendChild(btn);
+        return chip;
+    }
+
+    handlePriceChange(value) {
+        this.filtrosActivos.precio = value;
+        this.notifyChange();
+        this.render(); // Re-render to update active chips
+    }
+
+    handleBrandChange(value, isChecked) {
+        if (isChecked) {
+            this.filtrosActivos.marcas.push(value);
         } else {
-            this.shadowRoot.querySelector('.marcas').innerHTML = "";
+            this.filtrosActivos.marcas = this.filtrosActivos.marcas.filter(m => m !== value);
         }
-        this.populateFilters(precios, marcas);
+        this.notifyChange();
+        this.render(); // Re-render to update active chips
     }
 
-    populateFilters(precios, marcas) {        
-        this.shadowRoot.querySelector('.precios').innerHTML += precios.map(
-            price => 
-                `<div class="contenedor-input-radio"><input type="radio" name="precio" value="${price.value}" id="${price.rel}"><label for="${price.rel}">${price.label}</label></div>`).join('');
-        this.shadowRoot.querySelector('.marcas').innerHTML += marcas.map(
-            brand => 
-                `<div class="contenedor-input-radio"><input type="radio" name="marca" value="${brand.marca}" id="${brand.marca}"><label for="${brand.marca}">${brand.marca}</label></div>`).join('');    
-    }
-    async loadBrands() {
-        try {
-            //const response = await fetch(`/api/marcas/${this.categoria}`);
-            //const data = await response.json();            
-            const productsString = localStorage.getItem('products');
-            const products = JSON.parse(productsString);
-            const uniqueBrands = new Set(
-                products
-                    .filter(p => { return p.tipo === this.categoria}) 
-                    .map(p => p.marca)                     
-            );
-            const data = Array.from(uniqueBrands).map(marca => ({ marca }));
-            return data;
-            
-        } catch (error) {
-            console.error('Error loading brands:', error);
-        }
-    }
     clearFilters() {
-        this.shadowRoot.querySelectorAll('input[type="radio"]').forEach(input => {
-            input.checked = false;
-        });
-        window.location.reload();      
+        this.filtrosActivos = { marcas: [], precio: null };
+        this.notifyChange();
+        this.render();
+    }
+
+    notifyChange() {
+        // Prepare the payload.
+        // We map 'precio' to 'price' to match what the current backend likely expects (based on reading src/config/consultas.js)
+        // 'marcas' is sent as is; backend might ignore it since it expects 'marca' (singular), 
+        // but that's fine for this UI-first step.
+        this.dispatchEvent(new CustomEvent('filtrar', {
+            detail: {
+                marcas: this.filtrosActivos.marcas,
+                price: this.filtrosActivos.precio
+            }
+        }));
     }
 }
 

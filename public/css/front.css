@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+@font-face {
+    font-family: "Roboto";
+    src: url("./font/Roboto/Roboto-Regular.ttf") format("truetype");
+}
+
 body {
     margin: 0;
     width: 100%;
@@ -216,6 +221,22 @@ section.contacto {
     }
 }
 
+.tipo-vista-contenedor {
+    width: 100%;
+    max-width: 850px;
+    margin: auto;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 1em;
+}
+
+.tipo-vista-icon {
+    border-radius: 0;
+    width: 25px;
+    height: 25px;
+}
+
 .banner-contacto {
     height: 244px;
 
@@ -305,8 +326,8 @@ p.notFound {
     opacity: 1;
     padding: 0;
     pointer-events: auto;
-    height: 80px;
-
+    height: auto;
+    z-index: 10;
 }
 
 .filtros {
@@ -316,6 +337,7 @@ p.notFound {
     padding: 2em 1em;
     background-color: white;
     margin: auto;
+    position: relative;
 
     @media (width<900px) {
         max-width: 900px;
@@ -340,13 +362,9 @@ p.notFound {
 .busquedas .resultados {
     max-width: 900px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, 200px);
     gap: 1em;
     justify-content: center;
     margin-left: 1em;
-    position: relative;
-    max-height: 900px;
-    margin-bottom: 2.5em;
 
     @media (width<900px) {
         box-sizing: border-box;
@@ -355,6 +373,19 @@ p.notFound {
         width: 100%;
         padding: 10px;
         margin-left: 0;
+    }
+}
+
+.busquedas .resultados.grid {
+    grid-template-columns: repeat(auto-fill, 200px);
+}
+
+.busquedas .resultados.list {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(auto-fill, 150px);
+
+    product-card {
+        height: fit-content;
     }
 }
 

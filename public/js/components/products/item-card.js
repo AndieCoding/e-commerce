@@ -82,6 +82,7 @@ export class ItemCard extends CartCard {
             color: #333;
             width: 90px;
             text-align: right;
+            font-weight: 100;
         }
 
         .eliminar-item {
@@ -97,7 +98,7 @@ export class ItemCard extends CartCard {
              
         </style>
         `
-    }    
+    }
 }
 
 customElements.define('item-card', ItemCard);

@@ -1,71 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Alta de productos</title>
-		<link rel="stylesheet" href="/css/props.css" />
-		<link rel="stylesheet" href="/css/ficha-de-stock.css" />
-		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-        <script type="module" src="./js/altas.js"></script>
-	</head>
-	<body>
-		<menu-del-mate></menu-del-mate>
-		<div class="main">
-			<admin-nav></admin-nav>
-			
-			<div class="flex column color-main">
 
-				<h2 class="text-center">Alta de productos</h2>
-				
-				<form autocomplete="off" action="" class="nuevaFactura flex column align-center m-bottom-3em justify-center w-100porciento" id="nfacturaForm">					
-				
-					<p class="nota"> Ingresar en orden mate-termo-yerba</p>
-					<div class="flex m-top-1em"><!-- align-center h-150px justify-center gap-2em-->
-						
-						<table class="tabla-carga">
-							<thead class='tabla-carga-head altas'>
-								<tr>
-									<th>Tipo</th>
-									<th>Nombre</th>
-									<th>Marca</th>
-									<th>Descripción</th>
-									<th>Imagen</th>
-								</tr>
-							</thead>
-							<tbody class="tabla-carga-body altas">								
-								<!-- Mostrará las celdas para ingresar la compra -->
-							</tbody>
-						</table>						
-							
-						<table class="renderizada">
-							<thead class='renderizada-head'>
-								<tr>
-									
-								</tr>
-							</thead>
-							<tbody class="renderizada-body"></tbody>									
-                                <!-- Mostrará los productos y sus respectivos stock -->
-							</tbody>
-							<!--<label for="nuevaf-imagen">Image:</label>
-							<input type="file" id="nuevaf-imagen" name="product-image" accept="image/*" required>
-							<div class="preview"></div>-->
-						</table>
-							
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Alta de productos</title>
+	<link rel="stylesheet" href="/css/props.css" />
+	<link rel="stylesheet" href="/css/ficha-de-stock.css" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+		rel="stylesheet">
+	<script type="module" src="../../js/altas.js"></script>
+</head>
+
+<body>
+	<menu-del-mate></menu-del-mate>
+	<div class="main">
+		<admin-nav></admin-nav>
+		<div class="flex column color-main align-center m-top-2em p-bottom-2em">
+			<form autocomplete="off" class="form-alta-producto shadow-lg" id="nfacturaForm">
+
+				<div class="form-section">
+					<div class="input-group">
+						<label for="tipo">Tipo de Producto</label>
+						<select name="tipo" id="tipo" required>
+							<option value="" disabled selected>Seleccionar...</option>
+							<option value="mate">Mate</option>
+							<option value="termo">Termo</option>
+							<option value="yerba">Yerba</option>
+						</select>
 					</div>
-				</form>
-				<h4 id="total-facturado"></h4>
-				<!--<p class="stock text-center"></p>-->
-				<div class="guardar flex justify-center m-top-3em relative">
-					<button class="formButton enviar w-140px" disabled>Guardar</button>
-					<!--<button class="formButton font-size-14px w-140px m-left-1em" onclick="window.print()" class="">Imprimir</button>-->
-				</div>
-			</div>
-		</div>
 
-		<footer-del-mate></footer-del-mate>
-		
-		<script>
-		</script>
-	</body>
+					<div class="input-group">
+						<label for="nombre">Nombre</label>
+						<input type="text" name="nombre" id="nombre" placeholder="Ej: Camionero Alpaca" required>
+					</div>
+
+					<div class="input-group">
+						<label for="marca">Marca</label>
+						<input type="text" name="marca" id="marca" placeholder="Ej: Fan del Mate" required>
+					</div>
+				</div>
+
+				<div class="form-section">
+					<div class="input-group">
+						<label for="precio">Precio</label>
+						<input type="number" name="precio" id="precio" placeholder="Ej: 15000" required>
+					</div>
+
+					<div class="input-group">
+						<label for="oferta">Precio de Oferta (Opcional)</label>
+						<input type="number" name="oferta" id="oferta" placeholder="Ej: 12000">
+					</div>
+
+					<div class="input-group">
+						<label for="stock">Stock Inicial</label>
+						<input type="number" name="stock" id="stock" placeholder="Ej: 20" required>
+					</div>
+				</div>
+
+				<div class="form-section">
+					<div class="input-group full-width">
+						<label for="descripcion">Descripción</label>
+						<textarea name="descripcion" id="descripcion" rows="4"
+							placeholder="Detalles del producto..."></textarea>
+					</div>
+				</div>
+
+				<div class="form-section upload-section">
+					<label for="imagen" class="upload-label">
+						<span id="upload-text">Subir Imagen</span>
+						<img id="image-preview" class="hidden" alt="Vista previa">
+					</label>
+					<input type="file" name="imagen" id="imagen" accept="image/*" required>
+				</div>
+
+				<div class="form-actions flex column align-center">
+					<div class="guardar"></div>
+					<button type="button" class="formButton enviar" disabled>Guardar Producto</button>
+				</div>
+			</form>
+
+		</div>
+	</div>
+	<footer-del-mate></footer-del-mate>
+
+	<script>
+	</script>
+</body>
+
 </html>

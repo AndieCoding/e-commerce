@@ -70,8 +70,12 @@ app.get("/ficha", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ficha-stock.html"));
 });
 
-app.get("/informes", (req, res) => {
+app.get("/panel", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "informes.html"));
+});
+
+app.get("/administrar", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "views", "admin", "administrar.html"));
 });
 
 app.get("/altas", (req, res) => {

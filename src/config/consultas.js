@@ -3,78 +3,31 @@ import { Factura } from "../../public/js/models/factura.js";
 import { Producto } from "../../public/js/models/producto.js";
 
 
-async function AltaProductos(factura) {
-
-	const mates = factura.productos.filter((producto) => { return producto.productType.includes('mate') });
-	const termos = factura.productos.filter((producto) => { return producto.productType.includes('termo') });
-	const yerbas = factura.productos.filter((producto) => { return producto.productType.includes('yerba') });
-	let newProducts = [];
+async function AltaProductos(product) {
+	console.log('Estableciendo conexión con la base de datos...')
 	const conn = await getConn();
-	console.log('En la database')
+	console.log('Conexión establecida.')
+	console.log('Insertando nuevo producto en la base de datos.')
+	console.log('producto a insertar: ', product)
+	let producto = JSON.parse(product);
+	console.log('producto a insertar: ', producto)
 	try {
 		await conn.beginTransaction();
+		console.log('Transacción iniciada.')
 
-
-		if (mates.length > 0) {
-			for (const producto of mates) {
-				await conn.query(
-					`INSERT INTO productos
-					(p_tipo, p_nombre, p_marca, p_descripcion, p_img) 
-					VALUES (?, ?, ?, ?, ?);`,
-					[producto.productType, producto.productName, producto.marca, producto.descripcion, producto.image]
-				);
-				const [rows] = await conn.query(
-					`SELECT * 
-					FROM productos
-					WHERE id_prod = LAST_INSERT_ID();`
-				)
-				newProducts.push(rows[0]);
-				producto.id_prod = rows[0].ID_PROD;
-			}
-		};
-		if (termos.length > 0) {
-			for (const producto of termos) {
-
-				await conn.query(
-					`INSERT INTO productos
-					(p_tipo, p_nombre, p_marca, p_descripcion, p_img) 
-					VALUES (?, ?, ?, ?, ?);`,
-					[producto.productType, producto.productName, producto.marca, producto.descripcion, producto.image]
-				);
-				const [rows] = await conn.query(
-					`SELECT * 
-					FROM productos
-					WHERE id_prod = LAST_INSERT_ID();`
-				)
-				newProducts.push(rows[0]);
-				producto.id_prod = rows[0];
-			};
-
-		}
-		if (yerbas.length > 0) {
-			for (const producto of yerbas) {
-
-				await conn.query(
-					`INSERT INTO productos
-					(p_tipo, p_nombre, p_marca, p_descripcion, p_img) 
-					VALUES (?, ?, ?, ?, ?);`,
-					[producto.productType, producto.productName, producto.marca, producto.descripcion, producto.image]
-				);
-				const [rows] = await conn.query(
-					`SELECT * 
-					FROM productos
-					WHERE id_prod = LAST_INSERT_ID();`
-				)
-				newProducts.push(rows[0]);
-				producto.id_prod = rows[0].ID_PROD;
-			}
-		}
-
-		console.log('array newProducts', newProducts);
+		await conn.query(
+			`INSERT INTO productos
+			(p_tipo, p_nombre, p_marca, p_descripcion, p_img, p_precio, p_pr_oferta, p_cantidad) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
+			[producto.tipo, producto.nombre, producto.marca, producto.descripcion, producto.image, producto.precio, producto.oferta, producto.stock]
+		);
+		const [rows] = await conn.query(
+			`SELECT * FROM productos WHERE id_prod = LAST_INSERT_ID();`
+		)
+		producto.id_prod = rows[0].ID_PROD;
 		console.log(`Alta registrada en MySQL. \n`);
 		await conn.commit();
-
-		return [newProducts];
+		return [producto];
 
 	} catch (err) {
 		await conn.rollback();
@@ -83,7 +36,7 @@ async function AltaProductos(factura) {
 	} finally {
 		conn.release();
 	}
-}
+};
 
 async function cargarCompra(factura, conn) {
 	await conn.query(
@@ -669,28 +622,32 @@ async function ObtenerMarcas(categoria) {
 }
 
 async function ObtenerProductosPorCategoria(categoria, query) {
+
+	console.log('Estableciendo conexión con la base de datos.');
 	let conn = await getConn();
+	console.log('Conexión establecida.');
 	try {
 		let rows = [];
+		console.log('Consultando productos por categoría.');
 		if (query === "" || query === null || query === undefined) {
-			[rows] = await conn.query(`SELECT * FROM productos WHERE p_nombre LIKE '%${categoria}%'`);
+			[rows] = await conn.query(`SELECT * FROM productos WHERE p_tipo LIKE '%${categoria}%'`);
 			return [rows];
 		}
 		if (query !== "" && query.marca && query.price) {
 			[rows] = await conn.query(
 				`SELECT * FROM productos 
-				WHERE p_nombre LIKE '%${categoria}%'
+				WHERE p_tipo LIKE '%${categoria}%'
 				AND p_marca LIKE '${query.marca}'
 				AND ${query.price}`);
 		} else if (query !== "" && query.price) {
 			[rows] = await conn.query(
 				`SELECT * FROM productos 
-				WHERE p_nombre LIKE '%${categoria}%' 
+				WHERE p_tipo LIKE '%${categoria}%' 
 				AND ${query.price}`);
 		} else if (query !== "" && query.marca) {
 			[rows] = await conn.query(
 				`SELECT * FROM productos 
-				WHERE p_nombre LIKE '%${categoria}%'
+				WHERE p_tipo LIKE '%${categoria}%'
 				AND p_marca LIKE '${query.marca}'`);
 		}
 		console.log("Query es: " + JSON.stringify(query));
@@ -1100,6 +1057,59 @@ async function updateUserData(userId, data) {
 	}
 }
 
+async function deleteProduct(id) {
+	const conn = await getConn();
+	try {
+		const [result] = await conn.query(`DELETE FROM productos WHERE id_prod = ?`, [id]);
+		return result;
+	} catch (err) {
+		console.log("Error deleting product");
+		console.log(err);
+		throw err;
+	} finally {
+		conn.release();
+	}
+}
+
+async function getProductById(id) {
+	const conn = await getConn();
+	try {
+		const [rows] = await conn.query(`SELECT * FROM productos WHERE id_prod = ?`, [id]);
+		return rows[0];
+	} catch (err) {
+		console.log("Error getting product by id");
+		console.log(err);
+		throw err;
+	} finally {
+		conn.release();
+	}
+}
+
+async function updateProduct(id, product, imagePath) {
+	const conn = await getConn();
+	try {
+		let query = `UPDATE productos SET p_tipo = ?, p_nombre = ?, p_marca = ?, p_descripcion = ?, p_precio = ?, p_pr_oferta = ?, p_cantidad = ?`;
+		let params = [product.tipo, product.nombre, product.marca, product.descripcion, product.precio, product.oferta, product.stock];
+
+		if (imagePath) {
+			query += `, p_img = ?`;
+			params.push(imagePath);
+		}
+
+		query += ` WHERE id_prod = ?`;
+		params.push(id);
+
+		const [result] = await conn.query(query, params);
+		return result;
+	} catch (err) {
+		console.log("Error updating product");
+		console.log(err);
+		throw err;
+	} finally {
+		conn.release();
+	}
+}
+
 export default {
 
 	DevolverFichaDeStock,
@@ -1128,5 +1138,8 @@ export default {
 	getStockActual,
 	AltaProductos,
 	guardarFacturaUsuarioSinCuenta,
-	guardarRemito
+	guardarRemito,
+	deleteProduct,
+	getProductById,
+	updateProduct
 };

@@ -28,6 +28,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.filtros').classList.toggle('mostrar');
         console.log(document.querySelector('.filtros').classList)
     })
+    document.getElementById('grid').addEventListener('click', () => {
+        document.querySelector('.resultados').classList.add('grid');
+        document.querySelector('.resultados').classList.remove('list');
+        const cards = document.querySelectorAll('product-card');
+        cards.forEach(card => {
+            card.setAttribute('tipo', 'grid');
+        })
+    })
+
+    document.getElementById('list').addEventListener('click', () => {
+        document.querySelector('.resultados').classList.add('list');
+        document.querySelector('.resultados').classList.remove('grid');
+        const cards = document.querySelectorAll('product-card');
+        cards.forEach(card => {
+            card.setAttribute('tipo', 'list');
+        })
+    })
+
 })
 
 async function consultarProductos(categoria, query) {
@@ -43,10 +61,16 @@ async function consultarProductos(categoria, query) {
         card.setAttribute('image', p.P_IMG);
         card.setAttribute('name', p.P_NOMBRE);
         card.setAttribute('price', p.P_PRECIO);
+        card.setAttribute('oferta', p.P_PR_OFERTA || 0);
         card.setAttribute('marca', p.P_MARCA);
         card.setAttribute('description', p.P_DESCRIPCION);
         card.setAttribute('stock', p.P_CANTIDAD);
         card.setAttribute('type', p.P_TIPO);
+        if (document.querySelector('.resultados').classList.contains('grid')) {
+            card.setAttribute('tipo', 'grid');
+        } else {
+            card.setAttribute('tipo', 'list');
+        }
         document.querySelector('.resultados').appendChild(card);
     });
 }
@@ -64,8 +88,11 @@ async function searchProducts(query) {
         card.setAttribute('image', p.P_IMG);
         card.setAttribute('name', p.P_NOMBRE);
         card.setAttribute('price', p.P_PRECIO);
+        card.setAttribute('oferta', p.P_PR_OFERTA || 0);
         card.setAttribute('marca', p.P_MARCA);
         card.setAttribute('description', p.P_DESCRIPCION);
+        card.setAttribute('stock', p.P_CANTIDAD || 0);
+        card.setAttribute('type', p.P_TIPO);
         document.querySelector('.resultados').appendChild(card);
     });
     localStorage.removeItem('query');

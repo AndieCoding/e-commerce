@@ -1,174 +1,210 @@
-import {CartController} from './components/cart/cart-controller.js';
-import {Carrito} from './components/cart/carrito.js';
-import {Menu} from './components/navigation/menu.js';
+import { CartController } from './components/cart/cart-controller.js';
+import { Carrito } from './components/cart/carrito.js';
+import { Menu } from './components/navigation/menu.js';
 import { AdminNav } from './components/navigation/admin-nav.js';
 import { Footer } from './components/navigation/footer.js';
+import { Producto } from './models/producto.js';
 
-
-function MostrarRespuesta(mensaje) {	
+function MostrarRespuesta(mensaje) {
 	const divGuardar = document.querySelector('.guardar');
-	
-	const div = document.createElement('div');		
-	const span = document.createElement('span');					
-	span.textContent = mensaje.message;				
+
+	const div = document.createElement('div');
+	const span = document.createElement('span');
+	span.textContent = mensaje.message;
 	div.appendChild(span);
-	divGuardar.appendChild(div);	
-	div.classList.add(mensaje.success ? 'ok-message' : 'error-message');	
+	divGuardar.appendChild(div);
+	div.classList.add(mensaje.success ? 'ok-message' : 'error-message');
 
 	setTimeout(() => {
 		divGuardar.removeChild(div);
-	},2500 );
+	}, 2500);
 }
 
-async function GuardarFactura() {		
-	let tbody = document.querySelector('.tabla-carga-body').children;	
-	const productos = [];
-	Array.from(tbody).forEach( (element, index) => { 	
+async function GuardarFactura() {
+	const form = document.querySelector('#nfacturaForm');
 
-		if (
-			element.children[4].children[0].value == "",
-			element.children[3].children[0].value == "",
-			element.children[2].children[0].value == "",
-			element.children[1].children[0].value == ""
-		) { return };
-		let fileInput = element.children[4].children[0];
-		let obj_factura = {			
-			productType: document.getElementById(`nuevaf-tipo-${index+1}`).value,
-			productName: element.childNodes[1].childNodes[0].value,
-			marca: element.childNodes[2].childNodes[0].value,
-			descripcion: element.childNodes[3].childNodes[0].value,
-			cantidad: 0,
-			product_image: fileInput !== undefined ? document.querySelector(`tr[tr='${index + 1 }'] input[type="file"]`).files[0] : ""
-		};
-		console.log(obj_factura);
-		productos.push(obj_factura);
-		console.log(productos)
-	});	
-	
-	const formData = new FormData();	
-	formData.append("productos", JSON.stringify(productos));
-	productos.forEach((producto, index) => {
-        if (producto.product_image) {
-            formData.append(`product_image`, producto.product_image); 
-        }
-    });
+	const tipo = document.getElementById('tipo').value;
+	const nombre = document.getElementById('nombre').value;
+	const marca = document.getElementById('marca').value;
+	const descripcion = document.getElementById('descripcion').value;
+	const imagenInput = document.getElementById('imagen');
 
-	try 
-	{
+	const precio = document.getElementById('precio').value;
+	const oferta = document.getElementById('oferta').value || 0;
+	const stock = document.getElementById('stock').value;
+
+	if (tipo === "" || nombre.trim() === "" || marca.trim() === "" || precio === "" || stock === "" || !imagenInput.files[0]) {
+		return;
+	}
+
+	const obj_producto = {
+		tipo: tipo,
+		nombre: nombre,
+		marca: marca,
+		descripcion: descripcion,
+		precio: precio,
+		oferta: oferta,
+		stock: stock
+	};
+
+	const formData = new FormData();
+	formData.append("producto", JSON.stringify(obj_producto));
+	formData.append("image", imagenInput.files[0]);
+
+	try {
 		const response = await fetch(`http://localhost:3000/api/alta-productos`, {
 			method: "POST",
 			body: formData
 		})
-		const data = await response.json();					
-		MostrarRespuesta(data);							
-		document.getElementById("nfacturaForm").reset();
-	} 
-	catch (error) 
-	{
+		const data = await response.json();
+		MostrarRespuesta(data);
+
+		if (data.success) {
+			form.reset();
+			const imgPreview = document.getElementById('image-preview');
+			const uploadText = document.getElementById('upload-text');
+			imgPreview.src = '';
+			imgPreview.classList.add('hidden');
+			uploadText.classList.remove('hidden');
+			document.querySelector('.formButton.enviar').disabled = true;
+		}
+	}
+	catch (error) {
 		console.error("Error submitting form: " + error);
+		MostrarRespuesta({ success: false, message: 'Error de conexión con el servidor' });
 	}
 }
 
-function cargarCampos() {
+document.addEventListener("DOMContentLoaded", function () {
+	const imagenInput = document.getElementById('imagen');
+	const imgPreview = document.getElementById('image-preview');
+	const uploadText = document.getElementById('upload-text');
 
-	const tbody = document.querySelector('tbody.tabla-carga-body');	    	
+	imagenInput.addEventListener('change', function (e) {
+		const file = e.target.files[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = function (e) {
+				imgPreview.src = e.target.result;
+				imgPreview.classList.remove('hidden');
+				uploadText.classList.add('hidden');
+			}
+			reader.readAsDataURL(file);
+		} else {
+			imgPreview.src = '';
+			imgPreview.classList.add('hidden');
+			uploadText.classList.remove('hidden');
+		}
+		isCompleted();
+	});
 
-	for (let fila = 1; fila < 5; fila++) {
-		const tr = document.createElement('tr');
-		tr.setAttribute('tr', fila);			
-		for (let col = 1; col < 6; col++) {
-			const td = document.createElement('td');
-			td.setAttribute('col', col);			
-			const input = asignarProps(col, fila);
-			td.appendChild(input);
-			tr.appendChild(td);
-		}	
-		tr.setAttribute('tr', fila);			
-		tbody.appendChild(tr);	
-	};
-}
-
-function asignarProps(col, fila) {
-	let input = document.createElement('input');
-	
-	if (col === 1) { input = document.createElement('select');}	
-	if (col === 4) { input = document.createElement('textarea');} 
-
-	input.setAttribute('tr', fila);	
-	
-	switch (col) {
-		case 1:
-			input.name = 'tipo';			
-			input.setAttribute('id', `nuevaf-tipo-${fila}`);			
-			input.innerHTML = 
-			`	<option value="mate">Mate</option>
-				<option value="termo">Termo</option>
-				<option value="yerba">Yerba</option>								
-			`;
-			break;
-		case 2:
-			input.type = 'text';
-			input.name = 'nombre';			
-			input.setAttribute('id', `nuevaf-nombre-${fila}`);
-			break;
-		case 3:
-			input.type = 'text';
-			input.name = 'marca';			
-			input.setAttribute('id', `nuevaf-marca-${fila}`);
-			break;
-		case 4:			
-			input.name = 'descripcion';
-			input.setAttribute('id', `nuevaf-descripcion`);
-			break;
-		case 5:
-			input.type = 'file';
-			input.name = 'imagen';			
-			input.setAttribute('id', `nuevaf-imagen-${fila}`);
-			input.addEventListener('change', (event) => {
-				const img = document.createElement('img');
-				img.classList.add('preview');
-				
-				const file = event.target.files[0];
-
-				if (file) {
-					const reader = new FileReader();					
-					reader.onload = () => {
-						img.src = `${reader.result}`;
-					};
-					
-					reader.readAsDataURL(file); 
-				}
-				
-				input.parentNode.appendChild(img);				
-			});
-			break;	
-	}
-	return input;
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-
-	cargarCampos();
-
-	const form = document.forms["nfacturaForm"];
-	const inputs = form.elements;
+	const form = document.getElementById("nfacturaForm");
+	const inputs = form.querySelectorAll('input, select, textarea');
 	const submitBtn = document.querySelector('.formButton.enviar');
 
 	function isCompleted() {
-		const isCompleted = Array.from(inputs).every( input => {			
-			if (input.type === "file" || input.closest('.tabla-carga-body')) {
-				return true; // Check if file is selected
-			} else {
-				return input.value.trim() !== ""; // Check if input is not empty
-			}
-		})		
-		submitBtn.disabled = !isCompleted;
+		const tipo = document.getElementById('tipo').value;
+		const nombre = document.getElementById('nombre').value;
+		const marca = document.getElementById('marca').value;
+		const precio = document.getElementById('precio').value;
+		const stock = document.getElementById('stock').value;
+		const file = document.getElementById('imagen').files[0];
+
+		const editId = new URLSearchParams(window.location.search).get('edit');
+		const isFileValid = editId || file;
+
+		const isValid = tipo !== "" && nombre.trim() !== '' && marca.trim() !== '' && precio !== "" && stock !== "" && isFileValid;
+		submitBtn.disabled = !isValid;
 	}
 
-	Array.from(inputs).forEach(input => {
+	inputs.forEach(input => {
 		input.addEventListener('input', isCompleted);
 		input.addEventListener('change', isCompleted);
 	});
 
-	submitBtn.addEventListener('click', GuardarFactura);	
+	const urlParams = new URLSearchParams(window.location.search);
+	const editId = urlParams.get('edit');
+
+	if (editId) {
+		document.querySelector('title').textContent = 'Modificar producto';
+		document.querySelector('h1')?.textContent && (document.querySelector('h1').textContent = 'Modificar producto');
+
+		fetch(`http://localhost:3000/api/product/${editId}`)
+			.then(res => res.json())
+			.then(data => {
+				if (data.success) {
+					const p = data.product;
+					document.getElementById('tipo').value = p.P_TIPO.toLowerCase();
+					document.getElementById('nombre').value = p.P_NOMBRE;
+					document.getElementById('marca').value = p.P_MARCA;
+					document.getElementById('descripcion').value = p.P_DESCRIPCION;
+					document.getElementById('precio').value = p.P_PRECIO;
+					document.getElementById('oferta').value = p.P_PR_OFERTA;
+					document.getElementById('stock').value = p.P_CANTIDAD;
+
+					if (p.P_IMG) {
+						imgPreview.src = p.P_IMG;
+						imgPreview.classList.remove('hidden');
+						uploadText.classList.add('hidden');
+					}
+					submitBtn.textContent = 'Actualizar Producto';
+					document.getElementById('imagen').removeAttribute('required');
+					isCompleted();
+				}
+			})
+			.catch(err => {
+				console.error("Error fetching product data:", err);
+				MostrarRespuesta({ success: false, message: 'No se pudo cargar la información del producto' });
+			});
+	}
+
+	submitBtn.addEventListener('click', async () => {
+		if (editId) {
+			await ActualizarProducto(editId);
+		} else {
+			await GuardarFactura();
+		}
+	});
+
+	async function ActualizarProducto(id) {
+		const tipo = document.getElementById('tipo').value;
+		const nombre = document.getElementById('nombre').value;
+		const marca = document.getElementById('marca').value;
+		const descripcion = document.getElementById('descripcion').value;
+		const precio = document.getElementById('precio').value;
+		const oferta = document.getElementById('oferta').value || 0;
+		const stock = document.getElementById('stock').value;
+		const imagenInput = document.getElementById('imagen');
+
+		const obj_producto = {
+			tipo: tipo,
+			nombre: nombre,
+			marca: marca,
+			descripcion: descripcion,
+			precio: precio,
+			oferta: oferta,
+			stock: stock
+		};
+
+		const formData = new FormData();
+		formData.append("producto", JSON.stringify(obj_producto));
+		if (imagenInput.files[0]) {
+			formData.append("image", imagenInput.files[0]);
+		}
+
+		try {
+			const response = await fetch(`http://localhost:3000/api/products/${id}`, {
+				method: "PUT",
+				body: formData
+			});
+			const data = await response.json();
+			MostrarRespuesta(data);
+			if (data.success) {
+				setTimeout(() => window.location.href = '/administrar', 1500);
+			}
+		} catch (error) {
+			console.error("Error updating product: " + error);
+			MostrarRespuesta({ success: false, message: 'Error de conexión con el servidor' });
+		}
+	}
 });

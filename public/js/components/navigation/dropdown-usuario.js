@@ -80,7 +80,7 @@ export class dropdownUsuario extends HTMLElement {
         ${this.getStyles()}
         <ul class="dropdown-usuario">    
             <li><a href="/user_menu">Mi cuenta</a></li>
-            ${this.admin ? `<li><a href="/admin">Panel de Control</a></li>` : ''}
+            ${this.admin ? `<li><a href="/panel">Panel de Control</a></li>` : ''}
             <li id="logOut"><a href="">Salir</a></li>
         </ul>
         `;

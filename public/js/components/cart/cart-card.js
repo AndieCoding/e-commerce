@@ -31,6 +31,7 @@ export class CartCard extends HTMLElement {
                     text-transform: Capitalize;
                     font-size: 18px;
                     margin-bottom: 5px;
+                    font-weight: 100;
                 }
             }
 
@@ -72,6 +73,7 @@ export class CartCard extends HTMLElement {
                 text-transform: Capitalize;
                 font-size: 14px;
                 margin-bottom: 5px;
+                font-weight: 100;
             }
         }
 
@@ -117,6 +119,7 @@ export class CartCard extends HTMLElement {
             color: #333;
             width: 70px;
             text-align: right;
+            font-weight: 100;
         }
 
         .eliminar-item {
@@ -125,8 +128,8 @@ export class CartCard extends HTMLElement {
             cursor: pointer;
 
             img {
-            width: 25px;
-            height: 35px;
+            width: 20px;
+            height: 25px;
             }
         }
              

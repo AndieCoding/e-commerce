@@ -208,40 +208,41 @@ router.post("/images", upload.array('product_image', 5), async (req, res, next) 
     }
 });
 
-router.post("/alta-productos", upload.array('product_image', 5), async (req, res, next) => {
+router.post("/alta-productos", upload.single('image'), async (req, res, next) => {
     try {
-        let productos = JSON.parse(req.body.productos);
-        let factura = {
-            productos: productos
-        };
-        console.log(factura);
+        let producto = JSON.parse(req.body.producto);
+        console.log('Petición de alta de nuevo producto: ', producto);
 
-        const [newProducts] = await consultaDb.AltaProductos(factura);
-        console.log('Este es el array de ids : ', newProducts);
+        if (req.file) {
+            const timestamp = new Date().getTime();
+            const targetDir = path.join(__dirname, `../../public/img/products/${producto.tipo.toLowerCase().trim()}`);
+            const fileName = `${timestamp}.png`;
+            const targetPath = path.join(targetDir, fileName);
 
-        if (req.files && req.files.length > 0) {
-            console.log(req.files);
-            newProducts.forEach(async (p, index) => {
-                const file = req.files[index];
-                const targetDir = path.join(__dirname, `../../public/img/products/${p.P_TIPO.toLowerCase().trim()}`);
-                const targetPath = path.join(targetDir, p.ID_PROD + '.png');
+            await fs.mkdir(targetDir, { recursive: true });
 
-                await fs.rename(file.path, targetPath, (err) => {
-                    if (err) {
-                        console.error('File moving error:', err);
-                        return res.status(500).json({ message: 'Error moving file' });
-                    }
-                });
-                const baseDir = path.join(__dirname, '../../public');
-                const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
-                imagePath = '/' + image;
-                await consultaDb.insertarImgPath(imagePath, p.ID_PROD);
+            await fs.rename(req.file.path, targetPath, (err) => {
+                if (err) {
+                    console.error('File moving error:', err);
+                    return res.status(500).json({ message: 'Error moving file' });
+                }
             });
+
+            // Construct relative path for DB
+            const baseDir = path.join(__dirname, '../../public');
+            const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
+            producto.image = '/' + image;
+        } else {
+            producto.image = null; // Or handle as error if image is required
         }
-        res.json({ 'message': 'Producto registrado', 'success': true });
+
+        const [newProduct] = await consultaDb.AltaProductos(JSON.stringify(producto));
+        console.log('Nuevo producto registrado: ' + producto.nombre + " ", JSON.stringify(newProduct));
+        res.json({ 'message': 'Producto registrado con éxito', 'success': true });
 
     } catch (err) {
-        console.log(err);
+        console.error('Error en el servidor al registrar nuevo producto:', err);
+        res.status(500).json({ 'message': 'Error al registrar el producto', 'success': false });
     }
 });
 
@@ -464,6 +465,22 @@ router.get("/search/:query", async (req, res) => {
     }
 });
 
+//buscar productos
+router.get("/product/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const product = await consultaDb.getProductById(id);
+        if (product) {
+            res.json({ product, success: true });
+        } else {
+            res.status(404).json({ success: false, message: 'Producto no encontrado' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error retrieving product' });
+    }
+});
+
 router.get("/search/:query", async (req, res) => {
     try {
         const query = req.params.query;
@@ -474,6 +491,57 @@ router.get("/search/:query", async (req, res) => {
     } catch (err) {
         console.error("Error fetching records:", err);
         res.status(500).json({ message: "Error retrieving records" });
+    }
+});
+
+
+//Eliminar producto
+router.delete("/products/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await consultaDb.deleteProduct(id);
+        if (result.affectedRows > 0) {
+            res.json({ success: true, message: 'Producto eliminado' });
+        } else {
+            res.status(404).json({ success: false, message: 'Producto no encontrado' });
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error al eliminar producto' });
+    }
+});
+
+router.put("/products/:id", upload.single('image'), async (req, res) => {
+    try {
+        const id = req.params.id;
+        let producto = JSON.parse(req.body.producto);
+        let imagePath = null;
+
+        if (req.file) {
+            const timestamp = new Date().getTime();
+            const targetDir = path.join(__dirname, `../../public/img/products/${producto.tipo.toLowerCase().trim()}`);
+            const fileName = `${timestamp}.png`;
+            const targetPath = path.join(targetDir, fileName);
+
+            await fs.mkdir(targetDir, { recursive: true });
+            await fs.rename(req.file.path, targetPath);
+
+            const baseDir = path.join(__dirname, '../../public');
+            imagePath = '/' + path.relative(baseDir, targetPath).replace(/\\/g, '/');
+        }
+
+        const result = await consultaDb.updateProduct(id, producto, imagePath);
+        if (result.affectedRows > 0) {
+            const updatedProduct = { ...producto, id, image: imagePath || producto.image };
+            console.log(`Producto (${producto.nombre}) actualizado:`, JSON.stringify(updatedProduct, null, 2));
+            res.json({ success: true, message: 'Producto actualizado con éxito' });
+        } else {
+            console.error(`Error al actualizar producto (${producto.nombre}): No se encontró el producto con ID ${id}`);
+            res.status(404).json({ success: false, message: 'No se pudo actualizar: Producto no encontrado' });
+        }
+    } catch (err) {
+        console.error('Error en el servidor al actualizar producto:', err);
+        res.status(500).json({ success: false, message: 'Error interno al actualizar el producto' });
     }
 });
 

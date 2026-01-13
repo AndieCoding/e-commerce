@@ -55,9 +55,7 @@ export class Menu extends HTMLElement {
                     a {
                         text-decoration: none;
                         color: white;
-                        font-family: Roboto Condensed;
-                        font-weight: 500;
-                        letter-spacing: 1px;
+                        font-family: Roboto;
                         font-size: 14px;
                         cursor: pointer;
                         width: 100%;
@@ -72,7 +70,6 @@ export class Menu extends HTMLElement {
                             @media (width<900px) {
                                 display: none;
                             }
-                            
                         }
                         .ingresar-text {
                             display:block;
@@ -100,11 +97,11 @@ export class Menu extends HTMLElement {
                 width:50%;
                 input {
                     box-sizing: border-box;
-                    min-width: 150px;
+                    min-width: 100px;
                     height: 2em;
                     padding: 2px 5px;
                     padding-left: 15px;
-                    border-radius: 10px;
+                    border-radius: 5px;
                     border: 0;
                     outline: 0;
                     width:100%;
@@ -300,7 +297,7 @@ export class Menu extends HTMLElement {
                             <img src="/img/icons/cart.png" alt="icono de carrito">
                         </div>              
                         <div class="buscar">
-                            <input type="text" placeholder="Buscar" name="buscar">
+                            <input type="text" placeholder="Mate, yerba, termo..." name="buscar">
                             <span class="lupa">&#9906;</span>
                         </div>
                     </div>
@@ -308,7 +305,7 @@ export class Menu extends HTMLElement {
                     
                     <ul class="sm-menu">
                         <li><a href="/productos">Productos</a></li>                        
-                        <li><a href="/nosotros">Quienes somos</a></li>
+                        <li><a href="/nosotros">Nosotros</a></li>
                         <li class="li-contenedor-dropdown-usuario"> ${this.user ? `
                                 <dropdown-usuario></dropdown-usuario>
                             `

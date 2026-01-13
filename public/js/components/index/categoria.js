@@ -23,8 +23,8 @@ export class Categoria extends HTMLElement {
         return `
         <style>
           :host-context(.product-card) div{
-                width: 100px;
-                height: 100px;
+                width: 90px;
+                height: 90px;
                 @media (width<900px){
                     width: 70px;
                     height: 70px;
@@ -33,9 +33,9 @@ export class Categoria extends HTMLElement {
            div {
                 width: 120px;
                 height: 120px;
-                background-color: greenyellow;
-                outline: 2px solid rgba(0, 97, 5, 0.799);
-                border-radius: 50%;
+                background-color: #bbffbbff;
+                box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
+                border-radius: 10px;
                 overflow: hidden;
                 cursor: pointer;
                 @media (width<900px){
@@ -50,9 +50,11 @@ export class Categoria extends HTMLElement {
             }
             h3 {
                 text-transform: uppercase;
-                font-family: Arial, Helvetica;
+                font-family: Roboto;
                 text-align: center;
                 margin-top: 10px;
+                font-weight: 100;
+                font-size: 14px;
                 @media (width<900px){
                     font-size: 12px;
                     margin-top: 5px;

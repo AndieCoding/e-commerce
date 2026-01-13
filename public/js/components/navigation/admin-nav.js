@@ -6,69 +6,62 @@ export class AdminNav extends HTMLElement {
     getStyles() {
         return `
         <style> 
+            *{
+                --color-personalizado: #87C987;   
+                --color-secundario: #255200ff;   
+            }
             :host {
                 display: block;
-                height:40px; 
+                width:100%;
             }            
             div.aside {	
                 font-family: Roboto, Arial;
-                padding: 0;
-                float: left;
-                background-color: rgb(163, 186, 207);
-                color: black;
-                display: flex;
+                background-color: var(--color-personalizado);                
+                flex-direction: column;
                 align-items: center;
-                justify-content: center;
-                width: 100%;	
-                height: 40px;
-                margin-right: 0;
+                justify-content: center;                                
             }
                     
             .aside ul {
-                display: inherit;	
-                list-style-type: none;
-                padding: 0;
-                margin: 0;
-                height: 100%;
-                gap: 2em;                
-                justify-content: space-around;     
-                align-items: center;  
-                
+                display: grid;	
+                grid-template-columns: repeat(3, 1fr);
+                justify-items: center;
+                max-width: 500px;                
+                margin: auto;
                 li {
-                    height: 40px;
-                    display:flex;
+                    display: flex;
                     align-items: center;
-                    padding: 0 20px
+                    justify-content: center;
+                    height: 40px;   
                 }
             }
             .aside ul li:hover {
-                transition: background-color 0.4s ease;                
-                &:hover {
-                    background-color: rgb(145 189 155);
-                };                  
+                font-weight: 600;
             }
             a { 
                 display: inline-block;
                 color: rgb(63, 63, 63);
                 text-decoration: none;
-                font-weight: 600;
-                }
             }
-
+            a.active {
+                font-weight: 600;
+                color: var(--color-secundario);
+            }
         </style>
         `
     }
 
     getTemplate() {
         const template = document.createElement('template');
-        template.innerHTML =  `            
+        template.innerHTML = `            
            <div class="aside">
 				<ul>
-                    <li><a href="/altas">Alta de productos</a></li>
-                    <li><a href="/compras">Compras</a></li>
+                    <li><a href="/altas">Nuevo</a></li>
+                    <li><a href="/administrar">Administrar</a></li>
+                    <!--<li><a href="/compras">Compras</a></li>
                     <li><a href="/ventas">Ventas</a></li>
-					<li><a href="/ficha">Ficha de Stock</a></li>                    				
-					<li><a href="/informes">Informes</a></li>
+					<li><a href="/ficha">Ficha de Stock</a></li>-->
+					<li><a href="/panel">Informes</a></li>
 				</ul>
 			</div>
 
@@ -78,7 +71,18 @@ export class AdminNav extends HTMLElement {
     }
 
     connectedCallback() {
-        this.shadowRoot.appendChild(this.getTemplate());        
+        this.shadowRoot.appendChild(this.getTemplate());
+        this.addActivePage();
+    }
+
+    addActivePage() {
+        const path = window.location.pathname;
+        const links = this.shadowRoot.querySelectorAll('a');
+        links.forEach(link => {
+            if (link.getAttribute('href') === path) {
+                link.classList.add('active');
+            }
+        });
     }
 }
 customElements.define('admin-nav', AdminNav);

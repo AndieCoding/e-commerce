@@ -3,7 +3,9 @@
 	src: url("./font/Roboto/Roboto-Regular.ttf") format("truetype");
 }
 
-* { box-sizing: border-box;}
+* {
+	box-sizing: border-box;
+}
 
 .main {
 	margin: 0px auto;
@@ -17,8 +19,8 @@
 	border-bottom-left-radius: 10px;
 }
 
-body { 
-	margin: 0;	
+body {
+	margin: 0;
 	background-color: rgb(230, 250, 255);
 	font-family: Arial, Helvetica, sans-serif;
 }
@@ -31,12 +33,13 @@ h2 {
 
 input {
 	background-color: white;
-	border: none;	
+	border: none;
 	outline: 1px solid rgb(151, 151, 151);
 	border-radius: 5px;
 	resize: none;
 	height: auto;
 }
+
 input:focus {
 	background-color: aliceblue;
 }
@@ -46,6 +49,7 @@ input[type="number"] {
 	-moz-appearance: textfield;
 	appearance: textfield;
 }
+
 /*chrome*/
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -66,8 +70,9 @@ table {
 	border-top-left-radius: 10px;
 	border: 3px solid white;
 
-	
+
 }
+
 table.table-fecha {
 	&:hover {
 		background-color: #dadada;
@@ -77,64 +82,79 @@ table.table-fecha {
 thead {
 	background-color: rgb(174, 184, 190);
 	border: 1px solid black;
-	border-right: none;	
-	cursor: default;	
+	border-right: none;
+	cursor: default;
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
-	font-family: 'Roboto';	
+	font-family: 'Roboto';
 }
+
 /*Encabezados*/
 thead.ficha tr:first-of-type th {
 	font-weight: 400;
 	font-size: 14px;
-	padding: 3px 0;	
-	text-align: center;	
-} 
+	padding: 3px 0;
+	text-align: center;
+}
+
 /*thead.ficha tr:first-of-type th:nth-child(4) {
 	text-align: left;
 }*/
 /*Encabezados fin*/
 thead.ficha tr:last-of-type th:nth-child(2) {
 	width: 80px;
-} 
+}
 
 thead.ficha tr:last-of-type th:nth-child(3) {
 	width: 50px;
-} 
+}
+
 thead.ficha tr:last-of-type th {
 	width: 60px;
 	font-weight: 400;
 	font-size: 14px;
-} 
+}
 
 .error-message,
 .ok-message {
 	font-weight: 600;
-	font-family: Roboto,system-ui;
-	padding: 5px 30px;
-	border-radius: 10px;
+	font-family: Roboto, system-ui;
+	padding: 10px 20px;
+	border-radius: 8px;
 	position: absolute;
-	left: 43%;
-	bottom: 110%;
-	background-color: rgba(238, 67, 29, 0.872);
+	left: 50%;
+	bottom: 120%;
+	transform: translateX(-50%);
+	z-index: 1000;
+	min-width: 250px;
+	text-align: center;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.guardar {
+	position: relative;
+	width: 100%;
 }
 
 .ok-message {
 	background-color: rgb(64, 133, 76);
 	color: white;
-}		
+}
+
 .icon {
 	width: 1.3em;
-	cursor: pointer;	
+	cursor: pointer;
 }
 
 table.ficha th {
 	padding: 0 4px;
 }
 
-td { line-height: 2em;}
+td {
+	line-height: 2em;
+}
 
-tbody#body-facturas td{
+tbody#body-facturas td {
 	line-height: 1.5em;
 }
 
@@ -144,7 +164,7 @@ td ul {
 
 td li {
 	list-style-type: none;
-    padding: 0px 5px;
+	padding: 0px 5px;
 	border-bottom: 1px solid black;
 	font-size: 12px;
 	line-height: 1.6em;
@@ -152,14 +172,14 @@ td li {
 
 table.ficha tbody tr:hover {
 	background-color: #fff;
-	
+
 	input {
 		font-weight: 600;
 	}
 }
 
 select[name="lista"],
-select[name="mes"]{
+select[name="mes"] {
 	height: 2em;
 }
 
@@ -172,7 +192,9 @@ select[name="mes"]{
 	gap: 3em;
 
 	a {
-		&:hover { margin-bottom:  0;}
+		&:hover {
+			margin-bottom: 0;
+		}
 	}
 }
 
@@ -188,11 +210,11 @@ select[name="mes"]{
 	font-size: 14px;
 	width: 315px;
 
-	p {		
+	p {
 		background-color: rgb(174, 184, 190);
 		margin: 3px;
-		font-weight: 600;		
-		padding: 3px 5px;	
+		font-weight: 600;
+		padding: 3px 5px;
 	}
 }
 
@@ -204,23 +226,24 @@ select[name="mes"]{
 
 table.informes thead tr th {
 	font-weight: 600;
-	padding: 6px 4px;	
-	text-align: center;	
+	padding: 6px 4px;
+	text-align: center;
 }
 
 table.informes thead tr th:nth-child(3) {
 	text-align: left;
 	width: 150px;
-} 
+}
 
 table.informes thead tr th:first-child,
 table.informes thead tr th:nth-child(2) {
 	width: 80px;
 	text-align: left;
-} 
+}
 
 table.informes tbody tr {
 	font-size: 14px;
+
 	td {
 		padding: 5px 4px;
 
@@ -233,13 +256,17 @@ table.informes tbody tr {
 table.monotributo thead tr th:first-child {
 	text-align: left;
 	width: 250px;
-} 
+}
 
 table.monotributo thead tr th:nth-child(2) {
 	width: 80px;
 	text-align: left;
-} 
-table.monotributo:hover { background-color: white;}
+}
+
+table.monotributo:hover {
+	background-color: white;
+}
+
 table.monotributo tbody tr th:nth-child(2) {
 	text-align: center;
 }
@@ -253,12 +280,13 @@ table.monotributo tbody tr th:nth-child(2) {
 
 .select-mes-informes,
 h3 {
-	grid-column: 1 / 4;	
+	grid-column: 1 / 4;
 }
 
 h3 {
-text-transform: uppercase;
+	text-transform: uppercase;
 }
+
 form.nuevaFactura {
 	input[type="date"] {
 		font-size: 16px;
@@ -266,6 +294,7 @@ form.nuevaFactura {
 		font-family: Roboto, sans-serif;
 		width: 150px;
 	}
+
 	/*input:valid {
 		border: 1px solid green;
 		outline: 1px solid rgb(10, 183, 10);		
@@ -283,10 +312,10 @@ form.nuevaFactura {
 		position: absolute;
 		top: 100%;
 		left: 0;
-		background-color: white;		
+		background-color: white;
 		list-style: none;
 		margin: 0;
-		padding: 5px;		
+		padding: 5px;
 		z-index: 100;
 		cursor: default;
 
@@ -299,7 +328,7 @@ form.nuevaFactura {
 		tr {
 			border-top: 1px solid black;
 			border-bottom: 1px solid black;
-			font-size: 14px;			
+			font-size: 14px;
 
 			&:hover {
 				background-color: #a8a8a8;
@@ -309,17 +338,18 @@ form.nuevaFactura {
 				border-bottom: 0;
 				border: 0;
 			}
+
 			td:last-child {
 				border-right: 0;
 			}
 		}
 	}
-	
-	.tabla-carga{
+
+	.tabla-carga {
 		margin: auto;
 	}
-		
-	
+
+
 
 	.tabla-carga-head.altas tr {
 		th:nth-child(5) {
@@ -330,7 +360,7 @@ form.nuevaFactura {
 
 	.tabla-carga td {
 		padding: 5px 10px;
-		border:1px solid black;
+		border: 1px solid black;
 		border-right: 0;
 		border-top: 0;
 		line-height: 1.2em;
@@ -338,66 +368,72 @@ form.nuevaFactura {
 
 		textarea {
 			min-width: 100px;
-			max-width: 140px;			
+			max-width: 140px;
 			background-color: transparent;
 			outline: 0;
-			border: 0;		
+			border: 0;
 			width: 90%;
 			field-sizing: content;
 		}
-	
+
 	}
+
 	.tabla-carga td:last-child {
 		border-right: 1px solid black;
 	}
 
-	.tabla-carga input {		
+	.tabla-carga input {
 		background-color: transparent;
 		outline: 0;
 		width: 90%;
-	}  
+	}
 }
+
 .tabla-carga-head tr {
-	
-	
-	th:first-child{
+
+
+	th:first-child {
 		width: 80px;
 	}
 
-	th:nth-child(2){
-		width: 100px;
-	}
-	
-	th:nth-child(3){
+	th:nth-child(2) {
 		width: 100px;
 	}
 
-	th:nth-child(4){
+	th:nth-child(3) {
+		width: 100px;
+	}
+
+	th:nth-child(4) {
 		width: 150px;
 	}
-	
+
 	th:nth-child(5),
 	th:nth-child(6),
-	th:nth-child(7){
+	th:nth-child(7) {
 		width: 75px;
 	}
-	th:nth-child(8){
+
+	th:nth-child(8) {
 		width: 100px;
 		text-align: center;
-	}	
-	th:nth-child(9){
+	}
+
+	th:nth-child(9) {
 		width: 100px;
 		text-align: center;
-	}	
-	th:nth-child(10){
+	}
+
+	th:nth-child(10) {
 		width: 50px;
 		text-align: center;
-	}	
+	}
+
 	th {
 		font-weight: 400;
-		font-size: 12px;  
+		font-size: 12px;
 		text-transform: uppercase;
-		padding: 5px 10px;		
+		padding: 5px 10px;
 	}
 
 	input[disabled] {
@@ -419,8 +455,9 @@ form.nuevaFactura {
 	}
 }
 
-form.nuevaFactura > div > div:nth-child(2) {
+form.nuevaFactura>div>div:nth-child(2) {
 	width: 273px;
+
 	select {
 		border-radius: 5px;
 	}
@@ -428,7 +465,7 @@ form.nuevaFactura > div > div:nth-child(2) {
 
 div.relative {
 	div {
-		position: absolute;		
+		position: absolute;
 	}
 }
 
@@ -436,7 +473,8 @@ div.relative {
 	max-height: 400px;
 	overflow-y: scroll;
 }
-.gastos-a-restar{
+
+.gastos-a-restar {
 	margin-top: 20px;
 
 	button {
@@ -453,7 +491,7 @@ div.relative {
 			filter: brightness(1.4);
 			outline: 2px solid #102e4f;
 		}
-	}	
+	}
 }
 
 .ganancias-brutas,
@@ -461,7 +499,7 @@ div.relative {
 	position: relative;
 }
 
-#ganancias-netas-valor{
+#ganancias-netas-valor {
 	display: none;
 }
 
@@ -481,6 +519,7 @@ div.relative {
 	width: 100px;
 	display: inline-block;
 }
+
 .gasto input {
 	padding: 5px;
 }
@@ -500,9 +539,10 @@ div.relative {
 	transition: background-color 0.3s ease;
 
 	&:hover {
-        background-color: purple;
-        color: white;
-    }
+		background-color: purple;
+		color: white;
+	}
+
 	&:disabled {
 		background-color: #fff;
 		color: #ccc;
@@ -510,6 +550,7 @@ div.relative {
 		border: gray;
 	}
 }
+
 input[type="file"] {
 	background-color: transparent;
 	border: 0;
@@ -517,24 +558,27 @@ input[type="file"] {
 	width: 150px;
 
 	&:hover {
-		font-weight: 500;		
+		font-weight: 500;
 	}
 }
+
 input::file-selector-button {
 	content: "Elegir Imagen";
 	font-weight: bold;
 	color: dodgerblue;
-	background-color: white;	
+	background-color: white;
 	border: thin solid grey;
 	border-radius: 3px;
+
 	&:hover {
-		font-weight: 500;		
+		font-weight: 500;
 	}
 
-  }
+}
+
 .preview {
 	height: 40px;
-	width: 40px;	
+	width: 40px;
 	background-color: white;
 	object-fit: contain;
 }
@@ -543,43 +587,52 @@ thead.ficha.facturacion tr th {
 	width: 120px;
 	text-align: left;
 }
+
 thead.ficha.facturacion tr th:nth-child(3) {
 	width: 120px;
 }
+
 #body-facturas tr {
 	cursor: pointer;
+
 	&:hover {
 		background-color: #50b30e4f;
-		
+
 	}
 }
+
 #body-facturas tr td {
 	width: 120px;
 }
+
 #body-facturas tr td:first-child {
 	width: 100px;
 }
-#body-facturas input{
-	width: 95px;	
+
+#body-facturas input {
+	width: 95px;
 	background-color: transparent;
 }
-#body-facturas tr td:nth-child(2) input{
-	width: 45px;	
+
+#body-facturas tr td:nth-child(2) input {
+	width: 45px;
 	background-color: transparent;
 }
-#body-facturas p:first-child{
-	width: 55px;	
+
+#body-facturas p:first-child {
+	width: 55px;
 	background-color: transparent;
 }
+
 #body-facturas tr td:nth-child(4) a {
 	display: inline-block;
 	width: 60px;
-	
+
 }
 
 table.monotributo {
 	margin-top: 0;
-} 
+}
 
 .tableFecha ul:empty {
 	display: none;
@@ -602,9 +655,15 @@ factura-del-mate {
 	text-align: start;
 	width: 100%;
 }
+
 .pantalla-informes .categoria-monotributo {
-	h3 {margin-bottom: 0;}
-	p {margin-top: 0;}
+	h3 {
+		margin-bottom: 0;
+	}
+
+	p {
+		margin-top: 0;
+	}
 }
 
 .ficha-facturas {
@@ -616,9 +675,134 @@ factura-del-mate {
 	padding-left: 30px
 }
 
-.nota {
+
+/* Alta de Productos - Modern Form */
+.form-alta-producto {
+	background-color: white;
+	padding: 2rem;
+	border-radius: 15px;
+	width: 90%;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.shadow-lg {
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.form-section {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.input-group {
+	flex: 1;
+	min-width: 200px;
+	display: flex;
+	flex-direction: column;
+}
+
+.input-group.full-width {
+	flex: 100%;
+}
+
+.input-group label {
 	font-weight: 600;
-	font-size: 12px;
-	text-transform: uppercase;
-	letter-spacing: 1px;
+	margin-bottom: 0.5rem;
+	color: #333;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+	padding: 0.75rem;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	font-size: 1rem;
+	transition: border-color 0.2s;
+	width: 100%;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+	outline: none;
+	border-color: #255200;
+	box-shadow: 0 0 0 3px rgba(37, 82, 0, 0.1);
+}
+
+.upload-section {
+	justify-content: center;
+}
+
+.upload-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 400px;
+	height: 200px;
+	border: 2px dashed #cbd5e1;
+	border-radius: 10px;
+	cursor: pointer;
+	transition: all 0.3s;
+	background-color: #f8fafc;
+	overflow: hidden;
+	position: relative;
+}
+
+.upload-label:hover {
+	border-color: #255200;
+	background-color: #f1f5f9;
+}
+
+.upload-label img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	position: absolute;
+}
+
+#upload-text {
+	color: #64748b;
+	font-weight: 500;
+}
+
+input[type="file"]#imagen {
+	display: none;
+}
+
+.hidden {
+	display: none !important;
+}
+
+.form-actions {
+	display: flex;
+	justify-content: center;
+	margin-top: 2rem;
+}
+
+.formButton.enviar {
+	background-color: #255200;
+	color: white;
+	border: none;
+	padding: 1rem 3rem;
+	font-size: 1.1rem;
+	border-radius: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+}
+
+.formButton.enviar:hover:not(:disabled) {
+	background-color: #1a3a00;
+	transform: translateY(-1px);
+}
+
+.formButton.enviar:disabled {
+	background-color: #cbd5e1;
+	cursor: not-allowed;
+	transform: none;
 }
