@@ -676,14 +676,13 @@ factura-del-mate {
 }
 
 
-/* Alta de Productos - Modern Form */
+/* Alta de Productos*/
 .form-alta-producto {
 	background-color: white;
 	padding: 2rem;
 	border-radius: 15px;
-	width: 90%;
+	width: 100%;
 	max-width: 800px;
-	margin: 0 auto;
 }
 
 .shadow-lg {
@@ -709,20 +708,21 @@ factura-del-mate {
 }
 
 .input-group label {
-	font-weight: 600;
-	margin-bottom: 0.5rem;
+	font-weight: 500;
+	margin-bottom: 5px;
 	color: #333;
 }
 
 .input-group input,
 .input-group select,
 .input-group textarea {
-	padding: 0.75rem;
+	padding: 10px;
 	border: 1px solid #e2e8f0;
 	border-radius: 8px;
-	font-size: 1rem;
+	font-size: 14px;
 	transition: border-color 0.2s;
 	width: 100%;
+	font-family: 'Roboto', sans-serif;
 }
 
 .input-group input:focus,
@@ -743,8 +743,8 @@ factura-del-mate {
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	max-width: 400px;
-	height: 200px;
+	max-width: 250px;
+	height: 150px;
 	border: 2px dashed #cbd5e1;
 	border-radius: 10px;
 	cursor: pointer;
@@ -789,8 +789,9 @@ input[type="file"]#imagen {
 	background-color: #255200;
 	color: white;
 	border: none;
-	padding: 1rem 3rem;
-	font-size: 1.1rem;
+	padding: 10px 20px;
+	font-size: 16px;
+	font-weight: 500;
 	border-radius: 8px;
 	cursor: pointer;
 	transition: background-color 0.2s, transform 0.1s;

@@ -6,25 +6,19 @@ export class AdminNav extends HTMLElement {
     getStyles() {
         return `
         <style> 
-            *{
-                --color-personalizado: #87C987;   
+            *{                
                 --color-secundario: #255200ff;   
-            }
-            :host {
-                display: block;
-                width:100%;
-            }            
+            }         
             div.aside {	
-                font-family: Roboto, Arial;
-                background-color: var(--color-personalizado);                
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;                                
+                font-family: Roboto, Arial; 
+                width: 100%;
+                height: 100%;
+                display: grid;
+                place-items: center;
             }
                     
             .aside ul {
-                display: grid;	
-                grid-template-columns: repeat(3, 1fr);
+                display: grid;	                
                 justify-items: center;
                 max-width: 500px;                
                 margin: auto;
@@ -34,6 +28,10 @@ export class AdminNav extends HTMLElement {
                     justify-content: center;
                     height: 40px;   
                 }
+                    @media (width < 900px) {
+                     grid-template-columns: repeat(3, 1fr);
+                     gap: 30px;
+                    }
             }
             .aside ul li:hover {
                 font-weight: 600;

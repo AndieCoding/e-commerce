@@ -22,7 +22,7 @@ export class dropdownUsuario extends HTMLElement {
             }
 
             .dropdown-usuario{
-                font-family: 'Roboto Condensed', sans-serif;
+                font-family: 'Roboto', Arial;
                 list-style: none;
                 background-color: var(--custom-green);
                 position: absolute;

@@ -18,59 +18,75 @@
     <menu-del-mate></menu-del-mate>
 
     <main class="user-panel">
-        <div class="accesos">
-            <img id="acceso-mis-datos" class="icon edit-user active" src="../img/icons/edit-user.svg" alt="accesos">
-            <img id="acceso-historial-facturas" class="icon" src="../img/icons/doc.svg" alt="accesos">
+        <div class="mobile-tabs">
+            <button id="tab-datos" class="tab-btn active">Mis Datos</button>
+            <button id="tab-compras" class="tab-btn">Mis Compras</button>
         </div>
-        <historial-facturas></historial-facturas>
-        <div id="editar-usuario" class="main-user-config open">
-            <div class="titular-pantalla-grande">
-                <img id="user-icon-pantalla-grande" class="icon edit-user icon-titulo" src="../img/icons/edit-user.svg"
-                    alt="accesos">
+
+        <div class="user-card" id="user-card-section">
+            <div class="profile-header">
+                <h2>Mi Perfil</h2>
+                <p>Gestiona tu información personal</p>
             </div>
-            <form id="editar" class="registro">
-                <div class="container">
-                    <article class="imageSection">
-                        <div class="previewImage">
-                            <input class="saveBtn" id="saveBtn" type="file" name="image" />
+
+            <form id="editar" class="user-form">
+                <div class="profile-image-section">
+                    <div class="image-container">
+                        <div class="previewImage" id="previewImage"></div>
+                        <div class="image-overlay">
+                            <span class="camera-icon">✏️</span>
+                            <span>Editar</span>
                         </div>
-
-                    </article>
-                    <article>
-                        <user-tools name="NOMBRE">
-                            <label slot="label">Usuario</label>
-                        </user-tools>
-                    </article>
-
+                        <input type="file" id="fileInput" name="image" accept="image/*" hidden />
+                    </div>
+                    <button id="saveBtn" class="upload-btn">Guardar Nueva Foto</button>
+                    <div id="uploadStatus"></div>
                 </div>
 
-                <div id="configLine" class="line"></div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <user-tools name="NOMBRE">
+                            <label slot="label">Nombre</label>
+                        </user-tools>
+                    </div>
 
-                <section>
-                    <user-tools name="CIUDAD">
-                        <label slot="label">Localidad</label>
-                    </user-tools>
-                </section>
+                    <div class="form-group">
+                        <user-tools name="APELLIDO">
+                            <label slot="label">Apellido</label>
+                        </user-tools>
+                    </div>
 
-                <section>
-                    <user-tools name="EMAIL">
-                        <label slot="label">Correo</label>
-                    </user-tools>
-                </section>
+                    <div class="form-group">
+                        <user-tools name="CIUDAD">
+                            <label slot="label">Ciudad</label>
+                        </user-tools>
+                    </div>
 
-                <section class="sectionPass">
-                    <user-tools name="PASSWORD">
-                        <label slot="label">Contraseña</label>
-                    </user-tools>
-                </section>
+                    <div class="form-group">
+                        <user-tools name="EMAIL">
+                            <label slot="label">Email</label>
+                        </user-tools>
+                    </div>
 
-                <div id="displayError"></div>
-                <div id="configLine" class="line"></div>
+                    <div class="form-group full-width">
+                        <user-tools name="PASSWORD">
+                            <label slot="label">Contraseña</label>
+                        </user-tools>
+                    </div>
+                </div>
 
-                <section class="sectionAccDel">
-                    <a id="eliminar_cuenta" class="deleteAcc">Eliminar cuenta</a>
-                </section>
+                <div class="danger-zone">
+                    <a id="eliminar_cuenta" class="delete-account-btn">Eliminar cuenta</a>
+                </div>
             </form>
+        </div>
+
+        <div class="history-card" id="history-card-section">
+            <div class="card-header">
+                <h2>Mis Compras</h2>
+                <p>Historial de facturación</p>
+            </div>
+            <historial-facturas></historial-facturas>
         </div>
     </main>
 

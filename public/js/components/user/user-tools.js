@@ -6,7 +6,11 @@ export class UserTools extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.edit = false;
-        this.userData = JSON.parse(localStorage.getItem('user'));
+        try {
+            this.userData = JSON.parse(localStorage.getItem('user')) || {};
+        } catch (e) {
+            this.userData = {};
+        }
         this.manager = new Manager();
     }
     static get observedAttributes() {

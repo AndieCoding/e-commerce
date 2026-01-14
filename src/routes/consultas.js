@@ -211,7 +211,7 @@ router.post("/images", upload.array('product_image', 5), async (req, res, next) 
 router.post("/alta-productos", upload.single('image'), async (req, res, next) => {
     try {
         let producto = JSON.parse(req.body.producto);
-        console.log('Petición de alta de nuevo producto: ', producto);
+        console.log('Petición de alta de nuevo producto: ', JSON.stringify(producto));
 
         if (req.file) {
             const timestamp = new Date().getTime();
@@ -228,12 +228,11 @@ router.post("/alta-productos", upload.single('image'), async (req, res, next) =>
                 }
             });
 
-            // Construct relative path for DB
             const baseDir = path.join(__dirname, '../../public');
             const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
             producto.image = '/' + image;
         } else {
-            producto.image = null; // Or handle as error if image is required
+            producto.image = null;
         }
 
         const [newProduct] = await consultaDb.AltaProductos(JSON.stringify(producto));
@@ -630,7 +629,7 @@ router.post("/update/profile/:userNumber", upload.single('FOTO'), async (req, re
             });
             const baseDir = path.join(__dirname, '../../public');
             const image1 = path.relative(baseDir, targetPath).replace(/\\/g, '/'); // Replace backslashes with forward slashes
-            imagePath = '/' + image1;
+            let imagePath = '/' + image1;
 
             console.log('La ruta de la foto es : ' + imagePath);
             await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
@@ -639,6 +638,65 @@ router.post("/update/profile/:userNumber", upload.single('FOTO'), async (req, re
     } catch (err) {
         console.error('Error al actualizar el perfil', err);
         res.status(500).json({ message: 'Error al actualizar el perfil' });
+    }
+});
+
+import nodemailer from 'nodemailer';
+
+router.post("/contact", async (req, res) => {
+    const { nombre, email, asunto, mensaje } = req.body;
+
+    // Validate input
+    if (!nombre || !email || !asunto || !mensaje) {
+        return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
+    }
+
+    try {
+        // Create transporter
+        // Note: Ideally, use environment variables for sensitive data
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // Email content
+        const mailOptions = {
+            from: `"${nombre}" <${email}>`, // Filtered as 'Sender Name <sender@email.com>'
+            to: process.env.EMAIL_USER,
+            subject: `Nuevo mensaje de Contacto: ${asunto}`,
+            text: `
+                Has recibido un nuevo mensaje desde el formulario de contacto de Fan del Mate.
+                
+                Detalles:
+                Nombre: ${nombre}
+                Email: ${email}
+                Asunto: ${asunto}
+                
+                Mensaje:
+                ${mensaje}
+            `,
+            html: `
+                <h3>Nuevo mensaje de Contacto</h3>
+                <p><strong>Nombre:</strong> ${nombre}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Asunto:</strong> ${asunto}</p>
+                <p><strong>Mensaje:</strong></p>
+                <p>${mensaje}</p>
+            `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+
+        console.log('Email sent successfully');
+        res.json({ success: true, message: 'Mensaje enviado correctamente' });
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ success: false, message: 'Error al enviar el email: ' + error.message });
     }
 });
 

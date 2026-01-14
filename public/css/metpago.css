@@ -1,0 +1,212 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.met-pago-container {
+    font-family: 'Poppins', 'Roboto Condensed', sans-serif;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    margin: 0 auto;
+    color: #333;
+    box-sizing: border-box;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.total-summary {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: #666;
+}
+
+.total-amount {
+    color: #249900;
+    font-weight: 800;
+    font-size: 1.4rem;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.payment-card {
+    background: #fdfdfd;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.payment-card:hover {
+    border-color: #34db61ac;
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
+}
+
+.payment-card.active {
+    border-color: #249900;
+    background-color: #f7fff5;
+}
+
+.payment-card.active::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #249900;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.payment-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.payment-card h4 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.payment-card p {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+}
+
+.payment-details-section {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border-left: 4px solid #249900;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #28a745 0%, #249900 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-confirm:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-confirm:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.agreement-info {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.agreement-info ul {
+    padding-left: 1.2rem;
+    margin: 1rem 0;
+}
+
+/* Spinner */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* User restricted messaging */
+.restriction-container {
+    padding: 3rem;
+    text-align: center;
+}
+
+.restriction-container img {
+    max-width: 200px;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-login {
+    display: inline-block;
+    background: #1a1a1a;
+    color: white;
+    padding: 0.8rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1rem;
+    transition: background 0.3s;
+}
+
+.btn-login:hover {
+    background: #333;
+}

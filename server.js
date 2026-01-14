@@ -3,6 +3,10 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './src/routes/consultas.js';
+import shippingRouter from './src/routes/shipping.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,6 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rutas de API
 app.use('/api', router);
+app.use('/api/shipping', shippingRouter);
 
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
@@ -55,6 +60,10 @@ app.get("/envio", (req, res) => {
 
 app.get("/nosotros", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "nosotros.html"));
+});
+
+app.get("/contacto", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "views", "contacto.html"));
 });
 
 // Rutas de Administración

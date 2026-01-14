@@ -6,11 +6,9 @@ import { Producto } from "../../public/js/models/producto.js";
 async function AltaProductos(product) {
 	console.log('Estableciendo conexión con la base de datos...')
 	const conn = await getConn();
+	let producto = JSON.parse(product);
 	console.log('Conexión establecida.')
 	console.log('Insertando nuevo producto en la base de datos.')
-	console.log('producto a insertar: ', product)
-	let producto = JSON.parse(product);
-	console.log('producto a insertar: ', producto)
 	try {
 		await conn.beginTransaction();
 		console.log('Transacción iniciada.')

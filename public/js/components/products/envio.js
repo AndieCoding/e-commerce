@@ -7,130 +7,195 @@ export class DireEnvio extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.direcciones = ['Dirección Registrada 1', 'Dirección Registrada 2'];
+        this.selectedMethod = null;
+        this.shippingCost = 0;
+        this.origin = 'Venado Tuerto, Santa Fe';
         const logged = localStorage.getItem('user');
         const loggedUser = JSON.parse(logged);
         this.user = loggedUser ? loggedUser : false;
+
+        // Cost tables by zone
+        this.costMapping = {
+            'santa fe': 1200,
+            'buenos aires': 1800,
+            'cordoba': 1600,
+            'rosario': 1000,
+            'entre rios': 1900
+        };
+        this.defaultCost = 2500;
     }
+
     getTemplate() {
         return `
-        <style>
-        .dire-envio {
-            display: ${this.user ? 'block' : 'none'};
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 30px;
-            padding-bottom: 57.48px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
-            width: 100%;
-            margin: 0 auto;
-            color: #333333;
-            box-sizing: border-box;
-        }
-        h4 { 
-            margin: 10px 0;
-            margin-bottom: 20px;
-        }
-        .dire-envio select, 
-        .dire-envio input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 18px;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .hidden {display: none;}
-
-        .dire-envio .direccion-agregar {
-            margin-top: 15px;
-        }
-
-        .dire-envio .direccion-agregar input {
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 600px) {
-            .dire-envio {
-                padding: 15px;
-            }
-
-            .dire-envio select, 
-            .dire-envio input {
-                font-size: 16px;
-                padding: 8px;
-            }
-
-            button {
-                font-size: 0.9em;
-                padding: 8px;
-            }
-        }
-        </style>
-
-        <div class="dire-envio">
-            <h4>Seleccionar Dirección de Envío</h4>
-            <label for="envioSelect">Método de Envío:</label>
-            <select id="envioSelect">
-                <option value="retira">Retiro en sucursal</option>
-                
-            </select>
-            
-            <div id="direccionOptions" class="hidden">
-                <label for="addressSelect"><h4>Dirección registrada:</h4></label>
-                <select id="addressSelect">
-                    <option value="">Seleccionar</option>
-                    ${this.direcciones.map(direccion => `<option value="${direccion}">${direccion}</option>`).join('')}
-                </select>
-                <button id="agregarNuevaDireccion">Agregar Nueva Dirección</button>
-                <div id="nuevaDireccion" class="hidden direccion-agregar">
-                    <input type="text" id="calle" placeholder="Calle" />
-                    <input type="text" id="numero" placeholder="Número" />
-                    <input type="text" id="codigoPostal" placeholder="Código Postal" />
-                    <input type="text" id="localidad" placeholder="Localidad" />
-                    <input type="text" id="provincia" placeholder="Provincia" />
-                    <input type="text" id="pais" placeholder="País" />
-                    <button id="guardarDireccion">Guardar</button>
-                </div>
-            </div>
+        <link rel="stylesheet" href="../../css/envio.css">
+        <div class="shipment-container">
+            ${this.user ? this.renderShipmentOptions() : ''}
         </div>
         `;
     }
 
-    connectedCallback() {
-        this.shadowRoot.innerHTML = this.getTemplate();
-        const envioSelect = this.shadowRoot.querySelector('#envioSelect');
-        const direccionOptionsDiv = this.shadowRoot.querySelector('#direccionOptions');
+    renderShipmentOptions() {
+        return `
+            <h3>Método de Envío</h3>
+            <div class="shipment-grid">
+                <div class="shipment-card" data-method="sucursal">
+                    <img src="../../img/icons/sucursal.png" alt="Sucursal" class="shipment-icon">
+                    <h4>Retiro en Sucursal</h4>
+                    <p>¡Gratis! Retirá hoy mismo</p>
+                </div>
 
-        envioSelect.addEventListener('change', () => {
-            if (envioSelect.value === 'domicilio') {
-                direccionOptionsDiv.classList.remove('hidden');
-            } else {
-                direccionOptionsDiv.classList.add('hidden');
-            }
-        });
+                <div class="shipment-card" data-method="oca">
+                    <img src="../../img/icons/oca.png" alt="OCA" class="shipment-icon">
+                    <h4>Correo OCA</h4>
+                    <p>Envío a todo el país (3-5 días)</p>
+                </div>
+            </div>
 
+            <div id="shipment-details" class="hidden">
+                <div id="details-sucursal" class="details-section hidden">
+                    <div class="branch-info">
+                        <strong>Sucursal Central - Fan del Mate</strong><br>
+                        Av. Siempre Viva 742, CABA.<br>
+                        Lunes a Viernes de 09:00 a 18:00 hs.<br>
+                        Sábados de 09:00 a 13:00 hs.
+                    </div>
+                </div>
+
+                <div id="details-oca" class="details-section hidden">
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <input type="text" id="cp" placeholder="B2600">
+                    </div>
+                    <div class="form-group">
+                        <label>Localidad / Ciudad</label>
+                        <input type="text" id="localidad" placeholder="Venado Tuerto">
+                    </div>
+                    <div class="form-group">
+                        <label>Provincia</label>
+                        <input type="text" id="provincia" placeholder="Santa Fe">
+                    </div>
+                    <div class="form-group">
+                        <label>Calle y Altura</label>
+                        <input type="text" id="calle" placeholder="Calle Falsa 123">
+                    </div>
+                </div>
+
+                <div class="shipping-cost-summary">
+                    <span>Costo de Envío:</span>
+                    <span id="cost-display" class="cost-value">$0.00</span>
+                </div>
+            </div>
+        `;
     }
 
+    connectedCallback() {
+        this.render();
+    }
+
+    render() {
+        this.shadowRoot.innerHTML = this.getTemplate();
+        if (this.user) {
+            this.setupListeners();
+        }
+    }
+
+    setupListeners() {
+        const cards = this.shadowRoot.querySelectorAll('.shipment-card');
+        const detailsContainer = this.shadowRoot.querySelector('#shipment-details');
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const method = card.dataset.method;
+                this.selectMethod(method, cards, detailsContainer);
+            });
+        });
+
+        const ocaInputs = this.shadowRoot.querySelectorAll('#details-oca input');
+        ocaInputs.forEach(input => {
+            input.addEventListener('input', () => this.calculateShipping());
+        });
+    }
+
+    selectMethod(method, cards, detailsContainer) {
+        this.selectedMethod = method;
+
+        // Update selection UI
+        cards.forEach(c => c.classList.remove('active'));
+        this.shadowRoot.querySelector(`.shipment-card[data-method="${method}"]`).classList.add('active');
+
+        // Show details section
+        detailsContainer.classList.remove('hidden');
+        this.shadowRoot.querySelectorAll('.details-section').forEach(s => s.classList.add('hidden'));
+        this.shadowRoot.querySelector(`#details-${method}`).classList.remove('hidden');
+
+        this.calculateShipping();
+    }
+
+    async calculateShipping() {
+        let cost = 0;
+        const display = this.shadowRoot.querySelector('#cost-display');
+
+        if (this.selectedMethod === 'sucursal') {
+            cost = 0;
+            display.innerHTML = '¡GRATIS!';
+            display.classList.remove('cost-pending');
+        } else if (this.selectedMethod === 'oca') { // Renombrado internamente a Correo Argentino en el backend
+            const cp = this.shadowRoot.querySelector('#cp').value.trim();
+            const provincia = this.shadowRoot.querySelector('#provincia').value.trim();
+
+            if (cp.length >= 4) {
+                display.textContent = 'Calculando...';
+                display.classList.add('cost-pending');
+
+                try {
+                    const response = await fetch('/api/shipping/calculate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            destinationCP: cp,
+                            weight: 1000 // Valor por defecto ajustable
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.price) {
+                        cost = data.price;
+                        display.innerHTML = `
+                            $${cost.toLocaleString('es-AR', { minimumFractionDigits: 2 })}<br>
+                            <small style="font-size: 0.7em; color: #666;">
+                                ${data.service} (${data.deliveryTime})
+                            </small>
+                        `;
+                        display.classList.remove('cost-pending');
+                    } else {
+                        throw new Error('No price returned');
+                    }
+                } catch (error) {
+                    console.error('Shipping calculation error:', error);
+                    display.textContent = 'Error al calcular. Reintente.';
+                    cost = 2500; // Fallback
+                }
+            } else {
+                cost = 0;
+                display.textContent = 'Ingrese CP para calcular';
+                display.classList.add('cost-pending');
+            }
+        }
+
+        this.shippingCost = cost;
+
+        // Dispatch event for other components (like Total display)
+        this.dispatchEvent(new CustomEvent('shippingCostUpdated', {
+            detail: {
+                method: this.selectedMethod,
+                cost: this.shippingCost,
+                origin: this.origin
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
 }
 
 customElements.define('dire-envio', DireEnvio);

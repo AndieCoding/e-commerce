@@ -1,0 +1,167 @@
+:host {
+    display: block;
+    width: 100%;
+}
+
+.shipment-container {
+    font-family: 'Poppins', 'Roboto Condensed', sans-serif;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 100%;
+    margin: 0 auto;
+    color: #333;
+    box-sizing: border-box;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.shipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.shipment-card {
+    background: #fdfdfd;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+}
+
+.shipment-card:hover {
+    border-color: #34db61ac;
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
+}
+
+.shipment-card.active {
+    border-color: #249900;
+    background-color: #f7fff5;
+}
+
+.shipment-card.active::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #249900;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.shipment-icon {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    object-fit: contain;
+}
+
+.shipment-card h4 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.shipment-card p {
+    font-size: 0.9rem;
+    color: #777;
+    margin: 0;
+}
+
+.details-section {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border-left: 4px solid #249900;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.hidden {
+    display: none;
+}
+
+.branch-info {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.branch-info strong {
+    color: #1a1a1a;
+}
+
+.shipping-cost-summary {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.cost-value {
+    color: #249900;
+    font-size: 1.2rem;
+}
+
+.cost-pending {
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+}

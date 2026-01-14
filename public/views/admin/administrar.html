@@ -7,6 +7,7 @@
     <title>Administrar Productos</title>
     <link rel="stylesheet" href="/css/props.css">
     <link rel="stylesheet" href="/css/ficha-de-stock.css">
+    <link rel="stylesheet" href="/css/admin.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
@@ -16,106 +17,24 @@
     <script type="module" src="../../js/components/navigation/footer.js"></script>
     <script type="module" src="../../js/components/products/admin-product-row.js"></script>
 
-    <style>
-        .admin-container {
-            max-width: 1200px;
-            margin: 2em auto;
-            padding: 0 1em;
-            font-family: 'Roboto Condensed', sans-serif;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2em;
-        }
-
-        .admin-header h1 {
-            font-size: 2rem;
-            color: var(--text-color, #333);
-        }
-
-        .actions-bar {
-            display: flex;
-            gap: 1em;
-            margin-bottom: 2em;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            display: flex;
-            gap: 0.5em;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 0.5em;
-            align-items: center;
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 1rem;
-        }
-
-        .btn {
-            padding: 0.5em 1em;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid #4CAF50;
-            color: #4CAF50;
-        }
-
-        .product-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2em;
-            font-size: 1.2rem;
-            color: #666;
-        }
-    </style>
 </head>
 
 <body>
     <menu-del-mate></menu-del-mate>
 
-    <div class="main">
+    <div class="main admin">
         <admin-nav></admin-nav>
 
         <div class="admin-container">
             <div class="admin-header">
                 <h1>Administrar Productos</h1>
-                <a href="/altas" class="btn btn-primary">Agregar producto</a>
+                <!--<a href="/altas" class="btn btn-primary">Agregar producto</a>-->
             </div>
 
             <div class="actions-bar">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Buscar por nombre...">
-                    <span role="img" aria-label="search">🔍</span>
+                    <span class="search-icon" role="img" aria-label="search">&#9906</span>
                 </div>
                 <!-- <button class="btn btn-outline">Filtrar</button> -->
             </div>

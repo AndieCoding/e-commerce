@@ -225,7 +225,6 @@ export class Menu extends HTMLElement {
             }
             .contenedor-imagen-usuario {
                 position: relative;
-                width: 100px;
                 text-align: center;
                 @media (width<800px) {
                     display: none;
@@ -306,6 +305,7 @@ export class Menu extends HTMLElement {
                     <ul class="sm-menu">
                         <li><a href="/productos">Productos</a></li>                        
                         <li><a href="/nosotros">Nosotros</a></li>
+                        <li><a href="/contacto">Contacto</a></li>
                         <li class="li-contenedor-dropdown-usuario"> ${this.user ? `
                                 <dropdown-usuario></dropdown-usuario>
                             `

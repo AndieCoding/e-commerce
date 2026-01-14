@@ -9,9 +9,9 @@ export class MetPago extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
         this.total = this.cartController.getTotal();
-        this.metodosPago = ['Seleccionar', 'Tarjeta de Débito', 'Tarjeta de Crédito'];
         this.ticket = this.cartController.getProducts();
-        this.paymentData = {};
+        this.selectedMethod = null;
+
         const logged = localStorage.getItem('user');
         const loggedUser = JSON.parse(logged);
         this.user = loggedUser ? loggedUser : false;
@@ -19,309 +19,170 @@ export class MetPago extends HTMLElement {
 
     getTemplate() {
         return `
-        <style>
-        .met-pago {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            padding: 30px;
-            background-color: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 100%;
-            width: 100%;
-            margin: 0 auto;
-            color: #333333;
-            box-sizing: border-box;
-        }
+        <link rel="stylesheet" href="../../css/metpago.css">
+        <div class="met-pago-container">
+            ${this.user ? this.renderCheckout() : this.renderRestriction()}
+        </div>
+        `;
+    }
 
-        .met-pago h3 {
-            font-size: 1.5em;
-            margin-top: 10px;
-            margin-bottom: 20px;
-            color: #333333;
-        }
+    renderCheckout() {
+        return `
+            <h3>Finalizar Compra</h3>
+            <div class="total-summary">
+                Total a pagar: <span class="total-amount">$${this.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+            </div>
 
-        .met-pago label {
-            display: block;
-            font-size: 1em;
-            margin-top: 5px;
-        }
+            <div class="payment-grid">
+                <div class="payment-card" data-method="mercadopago">
+                    <img src="../../img/icons/mercadopago.png" alt="Mercado Pago" class="payment-icon">
+                    <h4>Mercado Pago</h4>
+                    <p>Tarjetas, Debito, Dinero en cuenta</p>
+                </div>
 
-        .met-pago select, 
-        .met-pago input {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 18px;
-        }
-        .met-pago select {
-            margin-top: 10px;
-        }
+                <div class="payment-card" data-method="transferencia">
+                    <img src="../../img/icons/bank-transfer.png" alt="Transferencia" class="payment-icon">
+                    <h4>Transferencia / Efectivo</h4>
+                    <p>10% OFF pagando por transferencia</p>
+                </div>
 
-        .met-pago button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .met-pago button:hover {
-            background-color: #45a049;
-        }
-
-        .hidden {
-            display: none;
-        }
-        .mensaje-confirmacion {
-            font-size: 1.2em;
-            color: #4CAF50;
-            margin-top: 20px;
-        }
-        .spinner {
-            margin-left: 2rem;
-            display: none;
-            border: 8px solid #f3f3f3; 
-            border-top: 8px solid #34dbd4b8; 
-            border-radius: 50%; 
-            width: 60px;
-            height: 60px;
-            animation: spin 1.5s linear infinite; 
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); border-top-color: #34db61c7; }
-        }
-        
-        .spinner.show{ display: inline-block; }
-
-        @media (max-width: 600px) {
-            .met-pago {
-                padding: 15px;
-            }
-            .met-pago h3 {
-                font-size: 1em;
-            }
-            .met-pago button {
-                padding: 15px;
-                width: 150px;
-                margin: 0 auto;
-                display: block;
-                margin-top: 30px;
-            }
-
-            .met-pago select {
-                font-size: 16px;
-            }
-        }
-
-        .container-necesita-loggin {
-           display: flex;
-           flex-direction: column;
-           justify-content: center;
-           align-items: center;
-           max-height: 450px;
-           gap: 20px;
-           min-height: 90vh;
-           max-height: 600px;
-           h3 {
-               text-wrap: balance;
-               text-align: center;
-           }
-           a {
-               text-decoration: none;
-               min-width: 180px;
-               width: 60%;
-               height: 190px;
-               cursor: pointer;
-               }
-               img {
-                   width: 100%;
-                   height : 100%;
-                   border-radius: 50%;
-               }
-           }
-        .container-fin-de-prueba {
-            display: flex;
-            position: relative;
-            padding: 2em;
-            width: 100%;
-            min-height: 300px;
-            max-width: 900px;
-            margin: 0 auto;
-            overflow: hidden;
-            opacity: 0;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 1s ease-out;
-
-            h3 {
-                text-align: center;
-            }
-        }
-        .container-fin-de-prueba.hidden {
-            display: none;
-        }
-        .container-fin-de-prueba.active {
-            opacity: 1;
-        }
-        .container-fin-de-prueba::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -25%;
-            width: 100%;
-            height: 100%;
-            background-image: url('../../img/banner/streamer.png');
-            background-size: contain;
-            background-position: right;
-            background-repeat: no-repeat;
-            transform: rotate(45deg);
-        }
-        </style>
-
-        ${this.user ? `<div class="met-pago">
-            <h3>Seleccionar Método de Pago</h3>
-            <p>Total a pagar: <strong>$${this.total.toFixed(2)}</strong></p>
-            <label for="paymentSelect">Método de Pago:</label>
-            <select id="paymentSelect">
-                ${this.metodosPago.map(metodo => `<option value="${metodo === 'Selecionar' ? '' : metodo}">${metodo}</option>`).join('')}
-            </select>
-            
-            <div id="infoPago" class="hidden">
-                <label for="numeroTarjeta">Número de tarjeta:</label>
-                <input type="text" id="numeroTarjeta" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" />
-                
-                <label for="fechaVencimiento">Fecha de vencimiento (MM/AA):</label>
-                <input type="text" id="fechaVencimiento" placeholder="MM/AA" />
-                
-                <label for="titular">Titular de la tarjeta:</label>
-                <input type="text" id="titular" placeholder="Nombre y apellido" />
-                
-                <label for="dni">DNI:</label>
-                <input type="text" id="dni" placeholder="DNI" />
-                
-                <label for="codigoSeguridad">Código de seguridad:</label>
-                <input type="text" id="codigoSeguridad" placeholder="XXXX" />
-                
-                
-                <button id="pagar">Pagar</button><div class='spinner'></div>
-                <div id="resultadoValidacion">
+                <div class="payment-card" data-method="tarjeta_directa">
+                    <img src="../../img/icons/credit-card.png" alt="Tarjeta" class="payment-icon">
+                    <h4>Tarjeta Directa</h4>
+                    <p>A través de nuestro gateway seguro</p>
                 </div>
             </div>
 
-            <div id="infoPagoEmail" class="hidden">
-                <label for="emailPago">Correo electrónico:</label>
-                <input type="email" id="emailPago" placeholder="Correo electrónico" />
-                <button id="continuarPago">Continuar</button>
+            <div id="method-details" class="hidden">
+                <div id="details-mercadopago" class="payment-details-section hidden">
+                    <p>Vas a ser redirigido a la plataforma segura de Mercado Pago para completar tu pago.</p>
+                </div>
+
+                <div id="details-transferencia" class="payment-details-section hidden">
+                    <div class="agreement-info">
+                        <strong>Datos para la transferencia:</strong>
+                        <ul>
+                            <li><strong>Banco:</strong> Galicia</li>
+                            <li><strong>Alias:</strong> fan.del.mate</li>
+                            <li><strong>CBU:</strong> 0070123456789012345678</li>
+                        </ul>
+                        <p>Una vez realizada la transferencia, envianos el comprobante por WhatsApp.</p>
+                    </div>
+                </div>
+
+                <div id="details-tarjeta_directa" class="payment-details-section hidden">
+                    <label>Número de tarjeta</label>
+                    <input type="text" id="numeroTarjeta" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                    <div style="display: flex; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <label>Vencimiento</label>
+                            <input type="text" id="fechaVencimiento" placeholder="MM/AA" maxlength="5">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>CVV</label>
+                            <input type="password" id="codigoSeguridad" placeholder="***" maxlength="4">
+                        </div>
+                    </div>
+                    <label>Titular</label>
+                    <input type="text" id="titular" placeholder="Nombre como figura en la tarjeta">
+                </div>
             </div>
-        </div>` : `
-        <div class='met-pago container-necesita-loggin'>
+
+            <button id="btn-confirmar" class="btn-confirm" disabled>
+                <span>Confirmar Compra</span>
+                <div id="spinner" class="spinner hidden"></div>
+            </button>
+        `;
+    }
+
+    renderRestriction() {
+        return `
+        <div class="restriction-container">
             <h3>Debe estar logueado para comprar</h3>
-            <a href="/login">
-                <img class='imagen-necesita-loggin' src='../../img/banner/imagen-necesita-login.jpg'/>
-            </a>
-        </div>`}
-        <div class='met-pago container-fin-de-prueba hidden'>
-            <h3>Esta fue una demostración gratuita de e-commerce</h3>
+            <img src="../../img/banner/imagen-necesita-login.jpg" alt="Login required">
+            <br>
+            <a href="/login" class="btn-login">Iniciar Sesión</a>
         </div>
-       
         `;
     }
 
     connectedCallback() {
-        this.shadowRoot.innerHTML = this.getTemplate();
-
-        const select = this.shadowRoot.querySelector('#paymentSelect');
-        const infoPagoDiv = this.shadowRoot.querySelector('#infoPago');
-        const infoPagoEmailDiv = this.shadowRoot.querySelector('#infoPagoEmail');
-        const numeroTarjetaInput = this.shadowRoot.querySelector('#numeroTarjeta');
-        const fechaVencimientoInput = this.shadowRoot.querySelector('#fechaVencimiento');
-        const titularInput = this.shadowRoot.querySelector('#titular');
-        const dniInput = this.shadowRoot.querySelector('#dni');
-        const codigoSeguridadInput = this.shadowRoot.querySelector('#codigoSeguridad');
-        const pagarBtn = this.shadowRoot.querySelector('#pagar');
-        const resultadoValidacion = this.shadowRoot.querySelector('#resultadoValidacion');
-        const emailPagoInput = this.shadowRoot.querySelector('#emailPago');
-        const continuarBtn = this.shadowRoot.querySelector('#continuarPago');
-
-        select.addEventListener('change', () => {
-            if (select.value === 'Tarjeta de Débito' || select.value === 'Tarjeta de Crédito') {
-                infoPagoDiv.classList.remove('hidden');
-                infoPagoEmailDiv.classList.add('hidden');
-            } else if (select.value === 'PayPal' || select.value === 'Mercado Pago') {
-                infoPagoDiv.classList.add('hidden');
-                infoPagoEmailDiv.classList.remove('hidden');
-            } else {
-                infoPagoDiv.classList.add('hidden');
-                infoPagoEmailDiv.classList.add('hidden');
-            }
-        });
-
-        pagarBtn.addEventListener('click', async () => {
-            const numeroTarjeta = numeroTarjetaInput.value;
-            const fechaVencimiento = fechaVencimientoInput.value;
-            const titular = titularInput.value;
-            const dni = dniInput.value;
-            const codigoSeguridad = codigoSeguridadInput.value;
-            let spinner = this.shadowRoot.querySelector('.spinner');
-
-            spinner.classList.add('show');
-            setTimeout(() => {
-                spinner.classList.remove('show');
-            }, 2000);
-
-            this.paymentData = {
-                numeroTarjeta,
-                fechaVencimiento,
-                senior: this.user.NOMBRE + ' ' + this.user.APELLIDO,
-                domicilio: this.user.DOMICILIO,
-                localidad: this.user.CIUDAD,
-                condicion_vta: 'contado',
-                total: this.total,
-            };
-
-            /*document.dispatchEvent(new CustomEvent('pagoConfirmado', {
-                detail: {
-                    products: this.ticket,
-                    client: this.paymentData
-                }
-            }));*/
-        });
-
-        continuarBtn.addEventListener('click', () => {
-            const emailPago = emailPagoInput.value;
-            if (emailPago) {
-                if (select.value === 'PayPal') {
-                    window.location.href = `${this.paypalUrl}?email=${encodeURIComponent(emailPago)}`;
-                } else if (select.value === 'Mercado Pago') {
-                    window.location.href = `${this.mercadoPagoUrl}?email=${encodeURIComponent(emailPago)}`;
-                }
-            }
-        });
-
-        this.shadowRoot.querySelector('#numeroTarjeta').addEventListener('input', (event) => {
-            this.formatInput(event);
-        });
-
-
+        this.render();
     }
-    formatInput(event) {
-        let inputSinEspaciado = event.target.value.replace(/\s+/g, '');
 
-        if (inputSinEspaciado.length > 19) {
-            inputSinEspaciado = inputSinEspaciado.slice(0, 19);
+    render() {
+        this.shadowRoot.innerHTML = this.getTemplate();
+        if (this.user) {
+            this.setupListeners();
+        }
+    }
+
+    setupListeners() {
+        const cards = this.shadowRoot.querySelectorAll('.payment-card');
+        const detailsContainer = this.shadowRoot.querySelector('#method-details');
+        const confirmBtn = this.shadowRoot.querySelector('#btn-confirmar');
+        const spinner = this.shadowRoot.querySelector('#spinner');
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                const method = card.dataset.method;
+                this.selectMethod(method, cards, detailsContainer, confirmBtn);
+            });
+        });
+
+        const cardNumInput = this.shadowRoot.querySelector('#numeroTarjeta');
+        if (cardNumInput) {
+            cardNumInput.addEventListener('input', (e) => this.formatCardNumber(e));
         }
 
-        const formattedValue = inputSinEspaciado.replace(/(\d{4})(?=\d)/g, '$1-');
+        confirmBtn.addEventListener('click', () => this.handleConfirmation(confirmBtn, spinner));
+    }
 
-        event.target.value = formattedValue;
+    selectMethod(method, cards, detailsContainer, confirmBtn) {
+        this.selectedMethod = method;
+
+        // Update selection UI
+        cards.forEach(c => c.classList.remove('active'));
+        this.shadowRoot.querySelector(`.payment-card[data-method="${method}"]`).classList.add('active');
+
+        // Show details section
+        detailsContainer.classList.remove('hidden');
+        this.shadowRoot.querySelectorAll('.payment-details-section').forEach(s => s.classList.add('hidden'));
+        this.shadowRoot.querySelector(`#details-${method}`).classList.remove('hidden');
+
+        // Enable button
+        confirmBtn.disabled = false;
+
+        // Update button text contextually
+        const btnText = confirmBtn.querySelector('span');
+        if (method === 'mercadopago') {
+            btnText.textContent = 'Pagar con Mercado Pago';
+        } else if (method === 'transferencia') {
+            btnText.textContent = 'Finalizar y Acordar';
+        } else {
+            btnText.textContent = 'Realizar Pago';
+        }
+    }
+
+    formatCardNumber(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        let formatted = value.match(/.{1,4}/g)?.join('-') || value;
+        e.target.value = formatted.substring(0, 19);
+    }
+
+    async handleConfirmation(btn, spinner) {
+        btn.disabled = true;
+        spinner.classList.remove('hidden');
+
+        // Logic for each method
+        console.log(`Confirming purchase with: ${this.selectedMethod}`);
+
+        setTimeout(() => {
+            spinner.classList.add('hidden');
+            btn.disabled = false;
+            // Here we would normally redirect or show a success modal
+            alert(`Simulación: Compra confirmada vía ${this.selectedMethod}`);
+        }, 2000);
     }
 }
 

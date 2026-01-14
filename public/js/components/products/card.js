@@ -168,13 +168,14 @@ export class Card extends HTMLElement {
             }
             .product-name {
                 font-family: Roboto Condensed;
-                font-size: 18px;
+                font-size: 16px;
                 text-transform: uppercase;
                 color: #553b28;
                 margin: 0.5em 0;      
                 text-wrap: nowrap;
                 overflow: hidden;
-                white-space: nowrap;
+                white-space: wrap;
+                height: 2.5em;                
                 text-overflow: ellipsis;
             }
             .price {
@@ -185,20 +186,27 @@ export class Card extends HTMLElement {
                 font-size: 20px;
                 font-weight: 400;
                 text-transform: uppercase;
-                color: #26313d;
+                color: #2c4e3dff;
                 position: absolute;
                 top: 45%;
                 right: 20px;
-                margin: 0;
+                margin: 0;                
             }
             .old-price {
                 font-size: 14px;
                 text-decoration: line-through;
-                color: #888;
-                margin-right: 5px;
+                color: #526858ff;
+                margin-right: 25px  ;
+                backdrop-filter: blur(5px);
+                padding: 0.1em 0.5em;
+                border-radius: 5px;
             }
             .offer-price {                
                 color: #4e595cff;
+                background-color: #ffffffdd;
+                width: fit-content;
+                border-radius: 10px;
+                padding: 2px;
             }
             .card.list .product-info .product-price .price {
                 top:70%;
@@ -251,7 +259,7 @@ export class Card extends HTMLElement {
             }
             </style>
             <div class="card ${this.tipo === 'list' ? 'list' : ''}">
-                <a>
+                <a href="/detalle?id=${productId}">
                     <div class="img">
                         <img src="${productImage}" alt="${productName}">
                     </div>
@@ -259,7 +267,9 @@ export class Card extends HTMLElement {
                 <section>
                     <div class="product-info">
                         <div>
-                            <h3 class="product-name">${productName}</h3>
+                            <a href="/detalle?id=${productId}" style="text-decoration: none;">
+                                <h3 class="product-name">${productName}</h3>
+                            </a>
                         </div>
                         <div class="product-price">
                         <p class="stock">
@@ -276,7 +286,7 @@ export class Card extends HTMLElement {
                         </div>
                     </div>
                     <div class="product-details">
-                        <h4 class="product-marca">${productMarca}</h4>          
+                        <!--<h4 class="product-marca">${productMarca}</h4>          -->
                     </div>
                     <div class="confirmacion">
                         <span>Producto agregado</span><span class="tick">&#10004;</span>
