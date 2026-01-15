@@ -117,7 +117,7 @@ export class Manager {
                 EMAIL: data.email,
                 PASS: data.password,
             });
-            const response = await fetch(`/api/registro`, {
+            const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/registro`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
