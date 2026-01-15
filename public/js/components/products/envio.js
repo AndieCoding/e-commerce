@@ -14,13 +14,12 @@ export class DireEnvio extends HTMLElement {
         const loggedUser = JSON.parse(logged);
         this.user = loggedUser ? loggedUser : false;
 
-        // Cost tables by zone
         this.costMapping = {
             'santa fe': 1200,
-            'buenos aires': 1800,
-            'cordoba': 1600,
-            'rosario': 1000,
-            'entre rios': 1900
+            'buenos aires': 4800,
+            'cordoba': 3600,
+            'rosario': 3000,
+            'entre rios': 4500
         };
         this.defaultCost = 2500;
     }
@@ -55,7 +54,7 @@ export class DireEnvio extends HTMLElement {
                 <div id="details-sucursal" class="details-section hidden">
                     <div class="branch-info">
                         <strong>Sucursal Central - Fan del Mate</strong><br>
-                        Av. Siempre Viva 742, CABA.<br>
+                        Venado Tuerto, Santa Fe.<br>
                         Lunes a Viernes de 09:00 a 18:00 hs.<br>
                         Sábados de 09:00 a 13:00 hs.
                     </div>
@@ -76,7 +75,7 @@ export class DireEnvio extends HTMLElement {
                     </div>
                     <div class="form-group">
                         <label>Calle y Altura</label>
-                        <input type="text" id="calle" placeholder="Calle Falsa 123">
+                        <input type="text" id="calle" placeholder="Calle 123">
                     </div>
                 </div>
 
@@ -153,7 +152,7 @@ export class DireEnvio extends HTMLElement {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             destinationCP: cp,
-                            weight: 1000 // Valor por defecto ajustable
+                            weight: 1000
                         })
                     });
 

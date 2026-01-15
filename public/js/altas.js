@@ -52,7 +52,7 @@ async function GuardarFactura() {
 	formData.append("image", imagenInput.files[0]);
 
 	try {
-		const response = await fetch(`http://localhost:3000/api/alta-productos`, {
+		const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/alta-productos`, {
 			method: "POST",
 			body: formData
 		})
@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.querySelector('title').textContent = 'Modificar producto';
 		document.querySelector('h1')?.textContent && (document.querySelector('h1').textContent = 'Modificar producto');
 
-		fetch(`http://localhost:3000/api/product/${editId}`)
+		fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/product/${editId}`)
 			.then(res => res.json())
 			.then(data => {
 				if (data.success) {
@@ -193,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 
 		try {
-			const response = await fetch(`http://localhost:3000/api/products/${id}`, {
+			const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/products/${id}`, {
 				method: "PUT",
 				body: formData
 			});

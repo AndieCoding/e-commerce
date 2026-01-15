@@ -287,7 +287,7 @@ export class Filtros extends HTMLElement {
     handlePriceChange(value) {
         this.filtrosActivos.precio = value;
         this.notifyChange();
-        this.render(); // Re-render to update active chips
+        this.render();
     }
 
     handleBrandChange(value, isChecked) {
@@ -297,7 +297,7 @@ export class Filtros extends HTMLElement {
             this.filtrosActivos.marcas = this.filtrosActivos.marcas.filter(m => m !== value);
         }
         this.notifyChange();
-        this.render(); // Re-render to update active chips
+        this.render();
     }
 
     clearFilters() {
@@ -307,10 +307,6 @@ export class Filtros extends HTMLElement {
     }
 
     notifyChange() {
-        // Prepare the payload.
-        // We map 'precio' to 'price' to match what the current backend likely expects (based on reading src/config/consultas.js)
-        // 'marcas' is sent as is; backend might ignore it since it expects 'marca' (singular), 
-        // but that's fine for this UI-first step.
         this.dispatchEvent(new CustomEvent('filtrar', {
             detail: {
                 marcas: this.filtrosActivos.marcas,

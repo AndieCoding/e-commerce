@@ -6,7 +6,7 @@ export class Manager {
     async consultarNFactura() {
         let response, error;
         try {
-            response = await fetch(`http://localhost:3000/api/nfactura`);
+            response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/nfactura`);
         } catch (err) {
             error = err;
         }
@@ -21,7 +21,7 @@ export class Manager {
     async registrarVenta(formData) {
         let response, error;
         try {
-            response = await fetch(`http://localhost:3000/api/registrarVenta`, {
+            response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/registrarVenta`, {
                 method: "POST",
                 body: formData
             });
@@ -42,7 +42,7 @@ export class Manager {
 
             const isFormData = data instanceof FormData;
 
-            const response = await fetch(`http://localhost:3000/api/update/${userId}`, {
+            const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/update/${userId}`, {
                 method: "PUT",
                 body: isFormData ? data : JSON.stringify(data),  // Send FormData if available
                 headers: !isFormData
@@ -73,12 +73,12 @@ export class Manager {
 
             if (nFactura) {
                 console.log('fetch segun el sistema')
-                response = await fetch(`http://localhost:3000/api/guardarFactura/sistema/${nFactura}`, {
+                response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/guardarFactura/sistema/${nFactura}`, {
                     method: "POST",
                     body: image
                 });
             } else {
-                response = await fetch(`http://localhost:3000/api/guardarFactura/${user.ID}`, {
+                response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/guardarFactura/${user.ID}`, {
                     method: "POST",
                     body: image
                 });
@@ -118,7 +118,7 @@ export class Manager {
                 DNI: data.dni,
                 PASS: data.password,
             });
-            const response = await fetch("http://localhost:3000/api/registro", {
+            const response = await fetch(`/api/registro`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
@@ -143,7 +143,7 @@ export class Manager {
         const credentials = { email: data.email, pass: data.pass };
 
         try {
-            const response = await fetch("http://localhost:3000/api/user", {
+            const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/user`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json",
@@ -165,7 +165,7 @@ export class Manager {
     }
 
     async eliminar(user) {
-        const response = await fetch(`http://localhost:3000/api/deleteAccount?user=${user}`, {
+        const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/deleteAccount?user=${user}`, {
             method: "DELETE",
         });
         const data = await response.json();

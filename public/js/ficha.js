@@ -1,12 +1,12 @@
-import {CartController} from './components/cart/cart-controller.js';
-import {Carrito} from './components/cart/carrito.js';
-import {Menu} from './components/navigation/menu.js';
+import { CartController } from './components/cart/cart-controller.js';
+import { Carrito } from './components/cart/carrito.js';
+import { Menu } from './components/navigation/menu.js';
 import { AdminNav } from './components/navigation/admin-nav.js';
 import { Footer } from './components/navigation/footer.js'
 
 function cargarSelect() {
 	const select = document.querySelector("#select-producto");
-	const values = [		
+	const values = [
 		{
 			name: "MATES",
 		},
@@ -23,7 +23,7 @@ function cargarSelect() {
 			option.textContent = value.name;
 			option.value = value.name.toLowerCase();
 			select.appendChild(option);
-	});	
+		});
 }
 
 function limpiarTabla() {
@@ -33,100 +33,100 @@ function limpiarTabla() {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-	const select = document.querySelector("select[name='lista']");	
+document.addEventListener("DOMContentLoaded", function () {
+	const select = document.querySelector("select[name='lista']");
 	const fecha_body = document.querySelector("#fecha tbody");
 	const bodys = Array.from(document.querySelectorAll("tbody"));
 	bodys.shift()
 	cargarSelect();
 
-	select.onchange = function() {
+	select.onchange = function () {
 		console.clear();
-		limpiarTabla();		
-		setTimeout(() => { llamarRegistros(this.value) }, 500);		
+		limpiarTabla();
+		setTimeout(() => { llamarRegistros(this.value) }, 500);
 	};
 
 	async function llamarRegistros(product) {
-		const response = await fetch(`http://localhost:3000/api/Ficha/${product}`);	
-		const data = await response.json();		
+		const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/Ficha/${product}`);
+		const data = await response.json();
 
-		let id_fila = 0;		
+		let id_fila = 0;
 		let antigua_factura = 0;
 		let precioAnterior = null;
-		let cantidadAnterior = null; 
+		let cantidadAnterior = null;
 		let nuevaCantidad;
 		let nuevoPrecio;
 		let precioCompraAnterior = [];
 		let precioVtaAnterior = [];
-		data.ficha.forEach((factura) => {									
-			console.log("Cargada la fila Nº ", id_fila + 1);	
-					
+		data.ficha.forEach((factura) => {
+			console.log("Cargada la fila Nº ", id_fila + 1);
+
 			let nuevo_nFactura = factura.n_factura;
-			let mismaFactura = nuevo_nFactura === antigua_factura ? true : false;				
+			let mismaFactura = nuevo_nFactura === antigua_factura ? true : false;
 			let columna = 0;
 			const factura_de_compra = factura.tipo === "original" ? true : false;
-			
-			console.log('esto es la factura ',factura);
+
+			console.log('esto es la factura ', factura);
 			if (mismaFactura) {
-				
+
 
 				nuevaCantidad = factura.cantidades_stock;
 				nuevoPrecio = factura.precio_stock;
 
 				if (nuevoPrecio !== precioAnterior) {
 					const li = document.createElement("li");
-					li.textContent = nuevaCantidad; 
+					li.textContent = nuevaCantidad;
 					document.querySelector(`.s-cantidad${factura.n_factura}`).appendChild(li);
-					cantidadAnterior = nuevaCantidad; 
+					cantidadAnterior = nuevaCantidad;
 
-					const li_prec = document.createElement("li");											
+					const li_prec = document.createElement("li");
 					li_prec.textContent = factura.precio_stock;
 					document.querySelector(`.s-precio${factura.n_factura}`).appendChild(li_prec);
 					precioAnterior = nuevoPrecio;
 
-					
+
 				}
-						
+
 				document.querySelector(`.total${factura.n_factura}`).textContent = factura.total
 
-				if (factura_de_compra) {					
+				if (factura_de_compra) {
 					if (!precioCompraAnterior.includes(factura.precio_compra)) {
-						const li_prec = document.createElement("li");											
+						const li_prec = document.createElement("li");
 						li_prec.textContent = factura.precio_compra;
 						document.querySelector(`.c-precio${factura.n_factura}`).appendChild(li_prec);
 						precioCompraAnterior.push(factura.precio_compra);
 
-						const li_cant = document.createElement("li");											
+						const li_cant = document.createElement("li");
 						li_cant.textContent = factura.cantidad_compra;
 						document.querySelector(`.c-cantidad${factura.n_factura}`).appendChild(li_cant);
 					}
 				} else {
 					if (!precioVtaAnterior.includes(factura.precio_venta)) {
-						const li_prec = document.createElement("li");											
+						const li_prec = document.createElement("li");
 						li_prec.textContent = factura.precio_venta;
 						document.querySelector(`.v-precio${factura.n_factura}`).appendChild(li_prec);
 						precioVtaAnterior.push(factura.precio_venta);
 
-						const li_cant = document.createElement("li");											
+						const li_cant = document.createElement("li");
 						li_cant.textContent = factura.cantidad_venta;
 						document.querySelector(`.v-cantidad${factura.n_factura}`).appendChild(li_cant);
-						
+
 					}
 				}
 
 			} else {
 				precioCompraAnterior = [];
 				precioVtaAnterior = [];
-				id_fila++;	
+				id_fila++;
 				const new_row = document.createElement("tr");
-				new_row.classList.add(`fila${id_fila}`);			
+				new_row.classList.add(`fila${id_fila}`);
 
-				for (let i = 1; i < 13; i++) {					
+				for (let i = 1; i < 13; i++) {
 					const td = document.createElement("td");
-					columna++;					
+					columna++;
 					switch (i) {
 						case 1:
-							td.innerHTML += `<input type="date" name="fecha${id_fila},${columna}" value="${factura.fecha.slice(0,10)}" disabled />`;
+							td.innerHTML += `<input type="date" name="fecha${id_fila},${columna}" value="${factura.fecha.slice(0, 10)}" disabled />`;
 							break;
 						case 2:
 							td.innerHTML += `<input value='${factura.tipo.toUpperCase()}' name='${id_fila},${columna}' disabled>`;
@@ -134,67 +134,65 @@ document.addEventListener("DOMContentLoaded", function() {
 						case 3:
 							td.innerHTML += `<input type="number" name="factura${id_fila},${columna}" value="${factura.n_factura}" disabled /></td>`;
 							break;
-						case 4:	
-							if (!factura_de_compra) {break;}
+						case 4:
+							if (!factura_de_compra) { break; }
 							const c_cantidad = document.createElement("ul");
 							c_cantidad.classList.add(`c-cantidad${factura.n_factura}`);
 							let li_c_cantidad = document.createElement('li');
 							li_c_cantidad.textContent = factura.cantidad_compra;
 							c_cantidad.appendChild(li_c_cantidad);
-							td.appendChild(c_cantidad);			
+							td.appendChild(c_cantidad);
 							break;
 						case 5:
-							if (!factura_de_compra) {break;}
+							if (!factura_de_compra) { break; }
 							const c_precio = document.createElement("ul");
 							c_precio.classList.add(`c-precio${factura.n_factura}`);
 							let li_c_precio = document.createElement('li');
 							li_c_precio.textContent = factura.precio_compra;
 							c_precio.appendChild(li_c_precio);
-							td.appendChild(c_precio);	
+							td.appendChild(c_precio);
 							break;
 						case 6:
-							if (!factura_de_compra) {break;}
-							td.innerHTML += `<input name="total${id_fila},${columna}" type="number" disabled value="${
-								factura_de_compra ? factura.cantidad_compra * factura.precio_compra : ""}" />`;
+							if (!factura_de_compra) { break; }
+							td.innerHTML += `<input name="total${id_fila},${columna}" type="number" disabled value="${factura_de_compra ? factura.cantidad_compra * factura.precio_compra : ""}" />`;
 							break;
 						case 7:
-							if (factura_de_compra) {break;}
+							if (factura_de_compra) { break; }
 							const v_cantidad = document.createElement("ul");
 							v_cantidad.classList.add(`v-cantidad${factura.n_factura}`);
 							let li_v_cantidad = document.createElement('li');
 							li_v_cantidad.textContent = factura.cantidad_venta;
 							v_cantidad.appendChild(li_v_cantidad);
-							td.appendChild(v_cantidad);											
+							td.appendChild(v_cantidad);
 
-												
+
 							//td.innerHTML += `<input name="v-cantidad${id_fila},${columna}" type="number" value="${
 							//	factura_de_compra ? "" : factura.cantidad_venta}" disabled />`;
 							break;
 						case 8:
-							if (factura_de_compra) {break;}
+							if (factura_de_compra) { break; }
 							const v_precio = document.createElement("ul");
 							v_precio.classList.add(`v-precio${factura.n_factura}`);
 							let li_v_precio = document.createElement('li');
 							li_v_precio.textContent = factura.precio_venta;
 							v_precio.appendChild(li_v_precio);
-							td.appendChild(v_precio);											
+							td.appendChild(v_precio);
 							//td.innerHTML += `<input name="v-precio-unitario${id_fila},${columna}" type="number" value="${
 							//	factura_de_compra ? "" : factura.precio_venta}" disabled />`;
 							break;
 						case 9:
-							if (factura_de_compra) {break;}
-							td.innerHTML += `<input name="v-total${id_fila},${columna}" type="number" value="${
-								factura_de_compra ? "" : factura.cantidad_venta * factura.precio_venta}" disabled />`;
+							if (factura_de_compra) { break; }
+							td.innerHTML += `<input name="v-total${id_fila},${columna}" type="number" value="${factura_de_compra ? "" : factura.cantidad_venta * factura.precio_venta}" disabled />`;
 							break;
 						case 10:
 							const ul = document.createElement("ul");
 							ul.classList.add(`s-cantidad${factura.n_factura}`);
 							let li = document.createElement('li');
 							li.textContent = factura.cantidades_stock === 0 ? "" : factura.cantidades_stock;
-							cantidadAnterior = factura.cantidades_stock; 
+							cantidadAnterior = factura.cantidades_stock;
 							ul.appendChild(li);
-							td.appendChild(ul);											
-							
+							td.appendChild(ul);
+
 							break;
 						case 11:
 							const ul_prec = document.createElement("ul");
@@ -203,12 +201,12 @@ document.addEventListener("DOMContentLoaded", function() {
 							li_prec.textContent = factura.cantidades_stock === 0 ? "" : factura.precio_stock;
 							precioAnterior = factura.precio_stock;
 							ul_prec.appendChild(li_prec);
-							td.appendChild(ul_prec);	
+							td.appendChild(ul_prec);
 							break;
 						case 12:
 							td.innerHTML = `<p class="total${factura.n_factura}">${factura.total === 0 ? 0 : factura.total}</p>`;
 							break;
-						//case 11:
+							//case 11:
 							/*
 							td.innerHTML = `
 							<div onclick="Borrar(${id_fila})" class="flex align-end justify-end">
@@ -218,11 +216,11 @@ document.addEventListener("DOMContentLoaded", function() {
 							</div>`;
 							td.style.textAlign = "end";*/
 							break;
-					}			
-						
+					}
+
 					new_row.appendChild(td);
 					fecha_body.appendChild(new_row);
-				}		
+				}
 			}
 			antigua_factura = nuevo_nFactura;
 			if (factura_de_compra) { precioCompraAnterior.push(factura.precio_compra); }

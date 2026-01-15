@@ -136,10 +136,10 @@ export class PortadaImg extends HTMLElement {
 
 
         this.textOverlay.classList.remove('slide-in');
-        void this.textOverlay.offsetWidth; // Forzar el reflow para reiniciar la animación
+        void this.textOverlay.offsetWidth;
         this.textOverlay.classList.add('slide-in');
 
-        // Mostrar el texto letra por letra
+
         const text = this.phrases[this.currentIndex];
         this.textOverlay.textContent = '';
         let index = 0;

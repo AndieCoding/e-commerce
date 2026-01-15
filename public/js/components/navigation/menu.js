@@ -382,7 +382,7 @@ export class Menu extends HTMLElement {
         }
 
         searchIcon.addEventListener('click', async () => {
-            window.location.href = "http://localhost:3000/productos";
+            window.location.href = "/productos";
             const searchTerm = searchInput.value;
             const regex = new RegExp(searchTerm, 'i');
             localStorage.setItem('categoria', 'busqueda');

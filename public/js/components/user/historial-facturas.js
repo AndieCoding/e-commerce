@@ -103,7 +103,7 @@ export class HistorialFacturas extends HTMLElement {
   async addEventListeners() {
     try {
       this.userId = JSON.parse(localStorage.getItem('user')).ID;
-      const response = await fetch(`http://localhost:3000/api/compras_usuario/${this.userId}`);
+      const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/compras_usuario/${this.userId}`);
       const data = await response.json();
       console.log(data);
       this.shadowRoot.querySelector('.lista-facturas').innerHTML = data.map(factura =>

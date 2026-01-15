@@ -2,7 +2,7 @@ class Form extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        
+
     }
     getStyles() {
         return `
@@ -73,13 +73,13 @@ class Form extends HTMLElement {
             </form>
                 `
 
-                return template.content.cloneNode(true);
+        return template.content.cloneNode(true);
     }
 
     connectedCallback() {
         this.shadowRoot.appendChild(this.template());
 
-        
+
         this.btnSubmit = this.shadowRoot.querySelector('.btn-submit-form');
         this.btnSubmit.addEventListener('click', () => {
             this.form.submit();
@@ -88,52 +88,46 @@ class Form extends HTMLElement {
         this.form = this.shadowRoot.querySelector('form');
         this.form.addEventListener('submit', async (event) => {
             event.preventDefault();
-        const nombre = this.shadowRoot.querySelector('#nombre').value;
-        const email = this.shadowRoot.querySelector('#email').value;
-        const mensaje = this.shadowRoot.querySelector('#mensaje').value;
-        const data = {
-             nombre,
-             email,
-             mensaje
-        };
+            const nombre = this.shadowRoot.querySelector('#nombre').value;
+            const email = this.shadowRoot.querySelector('#email').value;
+            const mensaje = this.shadowRoot.querySelector('#mensaje').value;
+            const data = {
+                nombre,
+                email,
+                mensaje
+            };
 
-        formData.append('form-name', 'contacto'); 
-        formData.append('nombre', nombre);
-        formData.append('email', email);
-        formData.append('mensaje', mensaje);
+            formData.append('form-name', 'contacto');
+            formData.append('nombre', nombre);
+            formData.append('email', email);
+            formData.append('mensaje', mensaje);
 
-        try {
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            });            
-            /*
-            const response = await fetch('/', {
-                method: 'POST',
-                body: formData // 
-            });
-            */
-            const textArea = this.shadowRoot.querySelector('#mensaje');
-            if (response.ok) {
-                textArea.value = 'Gracias por tu mensaje.';
-                textArea.style.outline = '2px solid green';
-                setTimeout(() => {
-                    textArea.style.outline = 'none';
-                }, 3000);
-                form.reset(); 
-            } else {                
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData).toString()
+                });
+                const textArea = this.shadowRoot.querySelector('#mensaje');
+                if (response.ok) {
+                    textArea.value = 'Gracias por tu mensaje.';
+                    textArea.style.outline = '2px solid green';
+                    setTimeout(() => {
+                        textArea.style.outline = 'none';
+                    }, 3000);
+                    form.reset();
+                } else {
+                    textArea.value = 'Ocurrió un error al enviar tu mensaje.';
+                    textArea.style.outline = '2px solid lightred';
+                    console.error('Error de Netlify Forms:', response.status, response.statusText);
+                    const errorText = await response.text();
+                    console.error('Detalles del error:', errorText);
+                }
+            } catch (error) {
+                console.error('Error de red o JS:', error);
                 textArea.value = 'Ocurrió un error al enviar tu mensaje.';
                 textArea.style.outline = '2px solid lightred';
-                console.error('Error de Netlify Forms:', response.status, response.statusText);
-                const errorText = await response.text();
-                console.error('Detalles del error:', errorText);
             }
-        } catch (error) {
-            console.error('Error de red o JS:', error);
-            textArea.value = 'Ocurrió un error al enviar tu mensaje.';
-            textArea.style.outline = '2px solid lightred';
-        }
         });
     }
 }
