@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function consultarProductos(categoria, query) {
     const contenedor = document.querySelector('.resultados');
-    const response = await fetch(`http://localhost:3000/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
+    const response = await fetch(`/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
 
     const data = await response.json();
 
@@ -77,7 +77,7 @@ async function consultarProductos(categoria, query) {
 
 async function searchProducts(query) {
     const contenedor = document.querySelector('.resultados');
-    const response = await fetch(`http://localhost:3000/api/search/${query}`);
+    const response = await fetch(`/api/search/${query}`);
 
     const data = await response.json();
 

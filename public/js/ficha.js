@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	};
 
 	async function llamarRegistros(product) {
-		const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/Ficha/${product}`);
+		const response = await fetch(`/api/Ficha/${product}`);
 		const data = await response.json();
 
 		let id_fila = 0;

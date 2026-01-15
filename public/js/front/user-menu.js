@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('type', 'profile');
 
         try {
-            const response = await fetch(`http://localhost:3000/api/update/profile/${user.ID}`, {
+            const response = await fetch(`/api/update/profile/${user.ID}`, {
                 method: "POST",
                 body: formData
             });

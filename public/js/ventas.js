@@ -99,7 +99,7 @@ async function GuardarFactura() {
 	/*
 		try 
 		{
-			const response = await fetch(`http://localhost:3000/api/registrarVenta`, {
+			const response = await fetch(`/api/registrarVenta`, {
 				method: "POST",
 				body: formData
 			})

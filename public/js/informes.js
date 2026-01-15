@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	crearGraficos();
 	selectMes.onchange = async function () {
 		try {
-			const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/Informes/${this.value}`)
+			const response = await fetch(`/api/Informes/${this.value}`)
 			const data = await response.json();
 			console.log(data);
 			const total_facturado = data.montoMensual[0].total_facturado;
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	};
 
-	fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/Periodo`)
+	fetch(`/api/Periodo`)
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data);
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		//Por ahora son todas "facturas"
 		let response, error;
 		try {
-			response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/Ficha/facturacion?mes=${mes}`);
+			response = await fetch(`/api/Ficha/facturacion?mes=${mes}`);
 		} catch (err) {
 			error = err;
 		}
@@ -144,10 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
 						td.innerHTML = `<p class="total${factura.n_factura}">${factura.total}</p>`;
 						break;
 					case 4:
-						td.innerHTML = `<a href='http://localhost:3000/${factura.link}' target='_blank' class="link${factura.n_factura}"> Ver </a>`;
+						td.innerHTML = `<a href='${factura.link}' target='_blank' class="link${factura.n_factura}"> Ver </a>`;
 						break;
 					case 5:
-						td.innerHTML = `<a href='http://localhost:3000/${factura.link_remito}' target='_blank' class="link${factura.n_factura}"> Ver </a>`;
+						td.innerHTML = `<a href='${factura.link_remito}' target='_blank' class="link${factura.n_factura}"> Ver </a>`;
 						break;
 				}
 
