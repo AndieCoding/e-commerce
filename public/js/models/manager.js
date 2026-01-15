@@ -116,6 +116,7 @@ export class Manager {
                 CIUDAD: data.ciudad,
                 EMAIL: data.email,
                 PASS: data.password,
+                DNI: data.dni
             });
             const response = await fetch(`/api/registro`, {
                 method: "POST",
@@ -134,6 +135,7 @@ export class Manager {
         }
         catch (error) {
             console.error("Error:", error);
+            return { success: false, message: "Error de conexión al intentar registrarse." };
         };
     }
 
@@ -159,7 +161,7 @@ export class Manager {
             return result;
         } catch (err) {
             console.error("Error during login:", err);
-            throw err;
+            return { success: false, message: "Error de conexión al intentar ingresar." };
         }
     }
 
