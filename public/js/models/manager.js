@@ -115,7 +115,6 @@ export class Manager {
                 APELLIDO: data.apellido,
                 CIUDAD: data.ciudad,
                 EMAIL: data.email,
-                DNI: data.dni,
                 PASS: data.password,
             });
             const response = await fetch(`/api/registro`, {
