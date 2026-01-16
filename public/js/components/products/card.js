@@ -54,13 +54,15 @@ export class Card extends HTMLElement {
             @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
             .card {
                 border-radius: 10px;
-                padding: 1.5em;                
+                padding: 0.5em 1.5em;                
                 overflow: hidden;
                 box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
                 background-color: white;
                 position: relative;
                 display: flex;
-                flex-direction: column;                
+                flex-direction: column;    
+                min-width: 160px;                 
+                
                 .img {             
                     height: 170px;
                 }
@@ -74,7 +76,6 @@ export class Card extends HTMLElement {
                 p {
                     text-wrap: balance;
                 }
-
                 .buttons {                    
                     display: flex;
                     flex-direction: row;
@@ -99,7 +100,8 @@ export class Card extends HTMLElement {
                     color: green;
                     transition: background-color 0.2s;
                     font-size: 14px;
-                    margin-top: 0;
+                    margin-top: 0;  
+                    text-wrap: nowrap;
                     &:hover {
                         background-color: green;
                         color: white;
@@ -166,6 +168,10 @@ export class Card extends HTMLElement {
                 z-index: 10;
                 width: 220px;;
             }
+                .card.list .product-name {
+                margin: 0;
+                margin-top: 0.5em;
+                }
             .product-name {
                 font-family: Roboto Condensed;
                 font-size: 16px;
@@ -257,6 +263,119 @@ export class Card extends HTMLElement {
                 opacity: 0.5;       
                 cursor: not-allowed;
             }
+            img.cart-icon{
+                display: none;
+            }
+            @media (width<700px) {
+                .card {
+                    padding: 8px;
+                    width: 140px;
+                    min-width: 140px;
+                    max-height: 260px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                    border: 1px solid #f0f0f0;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+                }
+
+                .img {             
+                    height: 120px !important;
+                    width: 100%;
+                    margin-bottom: 5px;
+                }
+                
+                img {
+                    object-fit: contain;
+                }
+
+                .product-name {
+                    font-family: 'Roboto Condensed', sans-serif;
+                    font-size: 13px;
+                    text-transform: uppercase; 
+                    color: #553b28; 
+                    margin: 4px 0;      
+                    height: auto;
+                    max-height: 3em;
+                    line-height: 1.2;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    text-align: left;
+                    font-weight: 400; 
+                    text-wrap: balance;
+                    white-space: normal;
+                }
+
+                .product-price {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    margin: 5px 0;
+                    position: relative;
+                }
+
+                .price {
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #2c4e3d;
+                    position: static; 
+                    background: none;
+                    padding: 0;
+                }
+
+                .stock {
+                    position: static;
+                    font-size: 9px;
+                    color: #777;
+                    background: none;
+                    box-shadow: none;
+                    padding: 0;
+                    margin-bottom: 2px;
+                }
+                
+                .buttons {                    
+                    width: 100%;
+                }
+                .card{
+                    .buttons a.agregar {
+                        width: 100%;
+                        padding: 6px 0; 
+                        margin: 0;
+                        font-size: 13px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        background-color: transparent;                   
+                        color: green;
+                }
+                .btn-text{
+                    display: none;
+                }
+                .buttons a.agregar img.cart-icon {
+                    display: block;
+                    width: 16px;
+                    height: 16px;
+                    filter: invert(24%) sepia(96%) saturate(1750%) hue-rotate(95deg) brightness(94%) contrast(104%); /* Make icon match green text */
+                }
+                .buttons a.agregar:hover {
+                    background-color: #5d995dff; 
+                    color: green;
+                }
+
+                .confirmacion {
+                    display: none;
+                }
+
+            }
+                .old-price {
+                    display: none; 
+                }
+                
+                .offer-price {
+                    margin-left: 0;
+                    font-size: 16px;
+                }
+            }
             </style>
             <div class="card ${this.tipo === 'list' ? 'list' : ''}">
                 <a href="/detalle?id=${productId}">
@@ -292,12 +411,12 @@ export class Card extends HTMLElement {
                         <span>Producto agregado</span><span class="tick">&#10004;</span>
                     </div>
                 </section>
-                <section>
+                <section class="buttons-section">
                     <div class="buttons">
                         <a 
-                            class="agregar ${stock === 'Agotado' ? 'disabled' : ''}"
+                            id="btn-agregar" class="agregar ${stock === 'Agotado' ? 'disabled' : ''}"
                         >
-                            Agregar al carrito
+                            <span class="btn-text">Agregar al carrito</span><img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart">
                         </a>                        
                     </div>
                 </section>
@@ -335,6 +454,8 @@ export class Card extends HTMLElement {
                 this.shadowRoot.querySelector('.confirmacion').classList.remove('show');
             }, 4000);
         });
+        //<img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart">
+
     }
 }
 

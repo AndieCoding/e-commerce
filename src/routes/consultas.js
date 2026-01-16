@@ -405,7 +405,7 @@ router.get("/productos/:categoria", async (req, res) => {
 router.get("/indexProducts", async (req, res) => {
     try {
 
-        const indexProducts = await consultaDb.ObtenerTresProductos();
+        const indexProducts = await consultaDb.productosIndex();
         console.log('Productos de index enviados.');
         res.json(indexProducts);
     } catch (err) {

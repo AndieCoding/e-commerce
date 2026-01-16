@@ -43,28 +43,28 @@ export class PortadaImg extends HTMLElement {
                 }
 
                 .text-overlay {
-
                     border-radius: 75px;
                     backdrop-filter: blur(3px);
                     background-color: rgb(150, 150, 150, 0.3);
                     box-shadow: 1px 1px 10px 1px rgb(155, 155, 155, 0.5);
-                    
-
                     font-family: 'Tangerine', serif;
                     position: absolute;
                     transform: translateX(-50%);
-                    color: white;
-                    
-                    padding: 5px 35px;
-                    
+                    color: white;                    
+                    padding: 5px 35px;                    
                     font-size: 96px;
                     text-align: center;
                     opacity: 0; 
                     animation: slideInFromTop 1s forwards; 
                     text-shadow: 4px 4px 4px rgb(119, 169, 119);
+                    @media (width<700px) {
+                        font-size: 48px;
+                    }
                 }
+                    button {
+                    display: none;}
 
-                button.prev, button.next {
+                /*button.prev, button.next {
                     background-color: transparent;
                     border: none;
                     color: white;
@@ -90,7 +90,7 @@ export class PortadaImg extends HTMLElement {
                     border-radius: 40%;
                     box-shadow: 0 0 20px rgba(0, 0, 255, 0.4);
                     transition: background 0.3s, box-shadow 0.3s;
-                }
+                }*/
 
                 @keyframes slideInFromTop {
                     0% {
@@ -123,7 +123,7 @@ export class PortadaImg extends HTMLElement {
         this.nextButton.addEventListener('click', () => this.nextImage());
         this.prevButton.addEventListener('click', () => this.prevImage());
 
-        this.autoSlide = setInterval(() => this.nextImage(), 6000);
+        this.autoSlide = setInterval(() => this.nextImage(), 4000);
     }
 
     updateImage() {

@@ -3,10 +3,9 @@ export class Filtros extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.filtrosActivos = {
-            marcas: [], // Store multiple selected brands
-            precio: null // Store single selected price range
+            marcas: [],
+            precio: null
         };
-        // Mock Data for Demo
         this.mockBrands = ['Playadito', 'Taragui', 'Mañanita', 'Amanda', 'La Merced', 'Rosamonte'];
         this.mockPrices = [
             { value: 'precio<5000', label: 'Menos de $5.000', id: 'price-1' },
@@ -27,10 +26,7 @@ export class Filtros extends HTMLElement {
             :host {
                 display: block;
                 font-family: 'Roboto Condensed', sans-serif;
-                background-color: #ffffff;
                 border-radius: 12px;
-                padding: 20px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.05);
                 width: 100%;
                 box-sizing: border-box;
                 color: #333;
@@ -53,8 +49,6 @@ export class Filtros extends HTMLElement {
                 margin: 20px 0 10px 0;
                 color: #555;
             }
-
-            /* Active Filters (Chips) */
             .active-filters {
                 display: flex;
                 flex-wrap: wrap;

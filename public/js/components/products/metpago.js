@@ -173,16 +173,107 @@ export class MetPago extends HTMLElement {
     async handleConfirmation(btn, spinner) {
         btn.disabled = true;
         spinner.classList.remove('hidden');
+        const btnText = btn.querySelector('span');
+        const originalText = btnText.textContent;
+        btnText.textContent = 'Procesando...';
 
-        // Logic for each method
-        console.log(`Confirming purchase with: ${this.selectedMethod}`);
+        try {
+            if (this.selectedMethod === 'mercadopago') {
+                await this.procesarMercadoPago();
+            } else if (this.selectedMethod === 'transferencia') {
+                await this.procesarTransferencia(spinner, btn, btnText, originalText);
+            } else {
+                alert('Método aún no implementado completamente.');
+                this.resetButton(btn, spinner, btnText, originalText);
+            }
+        } catch (error) {
+            console.error('Error en el proceso de pago:', error);
+            alert('Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
+            this.resetButton(btn, spinner, btnText, originalText);
+        }
+    }
 
-        setTimeout(() => {
+    async procesarMercadoPago() {
+        const items = this.ticket.map(item => ({
+            title: `${item.productType} ${item.marca} ${item.nombre}`,
+            unit_price: item.precio,
+            quantity: item.cantidad
+        }));
+
+        const response = await fetch('/api/payments/mp/create_preference', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                items: items,
+                payer: {
+                    email: this.user.email,
+                    name: `${this.user.nombre} ${this.user.apellido}`
+                },
+                external_reference: `ORDER-${Date.now()}` // Temporary reference
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.init_point) {
+            window.location.href = data.init_point;
+        } else {
+            throw new Error('No se recibió el link de pago');
+        }
+    }
+
+    async procesarTransferencia(spinner, btn, btnText, originalText) {
+        // Prepare order data for backend
+        // Note: internal "P_..." keys usually come from DB, but cart might use different structure.
+        // Adapting cart items to what backend RegistrarVenta expects.
+
+        const productosParaBackend = this.ticket.map(item => ({
+            P_TIPO: item.productType,  // Backend expects P_TIPO
+            P_ID: item.id,             // Backend expects P_ID
+            P_CANTIDAD: item.cantidad,
+            P_PRECIO: item.precio,
+            P_NOMBRE: item.nombre,
+            P_MARCA: item.marca
+        }));
+
+        const orderData = {
+            userEmail: this.user.email,
+            productos: productosParaBackend,
+            total: this.total,
+            fecha: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD format mostly safely parsed
+            empresa: 'Fan del Mate Web'
+        };
+
+        const response = await fetch('/api/payments/transfer/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Success UX
             spinner.classList.add('hidden');
-            btn.disabled = false;
-            // Here we would normally redirect or show a success modal
-            alert(`Simulación: Compra confirmada vía ${this.selectedMethod}`);
-        }, 2000);
+            btnText.textContent = '¡Pedido Confirmado!';
+            btn.style.background = '#28a745';
+
+            // Clear cart
+            this.cartController.vaciarCarrito();
+
+            setTimeout(() => {
+                alert(`¡Gracias por tu compra! Tu pedido #${result.orderId} ha sido registrado. Envianos el comprobante por WhatsApp.`);
+                window.location.href = '/';
+            }, 500);
+        } else {
+            throw new Error(result.message || 'Error al guardar la orden.');
+        }
+    }
+
+    resetButton(btn, spinner, btnText, originalText) {
+        spinner.classList.add('hidden');
+        btn.disabled = false;
+        btnText.textContent = originalText;
     }
 }
 

@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './src/routes/consultas.js';
 import shippingRouter from './src/routes/shipping.js';
+import paymentRouter from './src/routes/payments.js';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rutas de API
 app.use('/api', router);
 app.use('/api/shipping', shippingRouter);
+app.use('/api/payments', paymentRouter);
 
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));

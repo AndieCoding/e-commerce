@@ -661,11 +661,11 @@ async function ObtenerProductosPorCategoria(categoria, query) {
 	}
 }
 
-async function ObtenerTresProductos() {
+async function productosIndex() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
-			`SELECT DISTINCT * FROM productos ORDER BY p_precio ASC LIMIT 3`
+			`SELECT DISTINCT * FROM productos ORDER BY p_precio ASC LIMIT 6`
 		);
 		return rows;
 	}
@@ -1117,7 +1117,7 @@ export default {
 	GenerarInforme,
 	MontoPeriodo,
 	getSuggestions,
-	ObtenerTresProductos,
+	productosIndex,
 	ObtenerProductosPorCategoria,
 	RegistrarUsuario,
 	Login,
