@@ -156,7 +156,7 @@ export class MetPago extends HTMLElement {
         // Update button text contextually
         const btnText = confirmBtn.querySelector('span');
         if (method === 'mercadopago') {
-            btnText.textContent = 'Pagar con Mercado Pago';
+            btnText.innerHTML = '<div id="walletBrick_container"></div>';
         } else if (method === 'transferencia') {
             btnText.textContent = 'Finalizar y Acordar';
         } else {
@@ -195,9 +195,9 @@ export class MetPago extends HTMLElement {
 
     async procesarMercadoPago() {
         const items = this.ticket.map(item => ({
-            title: `${item.productType} ${item.marca} ${item.nombre}`,
-            unit_price: item.precio,
-            quantity: item.cantidad
+            title: `${item.P_TIPO} ${item.P_NOMBRE}`,
+            unit_price: item.P_PRECIO,
+            quantity: item.P_CANTIDAD
         }));
 
         const response = await fetch('/api/payments/mp/create_preference', {
@@ -206,14 +206,34 @@ export class MetPago extends HTMLElement {
             body: JSON.stringify({
                 items: items,
                 payer: {
-                    email: this.user.email,
-                    name: `${this.user.nombre} ${this.user.apellido}`
+                    email: 'fgcodear@gmail.com', //this.user.email,
+                    name: `${this.user.NOMBRE} ${this.user.APELLIDO}`
                 },
-                external_reference: `ORDER-${Date.now()}` // Temporary reference
+                external_reference: `ORDER-${Date.now()}`
             })
         });
 
         const data = await response.json();
+
+
+        const publicKey = "APP_USR-1c8ae308-1512-4004-a92f-9ef1454d008a";
+
+        const preferenceId = data.id;
+
+
+        const mp = new MercadoPago(publicKey);
+
+
+        const bricksBuilder = mp.bricks();
+        const renderWalletBrick = async (bricksBuilder) => {
+            await bricksBuilder.create("wallet", "walletBrick_container", {
+                initialization: {
+                    preferenceId: preferenceId,
+                }
+            });
+        };
+
+        renderWalletBrick(bricksBuilder);
 
         if (data.init_point) {
             window.location.href = data.init_point;
@@ -223,13 +243,10 @@ export class MetPago extends HTMLElement {
     }
 
     async procesarTransferencia(spinner, btn, btnText, originalText) {
-        // Prepare order data for backend
-        // Note: internal "P_..." keys usually come from DB, but cart might use different structure.
-        // Adapting cart items to what backend RegistrarVenta expects.
 
         const productosParaBackend = this.ticket.map(item => ({
-            P_TIPO: item.productType,  // Backend expects P_TIPO
-            P_ID: item.id,             // Backend expects P_ID
+            P_TIPO: item.productType,
+            P_ID: item.id,
             P_CANTIDAD: item.cantidad,
             P_PRECIO: item.precio,
             P_NOMBRE: item.nombre,
@@ -253,12 +270,12 @@ export class MetPago extends HTMLElement {
         const result = await response.json();
 
         if (result.success) {
-            // Success UX
+
             spinner.classList.add('hidden');
             btnText.textContent = '¡Pedido Confirmado!';
             btn.style.background = '#28a745';
 
-            // Clear cart
+
             this.cartController.vaciarCarrito();
 
             setTimeout(() => {

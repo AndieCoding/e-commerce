@@ -15,28 +15,38 @@ export const createPreference = async (req, res) => {
 
         const preference = new Preference(client);
 
-        const response = await preference.create({
-            body: {
-                items: items.map(item => ({
-                    title: item.title,
-                    unit_price: Number(item.unit_price),
-                    quantity: Number(item.quantity),
-                    currency_id: 'ARS'
-                })),
-                payer: {
-                    email: payer.email,
-                    name: payer.name
-                },
-                back_urls: {
-                    success: `${req.protocol}://${req.get('host')}/confirmar-compra`, // Adjust success URL as needed
-                    failure: `${req.protocol}://${req.get('host')}/envio`,
-                    pending: `${req.protocol}://${req.get('host')}/envio`
-                },
-                auto_return: 'approved',
-                external_reference: external_reference, // Can be used to track the local order ID if created beforehand
-                statement_descriptor: 'FAN DEL MATE'
-            }
-        });
+        const protocol = req.protocol || 'http';
+        const host = req.get('host') || 'localhost:3000';
+
+        // Ensure successful URL construction
+        const backUrls = {
+            success: `https://tienda-mate.vercel.app/`,
+            failure: `https://tienda-mate.vercel.app/confirmar-compra`,
+            pending: `https://tienda-mate.vercel.app/confirmar-compra`
+        };
+
+        console.log('Constructed Back URLs:', backUrls);
+
+        const body = {
+            items: items.map(item => ({
+                title: item.title,
+                unit_price: Number(item.unit_price),
+                quantity: Number(item.quantity),
+                currency_id: 'ARS'
+            })),
+            payer: {
+                email: payer.email,
+                name: payer.name
+            },
+            back_urls: backUrls,
+            auto_return: 'approved',
+            external_reference: external_reference,
+            statement_descriptor: 'FAN DEL MATE'
+        };
+
+        console.log('Preference Body:', JSON.stringify(body, null, 2));
+
+        const response = await preference.create({ body });
 
         res.status(200).json({
             id: response.id,
@@ -46,7 +56,8 @@ export const createPreference = async (req, res) => {
 
     } catch (error) {
         console.error('Error creating Mercado Pago preference:', error);
-        res.status(500).json({ message: 'Error al crear preferencia de pago', error: error.message });
+        console.error('Error details:', JSON.stringify(error, null, 2)); // Detailed error log
+        res.status(500).json({ message: 'Error al crear preferencia de pago', error: error.message, details: error });
     }
 };
 
