@@ -18,9 +18,9 @@ export class Menu extends HTMLElement {
             const response = await fetch('/api/me');
             const auth = await response.json();
             if (auth.logged) {
-                // If logged in via session, override local user or set it
+
                 this.user = new User(auth.user);
-                // Sync with localStorage for other existing legacy logic if needed
+
                 localStorage.setItem('user', JSON.stringify(this.user));
                 this.render();
                 window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
@@ -34,7 +34,7 @@ export class Menu extends HTMLElement {
         this.shadowRoot.innerHTML = '';
         this.shadowRoot.appendChild(this.template());
         this.addEventListeners();
-        // Re-attach carrito if needed or just handle it in connectedCallback
+
     }
     getStyles() {
         return `
