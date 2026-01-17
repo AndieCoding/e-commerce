@@ -29,7 +29,8 @@ router.get('/api/me', (req, res) => {
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: '/oauth2/redirect/google'
+    callbackURL: '/oauth2/redirect/google',
+    proxy: true
 }, async function verify(accessToken, refreshToken, profile, cb) {
     console.log('Google Verify Callback reached for:', profile.displayName);
     try {
