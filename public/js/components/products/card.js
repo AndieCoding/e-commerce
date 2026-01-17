@@ -49,9 +49,10 @@ export class Card extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');                        
+            * {
+                box-sizing: border-box;
+            }
             .card {
                 border-radius: 10px;
                 padding: 0.5em 1.5em;                
@@ -61,12 +62,10 @@ export class Card extends HTMLElement {
                 position: relative;
                 display: flex;
                 flex-direction: column;    
-                min-width: 160px;                 
-                
+                min-width: 160px;                                 
                 .img {             
                     height: 170px;
                 }
-
                 img {
                     width: 100%;
                     height: 100%;
@@ -99,7 +98,7 @@ export class Card extends HTMLElement {
                     outline: 1px solid green;
                     color: green;
                     transition: background-color 0.2s;
-                    font-size: 14px;
+                    font-size: 12px;
                     margin-top: 0;  
                     text-wrap: nowrap;
                     &:hover {
@@ -120,8 +119,7 @@ export class Card extends HTMLElement {
                     font-size: 12px;
                     margin: 0;
                     background-color: #96da96ff;
-                    border-radius: 10px;
-                    
+                    border-radius: 10px;                    
                     .tick {
                         font-size: 12px;
                     }
@@ -136,24 +134,26 @@ export class Card extends HTMLElement {
          
             .card.list {
                 display: grid;
-                grid-template-columns: 1fr 2fr 1fr;
-                gap: 1em;
+                grid-template-columns: 1fr 2fr;               
                 width: 100%; 
+                height: 100%;
                 max-width: 800px;
-                padding: 1em 0.5em;
             }
 
             .card.list .img {
                 height: 120px;
             }
-
-            .card.list .buttons {
-                flex-direction: column;
-                justify-content: center;
-            }
-            .card.list .buttons a.agregar {
+            .card.list .buttons .agregar{
                 position: absolute;
-                bottom: 5%;
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .card.list .product-info {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
             }
             
             .card.list .product-marca, 
@@ -161,17 +161,13 @@ export class Card extends HTMLElement {
                 margin: 0;
             }
             .card.list .confirmacion {
-                font-size: 14px;                
-                position: absolute;
-                top: 40%;
-                right: 5%;
-                z-index: 10;
+                font-size: 14px;             
                 width: 220px;;
             }
-                .card.list .product-name {
+            .card.list .product-name {
                 margin: 0;
                 margin-top: 0.5em;
-                }
+            }
             .product-name {
                 font-family: Roboto Condensed;
                 font-size: 16px;
@@ -184,6 +180,7 @@ export class Card extends HTMLElement {
                 height: 2.5em;                
                 text-overflow: ellipsis;
             }
+          
             .price {
                 //background-color: #f5cc81cc;
                 border-radius: 5px;
@@ -192,10 +189,7 @@ export class Card extends HTMLElement {
                 font-size: 20px;
                 font-weight: 400;
                 text-transform: uppercase;
-                color: #2c4e3dff;
-                position: absolute;
-                top: 45%;
-                right: 20px;
+                color: #2c4e3dff;                
                 margin: 0;                
             }
             .old-price {
@@ -214,27 +208,14 @@ export class Card extends HTMLElement {
                 border-radius: 10px;
                 padding: 2px;
             }
-            .card.list .product-info .product-price .price {
-                top:70%;
-                left: 210px;
-                display: inline-block;
-                width: fit-content;
-                height: fit-content;    
-            }
-            .card.list .product-info .stock {
-                top: 55%;
-                left: 220px;
-            }
             .stock {
                 display: flex;
-                align-items: center;     
+                align-items: center;   
+                margin:0;  
                 gap:5px;           
                 font-size: 10px;
                 font-weight: 100;
-                letter-spacing: -0.5px;
-                position: absolute;
-                top: 38%;
-                right: 25px;
+                letter-spacing: -0.5px;                
                 color: ${stockClass};
                 background-color: white;
                 border-radius: 10px;
@@ -257,7 +238,6 @@ export class Card extends HTMLElement {
                 margin: 0.3em 0;
                 font-weight: 100;
             }
-
             .card a.disabled {
                 pointer-events: none;  
                 opacity: 0.5;       
@@ -266,7 +246,20 @@ export class Card extends HTMLElement {
             img.cart-icon{
                 display: none;
             }
-            @media (width<700px) {
+            .product-price {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: end;
+                position: absolute;
+                top: 47%;
+                right: 5px;
+            }
+            .card.list .product-price {
+                position: static;
+                align-items: start;
+            }
+            @media (width<900px) {
                 .card {
                     padding: 8px;
                     width: 140px;
@@ -280,7 +273,7 @@ export class Card extends HTMLElement {
                 }
 
                 .img {             
-                    height: 120px !important;
+                    height: 100px;
                     width: 100%;
                     margin-bottom: 5px;
                 }
@@ -304,14 +297,6 @@ export class Card extends HTMLElement {
                     font-weight: 400; 
                     text-wrap: balance;
                     white-space: normal;
-                }
-
-                .product-price {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    margin: 5px 0;
-                    position: relative;
                 }
 
                 .price {
@@ -338,7 +323,7 @@ export class Card extends HTMLElement {
                 }
                 .card{
                     .buttons a.agregar {
-                        width: 100%;
+                        width: 150px;
                         padding: 6px 0; 
                         margin: 0;
                         font-size: 13px;
@@ -347,6 +332,9 @@ export class Card extends HTMLElement {
                         align-items: center;
                         background-color: transparent;                   
                         color: green;
+                }
+                .card.list .buttons a.agregar {
+                        min-width: 130px;
                 }
                 .btn-text{
                     display: none;
@@ -383,7 +371,7 @@ export class Card extends HTMLElement {
                         <img src="${productImage}" alt="${productName}">
                     </div>
                 </a>
-                <section>
+                <section class="descripcion">
                     <div class="product-info">
                         <div>
                             <a href="/detalle?id=${productId}" style="text-decoration: none;">

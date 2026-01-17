@@ -84,9 +84,7 @@ export class Filtros extends HTMLElement {
                 line-height: 1;
                 display: flex;
                 align-items: center;
-            }
-
-            /* Filter Groups */
+            }            
             .filter-group {
                 margin-bottom: 20px;
             }
@@ -99,6 +97,9 @@ export class Filtros extends HTMLElement {
                 font-size: 14px;
                 color: #444;
                 transition: color 0.2s;
+                @media (width<800px) {
+                    font-size: 10px;
+                }
             }
 
             .option-row:hover {
