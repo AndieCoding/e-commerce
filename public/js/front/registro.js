@@ -21,10 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       const div = document.createElement('div');
       div.classList.add('loginError');
+      div.classList.add('show');
       div.innerHTML = `<p><span>&#10006;</span> ${response.message || 'Ocurrió un problema al registrar el usuario'}</p>`;
       document.querySelector('form.registro').appendChild(div);
       setTimeout(() => {
-        div.remove();
+        div.classList.remove('show');
       }, 2000);
     }
 

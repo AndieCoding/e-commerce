@@ -1,15 +1,15 @@
 export class User {
     constructor(data) {
-        this.ID = data.ID_US || data.ID || undefined;
-        this.NOMBRE = data.NOMBRE;
-        this.APELLIDO = data.APELLIDO;
-        this.DOMICILIO = data.DOMICILIO;
-        this.CIUDAD = data.CIUDAD;
-        this.EMAIL = data.EMAIL;
-        this.DNI = data.DNI;
-        this.PASS = data.PASS;
-        this.FOTO = data.FOTO;
-        this.TIPO = data.TIPO;
+        this.ID = data.ID_US || data.id_us || data.ID || data.id || undefined;
+        this.NOMBRE = data.NOMBRE || data.nombre;
+        this.APELLIDO = data.APELLIDO || data.apellido;
+        this.DOMICILIO = data.DOMICILIO || data.domicilio;
+        this.CIUDAD = data.CIUDAD || data.ciudad;
+        this.EMAIL = data.EMAIL || data.email;
+        this.DNI = data.DNI || data.dni || 0;
+        this.PASS = data.PASS || data.pass;
+        this.FOTO = data.FOTO || data.foto;
+        this.TIPO = data.TIPO || data.tipo;
     }
 
     setID(id) {

@@ -18,11 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const $saveBtn = document.querySelector('#saveBtn');
     const $uploadStatus = document.querySelector('#uploadStatus');
 
-    if (user.FOTO && user.FOTO !== "null") {
-        $previewImage.style.backgroundImage = `url(${user.FOTO})`;
-    } else {
-        $previewImage.style.backgroundImage = `url('../img/icons/sin-foto.svg')`;
+    function updateProfileUI(user) {
+        if (user.FOTO && user.FOTO !== "null") {
+            $previewImage.style.backgroundImage = `url(${user.FOTO})`;
+        } else {
+            $previewImage.style.backgroundImage = `url('../img/icons/sin-foto.svg')`;
+        }
     }
+
+    updateProfileUI(user);
+
+    window.addEventListener('userUpdated', (e) => {
+        updateProfileUI(e.detail);
+    });
 
     $imageContainer.addEventListener('click', () => {
         $fileInput.click();

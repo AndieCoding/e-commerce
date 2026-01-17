@@ -18,19 +18,37 @@
     <menu-del-mate></menu-del-mate>
 
     <main class="login">
+
+
         <form action="" class="login">
+            <h3>Iniciar Sesión</h3>
             <div>
                 <label for="email"></label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
             </div>
             <div>
                 <label for="pass"></label>
-                <input type="password" id="pass" name="pass" required>
+                <input type="password" id="pass" name="pass" placeholder="Contraseña" required>
             </div>
 
             <button>Ingresar</button>
-            <a href="/registro">Crear una cuenta</a>
+            <!--   <a href="/registro">Crear una cuenta</a> -->
+
+            <p> <span class="decoration-span"></span> o <span class="decoration-span"></span></p>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/google.png" alt="Google Logo">
+                Ingresar con Google
+            </a>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/facebook.png" alt="Facebook Logo">
+                Ingresar con Facebook
+            </a>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/redes/instagram.png" alt="Instagram Logo">
+                Ingresar con Instagram
+            </a>
         </form>
+
     </main>
 
 

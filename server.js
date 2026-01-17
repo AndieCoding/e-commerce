@@ -1,11 +1,15 @@
 import express from 'express';
 import cors from 'cors';
+import session from 'express-session';
+import passport from 'passport';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import router from './src/routes/consultas.js';
 import shippingRouter from './src/routes/shipping.js';
 import paymentRouter from './src/routes/payments.js';
 import dotenv from 'dotenv';
+import logger from 'morgan';
+import authRouter from './src/routes/auth.js';
 
 dotenv.config();
 
@@ -18,8 +22,19 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(logger('dev'));
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Rutas de API
+app.use('/', authRouter);
 app.use('/api', router);
 app.use('/api/shipping', shippingRouter);
 app.use('/api/payments', paymentRouter);

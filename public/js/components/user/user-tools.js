@@ -97,6 +97,11 @@ export class UserTools extends HTMLElement {
     connectedCallback() {
         this.render();
         this.addEventListeners();
+        window.addEventListener('userUpdated', (e) => {
+            this.userData = e.detail;
+            this.render();
+            this.addEventListeners();
+        });
     }
 
     render() {

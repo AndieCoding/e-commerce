@@ -580,6 +580,70 @@ async function Login(email, pass) {
 	}
 }
 
+async function LoginOrRegisterWithGoogle(profile) {
+	let conn = await getConn();
+	try {
+		const issuer = 'https://accounts.google.com';
+		console.log('DB: Searching for credentials link for subject:', profile.id);
+		const [rows] = await conn.query(
+			`SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?`,
+			[issuer, profile.id]
+		);
+
+		if (rows.length > 0) {
+			const userId = rows[0].user_id || rows[0].USER_ID;
+			console.log('DB: Found link. Fetching user ID:', userId);
+			const [userRows] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
+
+			if (userRows.length === 0) {
+				console.log('DB: User referenced in link NOT found in usuarios table. ID searched:', userId);
+				return null;
+			}
+			return userRows[0];
+		} else {
+			console.log('DB: User not linked yet.');
+			const email = profile.emails[0].value;
+			console.log('DB: Checking if email exists:', email);
+			const [existingUserRows] = await conn.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+
+			let userId;
+			let user;
+
+			if (existingUserRows.length > 0) {
+				console.log('DB: User with this email already exists, ID:', existingUserRows[0].ID_US);
+				userId = existingUserRows[0].ID_US;
+				user = existingUserRows[0];
+			} else {
+				console.log('DB: Creating new user from Google profile');
+				const nombre = profile.displayName;
+				const [result] = await conn.query(
+					`INSERT INTO usuarios(nombre, email) VALUES (?, ?)`,
+					[nombre, email]
+				);
+				userId = result.insertId;
+				console.log('DB: New user created with ID:', userId);
+
+				const [newUser] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
+				user = newUser[0];
+			}
+
+			console.log('DB: Creating federated_credentials link for user_id:', userId);
+			// Create the federated credential link
+			await conn.query(
+				'INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)',
+				[userId, issuer, profile.id]
+			);
+
+			return user;
+		}
+	} catch (err) {
+		console.log("DB ERROR in LoginOrRegisterWithGoogle:", err);
+		return null;
+	} finally {
+		conn.release();
+	}
+}
+
 async function MontoPeriodo() {
 	const conn = await getConn();
 	try {
@@ -978,8 +1042,7 @@ async function RegistrarUsuario(user) {
 			ciudad,
 			email, 
 			pass,
-			dni
-			) 
+			dni) 
 		 	VALUES ( ?, ?, ?, ?, ?, ?, ?)`, [
 			user.NOMBRE,
 			user.APELLIDO,
@@ -1121,6 +1184,7 @@ export default {
 	ObtenerProductosPorCategoria,
 	RegistrarUsuario,
 	Login,
+	LoginOrRegisterWithGoogle,
 	ObtenerMarcas,
 	updateUserData,
 	insertarImgPath,

@@ -5,10 +5,14 @@ import path from 'path';
 import { Factura } from "../../public/js/models/factura.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import session from 'express-session';
+
+
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
