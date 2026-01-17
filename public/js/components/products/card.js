@@ -107,7 +107,7 @@ export class Card extends HTMLElement {
                     }
                 }
                 .confirmacion {
-                    color: green;                    
+                    color: #091c09;                    
                     margin-left: 10px;
                     opacity: 0;
                     transition: opacity 0.5s;
@@ -116,9 +116,9 @@ export class Card extends HTMLElement {
                     justify-content: center;
                     gap: 0.5em;
                     font-family: poppins;
-                    font-size: 12px;
+                    font-size: 9px;
                     margin: 0;
-                    background-color: #96da96ff;
+                    background-color: #96da9661;
                     border-radius: 10px;                    
                     .tick {
                         font-size: 12px;
@@ -161,8 +161,11 @@ export class Card extends HTMLElement {
                 margin: 0;
             }
             .card.list .confirmacion {
-                font-size: 14px;             
-                width: 220px;;
+                font-size: 10px;             
+                width: 140px;
+                position: absolute;
+                top: 45%;
+                right: 5px;
             }
             .card.list .product-name {
                 margin: 0;
@@ -186,7 +189,7 @@ export class Card extends HTMLElement {
                 border-radius: 5px;
                 padding: 0.1em 0.5em;
                 font-family: Roboto Condensed;
-                font-size: 20px;
+                font-size: 16px;
                 font-weight: 400;
                 text-transform: uppercase;
                 color: #2c4e3dff;                
