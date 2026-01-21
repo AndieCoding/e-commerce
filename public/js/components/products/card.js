@@ -371,7 +371,7 @@ export class Card extends HTMLElement {
                 .card {
                     padding: 8px;
                     width: 160px;
-                    min-width: 140px;
+                    width: 100%;
                     max-height: 290px;
                     display: flex;
                     flex-direction: column;

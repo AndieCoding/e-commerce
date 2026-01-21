@@ -402,6 +402,10 @@ p.notFound {
         padding: 10px;
         margin-left: 0;
     }
+
+    @media (width<400px) {
+        grid-template-columns: repeat(auto-fit, minmax(min(30%, 140px), 100px));
+    }
 }
 
 .busquedas .resultados.grid {
