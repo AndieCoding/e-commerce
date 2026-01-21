@@ -391,25 +391,28 @@ p.notFound {
 .busquedas .resultados {
     display: grid;
     gap: 1em;
-    justify-content: center;
+    justify-content: start;
+    grid-template-columns: repeat(auto-fill, 170px);
+
+}
+
+.busquedas .resultados.grid {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 
     @media (width<900px) {
-        min-height: 60vh;
+        min-height: 80vh;
         box-sizing: border-box;
-        grid-template-columns: repeat(auto-fit, minmax(min(30%, 170px), 100px));
+        grid-template-columns: repeat(auto-fill, minmax(min(30%, 170px), 130px));
         gap: 0.5em;
         width: 100%;
         padding: 10px;
         margin-left: 0;
+        margin: auto;
     }
 
     @media (width<400px) {
-        grid-template-columns: repeat(auto-fit, minmax(min(30%, 140px), 100px));
+        grid-template-columns: repeat(auto-fill, 140px);
     }
-}
-
-.busquedas .resultados.grid {
-    grid-template-columns: repeat(auto-fill, 170px);
 }
 
 .busquedas .resultados.list {

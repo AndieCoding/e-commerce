@@ -47,7 +47,7 @@ export class Card extends HTMLElement {
                 position: relative;
                 display: flex;
                 flex-direction: column;    
-                min-width: 160px;
+                
                 gap: 10px;
             }
             .card.list {
@@ -95,8 +95,7 @@ export class Card extends HTMLElement {
             @media (width<900px) {
                 .card {
                     padding: 8px;
-                    width: 140px;
-                    min-width: 140px;
+                    width: 100%;
                 }
                 .skeleton-img {
                     height: 100px;
@@ -153,7 +152,7 @@ export class Card extends HTMLElement {
                 position: relative;
                 display: flex;
                 flex-direction: column;    
-                min-width: 170px;                                 
+                
                 .img {             
                     height: 170px;
                 }
@@ -233,6 +232,7 @@ export class Card extends HTMLElement {
 
             .card.list .img {
                 height: 120px;
+                max-width: 180px;
             }
             .card.list .buttons .agregar{
                 position: absolute;
@@ -288,15 +288,14 @@ export class Card extends HTMLElement {
                 font-weight: 400;
                 text-transform: uppercase;
                 color: #2c4e3dff;                
-                margin: 0;                
+                margin: 0;                                
             }
+          
             .old-price {
                 font-size: 14px;
                 text-decoration: line-through;
-                color: #526858ff;
-                margin-right: 25px  ;
-                backdrop-filter: blur(5px);
-                padding: 0.1em 0.5em;
+                color: #526858ff;                
+                backdrop-filter: blur(5px);                
                 border-radius: 5px;
             }
             .offer-price {                
@@ -359,7 +358,18 @@ export class Card extends HTMLElement {
             .card.list .product-price {                
                 align-items: start;
                 left: 125px;
-                top: 70%;
+                top: 70%;     
+                @media (width<900px) {
+                left: clamp(90px, 20%, 220px);                            
+                }           
+            }
+            .product-price .price {
+                display:flex;
+                flex-direction: row-reverse;
+                align-items: center;
+                @media (width<900px) {
+                    flex-direction: row;
+                }
             }
             .descripcion {
                 height: 80px;
@@ -370,7 +380,6 @@ export class Card extends HTMLElement {
             @media (width<900px) {
                 .card {
                     padding: 8px;
-                    width: 160px;
                     width: 100%;
                     max-height: 290px;
                     display: flex;
@@ -459,15 +468,6 @@ export class Card extends HTMLElement {
                     display: none;
                 }
 
-            }
-                .old-price {
-                    display: none; 
-                }
-                
-                .offer-price {
-                    margin-left: 0;
-                    font-size: 16px;
-                }
             }
             </style>
 
