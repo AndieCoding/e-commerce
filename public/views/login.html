@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
     <script type="module" src="/js/front/login.js"></script>
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
 </head>
 
 <body class="login">
@@ -36,15 +37,15 @@
 
             <p> <span class="decoration-span"></span> o <span class="decoration-span"></span></p>
             <a href="/login/federated/google" class="google-login-btn">
-                <img src="/img/icons/google.png" alt="Google Logo">
+                <img src="/img/icons/google.png" alt="Google Logo" loading="lazy">
                 Ingresar con Google
             </a>
             <a href="/login/federated/google" class="google-login-btn">
-                <img src="/img/icons/facebook.png" alt="Facebook Logo">
+                <img src="/img/icons/facebook.png" alt="Facebook Logo" loading="lazy">
                 Ingresar con Facebook
             </a>
             <a href="/login/federated/google" class="google-login-btn">
-                <img src="/img/icons/redes/instagram.png" alt="Instagram Logo">
+                <img src="/img/icons/redes/instagram.png" alt="Instagram Logo" loading="lazy">
                 Ingresar con Instagram
             </a>
         </form>
@@ -55,6 +56,7 @@
     <footer>
         <footer-del-mate></footer-del-mate>
     </footer>
+    <mobile-nav-bar></mobile-nav-bar>
 </body>
 
 </html>

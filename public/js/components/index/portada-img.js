@@ -108,7 +108,7 @@ export class PortadaImg extends HTMLElement {
                 }
             </style>
             <div class="container">
-                <img id="portada-image" src="${this.images[this.currentIndex]}" alt="Portada Image">
+                <img id="portada-image" src="${this.images[this.currentIndex]}" alt="Portada Image" loading="lazy">
                 <div class="text-overlay">${this.phrases[this.currentIndex]}</div>
                 <button class="prev">&#10094;</button>
                 <button class="next">&#10095;</button>

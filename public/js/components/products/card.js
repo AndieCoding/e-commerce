@@ -2,27 +2,119 @@ export class Card extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.tipo = 'grid';
+        this.isLoading = false;
     }
     static get observedAttributes() {
-        return ['tipo'];
+        return ['tipo', 'loading'];
     }
     attributeChangedCallback(attr, oldValue, newValue) {
         if (attr === 'tipo') {
             this.tipo = newValue;
-            if (this.shadowRoot) {
-                const card = this.shadowRoot.querySelector('.card');
-                if (card) {
-                    if (this.tipo === 'list') {
-                        card.classList.add('list');
-                    } else {
-                        card.classList.remove('list');
-                    }
-                }
-            }
+            this.render();
+        }
+        if (attr === 'loading') {
+            this.isLoading = newValue === 'true';
+            this.render();
         }
     }
 
     connectedCallback() {
+        this.render();
+    }
+
+    render() {
+        if (this.isLoading) {
+            this.renderSkeleton();
+        } else {
+            this.renderContent();
+        }
+    }
+
+    renderSkeleton() {
+        this.shadowRoot.innerHTML = `
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');                        
+            * {
+                box-sizing: border-box;
+            }
+            .card {
+                border-radius: 10px;
+                padding: 0.5em 1.2em;                
+                overflow: hidden;
+                box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
+                background-color: white;
+                position: relative;
+                display: flex;
+                flex-direction: column;    
+                min-width: 160px;
+                gap: 10px;
+            }
+            .card.list {
+                display: grid;
+                grid-template-columns: 1fr 2fr;               
+                width: 100%; 
+                height: 100%;
+                max-width: 800px;
+                gap: 20px;
+                padding: 15px 5px;
+            }
+            .skeleton {
+                background: #eee;
+                background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+                border-radius: 5px;
+                background-size: 200% 100%;
+                animation: 1.5s shine linear infinite;
+            }
+            @keyframes shine {
+                to {
+                    background-position-x: -200%;
+                }
+            }
+            .skeleton-img {
+                height: 170px;
+                width: 100%;
+            }
+            .card.list .skeleton-img {
+                height: 120px;
+            }
+            .skeleton-title {
+                height: 20px;
+                width: 80%;
+                margin: 10px 0;
+            }
+            .skeleton-text {
+                height: 15px;
+                width: 60%;
+            }
+            .skeleton-button {
+                height: 40px;
+                width: 100%;
+                margin-top: 10px;
+            }
+            @media (width<900px) {
+                .card {
+                    padding: 8px;
+                    width: 140px;
+                    min-width: 140px;
+                }
+                .skeleton-img {
+                    height: 100px;
+                }
+            }
+        </style>
+        <div class="card ${this.tipo === 'list' ? 'list' : ''}">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton-info">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-button"></div>
+            </div>
+        </div>
+        `;
+    }
+
+    renderContent() {
         const productId = this.getAttribute('id');
         const productImage = this.getAttribute('image') || '';
         const productName = this.getAttribute('name') || 'Product Name';
@@ -46,23 +138,22 @@ export class Card extends HTMLElement {
             stockClass = '#c5640aff';
         }
 
-
         this.shadowRoot.innerHTML = `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');                        
+            @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght,XOPQ,XTRA,YOPQ,YTDE,YTFI,YTLC,YTUC@8..144,100..1000,96,468,79,-203,738,514,712&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');                        
             * {
                 box-sizing: border-box;
             }
             .card {
                 border-radius: 10px;
-                padding: 0.5em 1.5em;                
+                padding: 0.5em 1.2em;                
                 overflow: hidden;
                 box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
                 background-color: white;
                 position: relative;
                 display: flex;
                 flex-direction: column;    
-                min-width: 160px;                                 
+                min-width: 170px;                                 
                 .img {             
                     height: 170px;
                 }
@@ -147,6 +238,9 @@ export class Card extends HTMLElement {
                 position: absolute;
                 bottom: 10px;
                 right: 10px;
+                @media (width<900px) {
+                 width: 120px;
+                }
             }
             
             .card.list .product-info {
@@ -172,10 +266,11 @@ export class Card extends HTMLElement {
                 margin-top: 0.5em;
             }
             .product-name {
+                text-decoration: none;
                 font-family: Roboto Condensed;
-                font-size: 16px;
+                font-size: 14px;
                 text-transform: uppercase;
-                color: #553b28;
+                color: #83766cff;
                 margin: 0.5em 0;      
                 text-wrap: nowrap;
                 overflow: hidden;
@@ -255,19 +350,29 @@ export class Card extends HTMLElement {
                 justify-content: center;
                 align-items: end;
                 position: absolute;
-                top: 47%;
+                top: 50%;
                 right: 5px;
+                @media (width<900px) {
+                    top: 55%;
+                }
             }
-            .card.list .product-price {
-                position: static;
+            .card.list .product-price {                
                 align-items: start;
+                left: 125px;
+                top: 70%;
+            }
+            .descripcion {
+                height: 80px;
+                @media (width<900px) {
+                    height: 60px;
+                }
             }
             @media (width<900px) {
                 .card {
                     padding: 8px;
-                    width: 140px;
+                    width: 160px;
                     min-width: 140px;
-                    max-height: 260px;
+                    max-height: 290px;
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
@@ -287,9 +392,9 @@ export class Card extends HTMLElement {
 
                 .product-name {
                     font-family: 'Roboto Condensed', sans-serif;
-                    font-size: 13px;
+                    font-size: 12px;
                     text-transform: uppercase; 
-                    color: #553b28; 
+                    color: #83766cff; 
                     margin: 4px 0;      
                     height: auto;
                     max-height: 3em;
@@ -314,7 +419,7 @@ export class Card extends HTMLElement {
                 .stock {
                     position: static;
                     font-size: 9px;
-                    color: #777;
+                    color: ${stockClass};
                     background: none;
                     box-shadow: none;
                     padding: 0;
@@ -335,9 +440,6 @@ export class Card extends HTMLElement {
                         align-items: center;
                         background-color: transparent;                   
                         color: green;
-                }
-                .card.list .buttons a.agregar {
-                        min-width: 130px;
                 }
                 .btn-text{
                     display: none;
@@ -368,50 +470,39 @@ export class Card extends HTMLElement {
                 }
             }
             </style>
+
             <div class="card ${this.tipo === 'list' ? 'list' : ''}">
                 <a href="/detalle?id=${productId}">
                     <div class="img">
-                        <img src="${productImage}" alt="${productName}">
+                        <img src="${productImage}" alt="${productName}" loading="lazy">
                     </div>
                 </a>
                 <section class="descripcion">
                     <div class="product-info">
-                        <div>
-                            <a href="/detalle?id=${productId}" style="text-decoration: none;">
-                                <h3 class="product-name">${productName}</h3>
-                            </a>
-                        </div>
+                        <a class="product-name" href="/detalle?id=${productId}">
+                            <p>${productName}</p>
+                        </a>
                         <div class="product-price">
-                        <p class="stock">
-                        <span class="dot">&#8226;</span>
-                        ${stockClass === '#c5640aff' ? `${stockState} ${stock < 2 ? 'unidad' : 'unidades'}` : `${stockState}`}
-                        </p>
-                        <h4 class="price">
-                            ${stock > 0 ? (
-                parseInt(productOferta) > 0 ?
-                    `<span class="old-price">$ ${productPrice}</span><span class="offer-price">$ ${productOferta}</span>` :
-                    `$ ${productPrice}`
-            ) : "$ -"}
-                        </h4>
+                            <p class="stock">
+                                <span class="dot">&#8226;</span>
+                                ${this.evaluarStock(stockClass, stockState, stock)}
+                            </p>
+                            <h4 class="price">
+                                ${this.evaluarOferta(stock, productPrice, productOferta)}
+                            </h4>
                         </div>
-                    </div>
-                    <div class="product-details">
-                        <!--<h4 class="product-marca">${productMarca}</h4>          -->
-                    </div>
+                    </div>                 
                     <div class="confirmacion">
                         <span>Producto agregado</span><span class="tick">&#10004;</span>
                     </div>
                 </section>
                 <section class="buttons-section">
                     <div class="buttons">
-                        <a 
-                            id="btn-agregar" class="agregar ${stock === 'Agotado' ? 'disabled' : ''}"
-                        >
-                            <span class="btn-text">Agregar al carrito</span><img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart">
+                        <a id="btn-agregar" class="agregar ${stock === 'Agotado' ? 'disabled' : ''}">
+                            <span class="btn-text">Agregar al carrito</span><img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart" loading="lazy">
                         </a>                        
                     </div>
-                </section>
-                
+                </section>                
             </div>
         `;
 
@@ -439,14 +530,30 @@ export class Card extends HTMLElement {
     }
 
     addEventListeners() {
-        this.shadowRoot.querySelector('.agregar').addEventListener('click', (event) => {
-            this.shadowRoot.querySelector('.confirmacion').classList.add('show');
-            setTimeout(() => {
-                this.shadowRoot.querySelector('.confirmacion').classList.remove('show');
-            }, 4000);
-        });
-        //<img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart">
+        const btnAgregar = this.shadowRoot.querySelector('.agregar');
+        if (btnAgregar) {
+            btnAgregar.addEventListener('click', (event) => {
+                this.shadowRoot.querySelector('.confirmacion').classList.add('show');
+                setTimeout(() => {
+                    this.shadowRoot.querySelector('.confirmacion').classList.remove('show');
+                }, 4000);
+            });
+        }
+    }
+    evaluarStock(stockClass, stockState, stock) {
+        return stockClass === '#c5640aff' ? `${stockState} ${stock < 2 ? 'unidad' : 'unidades'}` : `${stockState}`;
 
+    }
+    evaluarOferta(stock, productPrice, productOferta) {
+        if (stock > 0) {
+            if (parseInt(productOferta) > 0) {
+                return `<span class="old-price">$ ${productPrice}</span><span class="offer-price">$ ${productOferta}</span>`;
+            } else {
+                return `$ ${productPrice}`;
+            }
+        } else {
+            return '$ -';
+        }
     }
 }
 

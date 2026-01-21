@@ -13,6 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Parkinsans:wght@300..800&family=PT+Sans+Narrow:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Tangerine&display=swap"
         rel="stylesheet">
     <script type="module" src="/js/front/index.js"></script>
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
 </head>
 
 <body>
@@ -31,12 +32,13 @@
 
     <section class="sommelier">
         <div class="contenedor-imagen-sommelier">
-            <img class="imagen-sommelier" src="/img/img/sommelier-valeria.jpg" alt="sommelier Valeria Trápaga">
+            <img class="imagen-sommelier" src="/img/img/sommelier-valeria.jpg" alt="sommelier Valeria Trápaga"
+                loading="lazy">
         </div>
         <div class="tip 1">
-            <h4>Valeria Trápaga - Sommelier</h4>
+            <p class="nombre-sommelier">Valeria Trápaga - Sommelier</p>
             <h3>Para sebar un buen mate</h3>
-            <p> La temperatura del agua es clave: el máximo aceptable para que la yerba mate se pueda expresar
+            <p> La temperatura del agua es clave: el máximo aceptable para que la yerba se pueda expresar
                 correctamente y no nos resulte demasiado intensa o amarga.</p>
         </div>
     </section>
@@ -62,14 +64,15 @@
 
     <section class="sommelier reverse">
         <div class="contenedor-imagen-sommelier">
-            <img class="imagen-sommelier" src="/img/img/sommelier-maria.jpg" alt="sommelier Valeria Trápaga">
+            <img class="imagen-sommelier" src="/img/img/sommelier-maria.jpg" alt="sommelier Valeria Trápaga"
+                loading="lazy">
         </div>
         <div class="tip">
-            <h4>María Consuelo Sastre - Sommelier</h4>
+            <p class="nombre-sommelier">María Consuelo Sastre - Sommelier</p>
             <h3>¿Qué yerba usar?</h3>
             <p>Debe tener una yerba mate que te guste y que vos puedas elegir no por el precio sino que elijas la marca
-                o el producto en sí. Desde una perspectiva más técnica, se dice que una yerba de calidad va a tener
-                mejores resultados porque no se va a lavar rápidamente</p>
+                o el producto en sí. Una yerba de calidad va a tener mejores resultados porque no se va a lavar
+                rápidamente</p>
         </div>
     </section>
 
@@ -79,7 +82,7 @@
         <div class="wa">
             <a href="https://api.whatsapp.com/send?phone=+543462336880&text=Hola%20soy%20una%20persona%20interesada%20en%20los%20mates%20de%20Fan%20del%20Mate"
                 target="_blank">
-                <img class="icon" src="/img/icons/redes/whatsapp.png" alt="Whatsapp">
+                <img class="icon" src="/img/icons/redes/whatsapp.png" alt="Whatsapp" loading="lazy">
                 <p>Whatsapp</p>
                 <p>+54 3462 336880</p>
             </a>
@@ -88,7 +91,7 @@
         <div class="email">
 
             <a href="mailto:federicoa.gigena@gmail.com?Subject=MATES">
-                <img class="icon" src="/img/icons/redes/email.png" alt="email">
+                <img class="icon" src="/img/icons/redes/email.png" alt="email" loading="lazy">
                 <p>pedidos@elfandelmate.com</p>
             </a>
 
@@ -96,12 +99,13 @@
 
     </section>
     <div class="banner-contacto">
-        <img src="/img/banner/contacto.png" alt="Whatsapp icon">
+        <img src="/img/banner/contacto.png" alt="Whatsapp icon" loading="lazy">
     </div>
 
     <footer>
         <footer-del-mate></footer-del-mate>
     </footer>
+    <mobile-nav-bar></mobile-nav-bar>
 
 </body>
 

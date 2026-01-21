@@ -14,6 +14,12 @@ body {
     overflow-x: hidden;
 }
 
+@media (max-width: 800px) {
+    body {
+        padding-bottom: 70px;
+    }
+}
+
 body::-webkit-scrollbar {
     width: 12px;
 }
@@ -236,13 +242,18 @@ section.contacto {
     }
 }
 
-.tipo-vista-contenedor {
-    width: 100%;
-    max-width: 850px;
-    margin: auto;
+.filtros-vista-contenedor {
+    width: 80%;
+    max-width: 800px;
+    margin: 30px auto;
+    margin-top: 20px;
     display: flex;
-    justify-content: end;
+    justify-content: space-between;
     align-items: center;
+}
+
+.contenedor-boton-vista {
+    display: flex;
     gap: 1em;
 }
 
@@ -301,10 +312,10 @@ p.notFound {
 
 .contenedor-boton-filtro {
     display: flex;
-    justify-content: end;
+    justify-content: start;
     align-items: center;
     max-width: 700px;
-    margin-right: 1em;
+    margin-left: 1em;
 }
 
 .contenedor-boton-filtro span {
@@ -383,8 +394,9 @@ p.notFound {
     justify-content: center;
 
     @media (width<900px) {
+        min-height: 60vh;
         box-sizing: border-box;
-        grid-template-columns: repeat(auto-fit, minmax(min(30%, 150px), 100px));
+        grid-template-columns: repeat(auto-fit, minmax(min(30%, 170px), 100px));
         gap: 0.5em;
         width: 100%;
         padding: 10px;
@@ -393,7 +405,7 @@ p.notFound {
 }
 
 .busquedas .resultados.grid {
-    grid-template-columns: repeat(auto-fill, 150px);
+    grid-template-columns: repeat(auto-fill, 170px);
 }
 
 .busquedas .resultados.list {
@@ -662,6 +674,7 @@ main.login {
         margin: 0;
         justify-content: center;
         width: 100%;
+        margin: 50px auto;
     }
 }
 
@@ -1414,8 +1427,9 @@ remito-del-mate {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 50px;
-    margin-top: 30px;
+    margin-bottom: 130px;
+    margin-top: 100px;
+    position: relative;
 
     @media (width< 900px) {
         height: 300px;
@@ -1455,36 +1469,31 @@ remito-del-mate {
 }
 
 .tip {
-    width: clamp(280px, 90%, 650px);
+    width: clamp(280px, 70%, 650px);
     box-shadow: 1px 1px 5px 1px gray;
     position: relative;
     border-radius: 15px;
     padding: 10px 30px;
     max-height: 290px;
-    background-color: rgb(209 241 212);
+    background-color: rgba(209, 241, 212, 0.43);
 
     @media (width<900px) {
         padding: 5px;
     }
 
-    h4 {
+    p.nombre-sommelier {
         position: absolute;
         bottom: -35px;
         right: 40px;
         border-radius: 10px;
-        background-color: rgb(230, 250, 255);
         backdrop-filter: blur(8px);
         text-transform: uppercase;
         font-size: 16px;
-        padding: 5px 15px;
         font-family: 'Roboto Condensed';
-        letter-spacing: 1px;
-        font-weight: 600;
+        font-weight: 300;
 
         @media (max-width: 900px) {
-            font-size: 12px;
-            right: 20px;
-            left: calc(50% - 110px);
+            font-size: 10px;
         }
     }
 

@@ -11,9 +11,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Parkinsans:wght@300..800&family=PT+Sans+Narrow:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Tangerine&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght,XOPQ,XTRA,YOPQ,YTDE,YTFI,YTLC,YTUC@8..144,100..1000,96,468,79,-203,738,514,712&family=Manrope:wght@200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Parkinsans:wght@300..800&family=PT+Sans+Narrow:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Tangerine&display=swap"
         rel="stylesheet">
 
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
 </head>
 
 <body>
@@ -29,17 +30,20 @@
 
         </section>
     </header>
-    <section id="tipo-vista-contenedor" class="tipo-vista-contenedor">
-        <img src="../img/icons/grid.svg" id="grid" class="tipo-vista-icon" alt="">
-        <img src="../img/icons/list.svg" id="list" class="tipo-vista-icon" alt="">
+    <section id="tipo-vista-contenedor" class="filtros-vista-contenedor">
+        <div class="contenedor-boton-filtro" id="boton-filtro">
+            <span>Filtrar</span>
+            <img class="filtrar-icon" src="../img/icons/filtros.svg" alt="Filtrar" loading="lazy">
+        </div>
+        <div class="contenedor-boton-vista">
+            <img src="../img/icons/grid.svg" id="grid" class="tipo-vista-icon" alt="" loading="lazy">
+            <img src="../img/icons/list.svg" id="list" class="tipo-vista-icon" alt="" loading="lazy">
+        </div>
     </section>
     <main>
         <div class="busquedas">
             <aside>
-                <div class="contenedor-boton-filtro" id="boton-filtro">
-                    <span>Filtrar</span>
-                    <img class="filtrar-icon" src="../img/icons/filtros.svg" alt="Filtrar">
-                </div>
+
                 <div class="filtros">
                     <filtros-del-mate></filtros-del-mate>
                 </div>
@@ -52,6 +56,8 @@
     <footer>
         <footer-del-mate></footer-del-mate>
     </footer>
+
+    <mobile-nav-bar></mobile-nav-bar>
 
     <script type="module" src="/js/front/products.js"></script>
 </body>

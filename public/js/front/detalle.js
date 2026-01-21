@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Update Image
-        imgContainer.innerHTML = `<img src="${product.P_IMG}" alt="${product.P_NOMBRE}" id="product-image" class="product-image">`;
+        imgContainer.innerHTML = `<img src="${product.P_IMG}" alt="${product.P_NOMBRE}" id="product-image" class="product-image" loading="lazy">`;
 
         // Update Info
         infoContainer.innerHTML = `

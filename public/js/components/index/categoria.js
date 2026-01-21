@@ -68,7 +68,7 @@ export class Categoria extends HTMLElement {
         template.innerHTML = `
             ${this.getStyles()}
             <div>
-                <img src="${this.img}" alt="${this.name}">
+                <img src="${this.img}" alt="${this.name}" loading="lazy">
             </div>
             <h3>${this.name}</h3>
         `;

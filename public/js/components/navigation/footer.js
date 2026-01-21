@@ -46,9 +46,9 @@ export class Footer extends HTMLElement {
             `
             <p>2024 Fan del Mate. Todos los derechos reservados.</p>
             <div class="redes">
-                <a href="#"><img src="/img/icons/redes/facebook.png" alt="Facebook"></a>
-                <a href="#"><img src="/img/icons/redes/instagram.png" alt="Instagram"></a>
-                <a href="#"><img src="/img/icons/redes/twitter.png" alt="Twitter"></a>
+                <a href="#"><img src="/img/icons/redes/facebook.png" alt="Facebook" loading="lazy"></a>
+                <a href="#"><img src="/img/icons/redes/instagram.png" alt="Instagram" loading="lazy"></a>
+                <a href="#"><img src="/img/icons/redes/twitter.png" alt="Twitter" loading="lazy"></a>
             </div>
         `;
         return template.content.cloneNode(true);

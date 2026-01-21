@@ -36,6 +36,24 @@ export class Carrito extends HTMLElement {
                 width: 290px;
             }
 
+            @media (max-width: 800px) {
+                .carrito {
+                box-sizing: border-box;
+                    top: auto;
+                    bottom: 0px;
+                    width: 100%;
+                    max-height: 80vh;
+                    transform: translateY(100%);
+                    border-radius: 20px 20px 0 0;
+                    padding: 20px;
+                    padding-bottom: 100px;
+                }
+                .carrito.open {
+                    transform: translateY(0);
+                    width: 100%;
+                }               
+            }
+
             .carrito-header {
                 display: grid;
                 grid-template-columns: 3fr 1fr 1fr;
@@ -81,6 +99,7 @@ export class Carrito extends HTMLElement {
                 margin-top: 20px;
                 display: flex;
                 justify-content: space-around;
+                flex-direction: row-reverse;                
                 background-color: white;
                 gap: 1.5em;
 
@@ -153,11 +172,23 @@ export class Carrito extends HTMLElement {
         this.mostrarProductos();
         this.addEventListeners();
 
-        document.addEventListener('actualizarCarrito', (event) => {
-            this.products = event.detail;
-            this.mostrarProductos();
-            this.mostrarCarrito();
-        });
+        if (!this.hasGlobalListeners) {
+            document.addEventListener('actualizarCarrito', (event) => {
+                this.products = event.detail;
+                this.mostrarProductos();
+                this.mostrarCarrito();
+            });
+
+            document.addEventListener('toggleCarrito', () => {
+                const carrito = this.shadowRoot.querySelector('.carrito');
+                if (carrito.classList.contains('open')) {
+                    this.ocultarCarrito();
+                } else {
+                    this.mostrarCarrito();
+                }
+            });
+            this.hasGlobalListeners = true;
+        }
     }
     addEventListeners() {
         this.shadowRoot.querySelector('.boton-vaciar-carrito').addEventListener('click', () => {
