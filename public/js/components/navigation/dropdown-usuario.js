@@ -3,7 +3,7 @@ export class dropdownUsuario extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         let user = JSON.parse(localStorage.getItem('user'));
-        this.admin = user.TIPO === 'AD' ? true : false;
+        this.admin = user.TIPO === 'ad' ? true : false;
     }
     getStyles() {
         return `
@@ -11,58 +11,53 @@ export class dropdownUsuario extends HTMLElement {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');  
             :host {
                 display: block;
+                    
             }    
-            :host-context(.contenedor-imagen-usuario) .dropdown-usuario {
-                top: 35px;
-                color:red;
-                width: 150px;                
-            }
             * {
-                --custom-green: rgb(41, 126, 49); 
+                --custom-green: rgba(41, 126, 49, 0.35); 
             }
-
+            .contenedor-dropdown {
+                position: relative;
+                width:200px;
+                height: 95px;
+            }
             .dropdown-usuario{
-                font-family: 'Roboto', Arial;
+                font-family: 'Roboto', Arial;                
+                width: 200px;       
                 list-style: none;
                 background-color: var(--custom-green);
                 position: absolute;
                 left: 0;
-                top: 0;
+                top: 0;                
                 margin: 0;
                 padding: 0;                                
-                text-align: left;                        
-                z-index: 100;  
-                border-radius: 0 0 0 10px;
-                overflow: hidden;            
-                @media (width>900px) {
-                    width: 150px;
-                    top:25px;
-                }    
-                @media (width<900px) {
-                    width: 100%;
-                }
+                text-align: center;                        
+                z-index: 1;  
+                border-radius: 0 0 10px 10px;
+                overflow: hidden;         
+                backdrop-filter: blur(10px);   
+                display: grid;
+                grid-template-rows: repeat(3, 45px); 
+                justify-items: center;    
                 li {                   
                     color: white;
                     width: 100%;
+                    height: 100%;
                     cursor: pointer;                    
-                    padding-left: 24px;    
-                    background-color: var(--custom-green);
-                    @media (width>900px) {
-                        width: 150px;
-                    }
+                    padding-left: 24px;
                     &:hover {
-                        cursor: pointer;
-                        background-color: rgb(38, 115, 38);
+                        background-color: rgba(38, 115, 38, 0.74);
                     }                    
                     a { 
-                        display: block;
-                        width: 100%;
+                        display: flex;
+                        width: inherit;
+                        height: inherit;
                         text-decoration: none;
                         font-size: 14px;
-                        padding: 15px 0;
                         color: white;
                         font-weight: 500;
-                        letter-spacing: 1px;
+                        justify-content:center;
+                        align-items: center;
                     }
                     a:visited{
                         color: white;
@@ -78,11 +73,13 @@ export class dropdownUsuario extends HTMLElement {
         template.innerHTML =
             `        
         ${this.getStyles()}
+        <div class="contenedor-dropdown">
         <ul class="dropdown-usuario">    
             <li><a href="/user_menu">Mi cuenta</a></li>
             ${this.admin ? `<li><a href="/panel">Panel de Control</a></li>` : ''}
             <li id="logOut"><a href="">Salir</a></li>
         </ul>
+        </div>
         `;
         return template.content.cloneNode(true);
     }

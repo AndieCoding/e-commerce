@@ -38,7 +38,7 @@ export class Carrito extends HTMLElement {
 
             @media (max-width: 800px) {
                 .carrito {
-                box-sizing: border-box;
+                    box-sizing: border-box;
                     top: auto;
                     bottom: 0px;
                     width: 100%;

@@ -18,31 +18,28 @@ export class Menu extends HTMLElement {
             const response = await fetch('/api/me');
             const auth = await response.json();
             if (auth.logged) {
-
                 this.user = new User(auth.user);
-
                 localStorage.setItem('user', JSON.stringify(this.user));
-                this.render();
-                window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
+            } else {
+                this.user = null;
+                localStorage.removeItem('user');
             }
+            this.render();
+            console.log('Usuario: ', this.user);
+            window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
         } catch (error) {
             console.error("Error al verificar sesión:", error);
         }
     }
 
     render() {
-        // Only update the template-derived part, preserving this.carrito
         const nav = this.shadowRoot.querySelector('nav');
         if (nav) nav.remove();
 
         this.shadowRoot.prepend(this.template());
-
-        // Ensure carrito is still there (it might have been removed by innerHTML = '' elsewhere, 
-        // but here we are being more selective. Although we used remove() above).
         if (this.carrito && !this.shadowRoot.contains(this.carrito)) {
             this.shadowRoot.appendChild(this.carrito);
         }
-
         this.addEventListeners();
     }
     getStyles() {
@@ -54,6 +51,8 @@ export class Menu extends HTMLElement {
                 box-sizing: border-box;
             }
             nav {
+                position: relative;
+                z-index: 100;
                 height: 70px;
                 padding: 0 20px;
                 padding-top: 10px;
@@ -68,11 +67,12 @@ export class Menu extends HTMLElement {
                     padding: 5px 10px;
                 }  
             }
-                .logo {
-                    @media (width<800px) {
-                        display: none;
-                    }
+            .logo {
+                margin-top: 1em;
+                @media (width<800px) {
+                    display: none;
                 }
+            }
             a{
                 text-decoration: none;
                 color: white;
@@ -95,11 +95,6 @@ export class Menu extends HTMLElement {
                     justify-content: center;
                     align-items: center;                   
                 }  
-                
-                .li-contenedor-dropdown-usuario {
-                    position: relative;
-                    display: block;
-                }
             }       
                 .contenedor-lista {
                     display: flex;
@@ -130,16 +125,8 @@ export class Menu extends HTMLElement {
                                 display: none;
                             }
                         }
-                        .ingresar-text {
-                            display:block;
-                            @media (width<900px) {
-                                display: block;
-                                margin:0;
-                            }                         
-                        }
                         .ingresar-icon {                            
-                                display: none;
-                            
+                                display: none;                            
                         }
                     }       
                 }     
@@ -208,10 +195,7 @@ export class Menu extends HTMLElement {
                 align-items: center;
                 justify-content: center;
                 pointer-events: none;
-            }
-            .burguer {
-                display: none;
-            }         
+            }       
             .user {
                 width: 30px;
                 cursor: pointer;
@@ -229,10 +213,6 @@ export class Menu extends HTMLElement {
             .menu a img.logo {
                     width: 50px;
                     height: 35px;
-                    @media (width<900px) {
-                        width: 40px;
-                        height: 30px;
-                    }
                 }
             .contenedor-busqueda {
                width: 100%;
@@ -252,49 +232,24 @@ export class Menu extends HTMLElement {
                     display: none;
                 }
             }
-            dropdown-usuario{
-                opacity: 0;
-                width: 0px;
-                transform: translateX(-100px);
-                transition: opacity 0.3s ease, width 0.5s ease-in-out, transform 0.4s ease-in-out;
-                @media (width<900px) {
-                    opacity: 1;
-                    width: 100%;
-                    transform: translateX(0px);
-                }
+            #contenedor-desplegable {
+                position: absolute;
+                top: 52px;         
+                left: -90px;       
+                width: 200px;
+                height: 135px;
+                z-index: 1;
+                overflow:hidden;
             }
-            dropdown-usuario.open{
-                opacity: 1;
-                transform: translateX(0px);
-                width: 150px;
-            }                
-            .dropdown-usuario-dinamico{
-                opacity: 0;
-                width: 0;
-                transform: translateY(-15px);
-                transition: opacity 0.1s ease, width 0.2s ease-in-out, transform 0.2s ease-in-out;
+            .dropdown-usuario-dinamico{   
+                position: absolute;             
+                transform: translateY(-135px);
+                transition: transform 0.3s ease-in-out;
+                pointer-events: none;
             }
-            .dropdown-usuario-dinamico.open{
-                opacity: 1;
+            .dropdown-usuario-dinamico.open{                
                 transform: translateY(0px);
-                width: 150px;
-            }
-            .dropdown-ingresar {                
-                padding: 0;
-                
-                width: 100%;
-                a{
-                    width: 100%;
-                }
-                @media (width<900px) {
-                    padding-left: 24px;
-                }
-            }
-            .pantallas-grandes-ingresar{
-                display:block;
-                @media (width<900px) {
-                    display: none;
-                }
+                pointer-events: all;
             }
         </style>
         `
@@ -312,23 +267,22 @@ export class Menu extends HTMLElement {
                             <input type="text" placeholder="Mate, yerba, termo..." name="buscar">
                             <span class="lupa">&#9906;</span>
                         </div>
-                    </div>
-                    
-                                        
+                    </div>              
                     <ul class="contenedor-lista">
-                        <li><div class="cart-icon">
-                            <img src="/img/icons/cart.png" alt="icono de carrito" loading="lazy">
-                            <span id="cart-badge-desktop" class="badge">${this.cartController.getTotalProducts()}</span>
-                        </div>   </li>
                         <li>
-                        <div class="contenedor-imagen-usuario">
-                        ${this.user ?
-                `<img id="icono-usuario" class="nav-icons user" src="../../img/icons/sin-foto.svg" loading="lazy" />`
+                            <div class="cart-icon">
+                                <img src="/img/icons/cart.png" alt="icono de carrito" loading="lazy">
+                                <span id="cart-badge-desktop" class="badge">${this.cartController.getTotalProducts()}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="contenedor-imagen-usuario">
+                            ${this.user ?
+                `<img id="icono-usuario" class="nav-icons user" src="${this.user ? this.user.FOTO : "../../img/icons/sin-foto.svg"}" loading="lazy" />`
                 : `<a class="nav-item" href="/login">Ingresar</a>`}                                
-                    </div>
+                            </div>
                         </li>
                     </ul>
-                    
                 </div>   
             </nav>
             ${this.getStyles()}
@@ -379,13 +333,15 @@ export class Menu extends HTMLElement {
         if (iconoUsuario) {
             iconoUsuario.addEventListener('click', () => {
                 let desplegable = this.shadowRoot.querySelector('#desplegable-dinamico');
+                let div = this.shadowRoot.querySelector('#contenedor-desplegable');
                 if (!desplegable) {
                     desplegable = document.createElement('dropdown-usuario');
                     desplegable.classList.add('dropdown-usuario-dinamico');
                     desplegable.setAttribute('id', 'desplegable-dinamico');
-                    desplegable.style.position = 'absolute';
-                    desplegable.style.zIndex = '500';
-                    desplegable.style.top = "-3px";
+                    div = document.createElement('div');
+                    div.setAttribute('id', 'contenedor-desplegable');
+                    div.classList.add('contenedor-dropdown');
+                    div.appendChild(desplegable);
                 }
                 if (desplegable.classList.contains('open')) {
                     requestAnimationFrame(() => {
@@ -400,7 +356,7 @@ export class Menu extends HTMLElement {
                     });
                 }
 
-                this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(desplegable);
+                this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(div);
             });
         }
 
