@@ -50,7 +50,7 @@ passport.use(new GoogleStrategy({
 router.post('/logout', function (req, res, next) {
     req.logout(function (err) {
         if (err) { return next(err); }
-        res.redirect('/');
+        res.json({ success: true, message: 'Usuario deslogueado exitosamente' });
     });
 });
 passport.serializeUser(function (user, cb) {

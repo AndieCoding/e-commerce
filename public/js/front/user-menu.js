@@ -49,9 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             try {
                 const response = await fetch('/logout', { method: 'POST' });
-                if (response.ok || response.redirected) {
-                    localStorage.removeItem('user');
-                    window.location.href = '/login';
+                // Check for JSON response indicating success
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        localStorage.removeItem('user');
+                        window.location.href = '/login';
+                    }
                 } else {
                     console.error('Logout failed');
                 }

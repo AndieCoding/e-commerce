@@ -11,6 +11,7 @@ import dotenv from 'dotenv';
 import logger from 'morgan';
 import authRouter from './src/routes/auth.js';
 import mysqlSession from 'express-mysql-session';
+import { isAdmin, isAuthenticated } from './src/middleware/authMiddleware.js';
 import helmet from 'helmet';
 
 dotenv.config();
@@ -26,7 +27,21 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
-app.use(helmet());
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                "default-src": ["'self'"],
+                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com"],
+                "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+                "font-src": ["'self'", "https://fonts.gstatic.com"],
+                "img-src": ["'self'", "data:", "https:"],
+                "connect-src": ["'self'", "https://cdn.jsdelivr.net"],
+            },
+        },
+    })
+);
+console.log("Helmet CSP middleware initialized");
 
 const options = {
     host: process.env.DB_HOST,
@@ -115,27 +130,27 @@ app.get("/contacto", (req, res) => {
 });
 
 // Rutas de Administración
-app.get("/ventas", (req, res) => {
+app.get("/ventas", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ventas.html"));
 });
 
-app.get("/compras", (req, res) => {
+app.get("/compras", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "compras.html"));
 });
 
-app.get("/ficha", (req, res) => {
+app.get("/ficha", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ficha-stock.html"));
 });
 
-app.get("/panel", (req, res) => {
+app.get("/panel", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "informes.html"));
 });
 
-app.get("/administrar", (req, res) => {
+app.get("/administrar", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "administrar.html"));
 });
 
-app.get("/altas", (req, res) => {
+app.get("/altas", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "alta-productos.html"));
 });
 
