@@ -1,15 +1,43 @@
 import { CartController } from '../cart/cart-controller.js';
+import { User } from '../../models/user.js';
 
 export class MobileNavBar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
+        try {
+            const logged = localStorage.getItem('user');
+            this.user = logged ? new User(JSON.parse(logged)) : null;
 
+            //programar con jwt
+        } catch (e) {
+            this.user = null;
+        }
+    }
+
+    async checkAuth() {
+        try {
+            const response = await fetch('/api/me');
+            const auth = await response.json();
+            if (auth.logged) {
+                this.user = new User(auth.user);
+                localStorage.setItem('user', JSON.stringify(this.user));
+                //programar con jwt
+            } else {
+                this.user = null;
+                localStorage.removeItem('user');
+            }
+            this.render();
+            window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
+        } catch (error) {
+            console.error("Error al verificar sesión en móvil:", error);
+        }
     }
 
     connectedCallback() {
         this.render();
+        this.checkAuth();
 
         if (!this.hasGlobalListeners) {
             document.addEventListener('actualizarTotalProducts', (event) => {
@@ -17,6 +45,10 @@ export class MobileNavBar extends HTMLElement {
                 if (badge) {
                     badge.textContent = event.detail !== undefined ? event.detail : this.cartController.getTotalProducts();
                 }
+            });
+            window.addEventListener('userUpdated', (e) => {
+                this.user = e.detail;
+                this.render();
             });
             this.hasGlobalListeners = true;
         }
@@ -66,6 +98,7 @@ export class MobileNavBar extends HTMLElement {
                 transition: all 0.3s ease;
                 gap: 4px;
                 position: relative;
+                width: 25%;
             }
 
             .nav-item img {
@@ -73,6 +106,14 @@ export class MobileNavBar extends HTMLElement {
                 height: 24px;
                 filter: grayscale(1) opacity(0.7);
                 transition: all 0.3s ease;
+            }
+
+            .nav-item.profile-img img {
+                border-radius: 50%;
+                filter: none;
+                opacity: 1;
+                border: 1px solid #ddd;
+                object-fit: cover;
             }
 
             .icon-wrapper {
@@ -132,6 +173,11 @@ export class MobileNavBar extends HTMLElement {
 
     render() {
         const currentPath = window.location.pathname;
+        const userLink = this.user ? '/user_menu' : '/login';
+        const userLabel = this.user ? 'Perfil' : 'Ingresar';
+        const userIcon = (this.user && this.user.FOTO && this.user.FOTO !== 'null')
+            ? this.user.FOTO
+            : '/img/icons/sin-foto.svg';
 
         this.shadowRoot.innerHTML = `
             ${this.getStyles()}
@@ -151,16 +197,19 @@ export class MobileNavBar extends HTMLElement {
                     </div>
                     <span>Carrito</span>
                 </div>
-                <a href="/login" class="nav-item ${currentPath === '/login' ? 'active' : ''}">
-                    <img src="/img/icons/login-green.svg" alt="Cuenta">
-                    <span>Cuenta</span>
+                <a href="${userLink}" class="nav-item ${currentPath === userLink ? 'active' : ''} ${this.user ? 'profile-img' : ''}">
+                    <img src="${userIcon}" alt="${userLabel}">
+                    <span>${userLabel}</span>
                 </a>
             </nav>
         `;
-        this.shadowRoot.querySelector('#btn-carrito').addEventListener('click', () => {
-            document.dispatchEvent(new CustomEvent('toggleCarrito'));
-        });
 
+        const btnCarrito = this.shadowRoot.querySelector('#btn-carrito');
+        if (btnCarrito) {
+            btnCarrito.addEventListener('click', () => {
+                document.dispatchEvent(new CustomEvent('toggleCarrito'));
+            });
+        }
     }
 }
 
