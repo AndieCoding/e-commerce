@@ -154,7 +154,7 @@ export class Carrito extends HTMLElement {
             <div class="carrito-items"></div>
         
             <div class="carrito-controles">                
-                <button class="carrito-comprar" onclick="window.location.href='/confirmar'">Confirmar<span class="flecha-icon">&#8702;</span></button>
+                <button class="carrito-comprar">Confirmar<span class="flecha-icon">&#8702;</span></button>
                 <button class="boton-vaciar-carrito">Vaciar<span class="vaciar-icon">&#10006;</span></button>
             </div>
         </div>
@@ -200,6 +200,13 @@ export class Carrito extends HTMLElement {
         this.shadowRoot.querySelector('.carrito-cerrar').addEventListener('click', () => {
             this.ocultarCarrito();
         });
+
+        const comprarBtn = this.shadowRoot.querySelector('.carrito-comprar');
+        if (comprarBtn) {
+            comprarBtn.addEventListener('click', () => {
+                window.location.href = '/confirmar';
+            });
+        }
     }
 
     mostrarProductos() {
