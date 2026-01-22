@@ -584,7 +584,7 @@ async function LoginOrRegisterWithGoogle(profile) {
 	let conn = await getConn();
 	try {
 		const issuer = 'https://accounts.google.com';
-		console.log('DB: Searching for credentials link for subject:', profile.id);
+		console.log('Buscando credenciales en DB.', profile.id);
 		const [rows] = await conn.query(
 			`SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?`,
 			[issuer, profile.id]
@@ -592,48 +592,47 @@ async function LoginOrRegisterWithGoogle(profile) {
 
 		if (rows.length > 0) {
 			const userId = rows[0].user_id || rows[0].USER_ID;
-			console.log('DB: Found link. Fetching user ID:', userId);
+			console.log('Conectando con registros locales');
 			const [userRows] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
 
 			if (userRows.length === 0) {
-				console.log('DB: User referenced in link NOT found in usuarios table. ID searched:', userId);
+				console.log('No se encontro el usuario en registros locales');
 				return null;
 			}
 			return userRows[0];
 		} else {
-			console.log('DB: User not linked yet.');
+			console.log('Usuario no registrado');
 			const email = profile.emails[0].value;
-			console.log('DB: Checking if email exists:', email);
+			console.log('Verificando si el email existe en DB local. \n', email);
 			const [existingUserRows] = await conn.query('SELECT * FROM usuarios WHERE email = ?', [email]);
 
 			let userId;
 			let user;
 
 			if (existingUserRows.length > 0) {
-				console.log('DB: User with this email already exists, ID:', existingUserRows[0].ID_US);
+				console.log('El usuario ya existe en DB local, ID:', existingUserRows[0].ID_US);
 				userId = existingUserRows[0].ID_US;
 				user = existingUserRows[0];
 			} else {
-				console.log('DB: Creating new user from Google profile');
+				console.log('Creando nuevo usuario desde perfil de Google');
 				const nombre = profile.displayName;
 				const [result] = await conn.query(
 					`INSERT INTO usuarios(nombre, email) VALUES (?, ?)`,
 					[nombre, email]
 				);
 				userId = result.insertId;
-				console.log('DB: New user created with ID:', userId);
+				console.log('Nuevo usuario creado con ID:', userId);
 
 				const [newUser] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
 				user = newUser[0];
 			}
 
-			console.log('DB: Creating federated_credentials link for user_id:', userId);
-			// Create the federated credential link
+			console.log('Creando enlace de credenciales federadas');
 			await conn.query(
 				'INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)',
 				[userId, issuer, profile.id]
 			);
-
+			console.log('Registro completado')
 			return user;
 		}
 	} catch (err) {

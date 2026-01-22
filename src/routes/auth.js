@@ -15,7 +15,7 @@ router.get('/oauth2/redirect/google', passport.authenticate('google', {
 router.get('/api/me', (req, res) => {
     console.log('Checking auth status. Session:', req.sessionID);
     if (req.isAuthenticated()) {
-        console.log('User is authenticated:', req.user.nombre);
+        console.log('User is authenticated:', req.user.NOMBRE);
         res.json({
             logged: true,
             user: req.user
@@ -36,10 +36,10 @@ passport.use(new GoogleStrategy({
     try {
         const user = await consultaDb.LoginOrRegisterWithGoogle(profile);
         if (!user) {
-            console.log('LoginOrRegisterWithGoogle returned null');
+            console.log('Error en el login o registro');
             return cb(null, false);
         }
-        console.log('Login successful for:', user.nombre);
+        console.log('Login exitoso. Usuario:', user.NOMBRE);
         return cb(null, user);
     } catch (err) {
         console.error("Error en autenticación Google:", err);

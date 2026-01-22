@@ -10,6 +10,8 @@ import paymentRouter from './src/routes/payments.js';
 import dotenv from 'dotenv';
 import logger from 'morgan';
 import authRouter from './src/routes/auth.js';
+import mysqlSession from 'express-mysql-session';
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -24,11 +26,31 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
+app.use(helmet());
+
+const options = {
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+};
+
+const MySQLStore = mysqlSession(session);
+const sessionStore = new MySQLStore(options);
 
 app.use(session({
+    key: process.env.SESSION_KEY,
     secret: process.env.SESSION_SECRET,
+    store: sessionStore,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 días en milisegundos
+        httpOnly: true,
+        secure: false, // Set to true only for HTTPS
+        sameSite: 'lax'
+    }
 }));
 
 app.use(passport.initialize());
@@ -54,6 +76,14 @@ app.get("/login", (req, res) => {
 
 app.get("/user_menu", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "user_menu.html"));
+});
+
+app.get("/mis_datos", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "views", "mis_datos.html"));
+});
+
+app.get("/mis_compras", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "views", "mis_compras.html"));
 });
 
 app.get("/productos", (req, res) => {
