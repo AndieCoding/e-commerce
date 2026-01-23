@@ -96,10 +96,21 @@ export class dropdownUsuario extends HTMLElement {
             this.cerrarSesion();
         });
     }
-    cerrarSesion() {
-        localStorage.removeItem('user');
-        this.user = null;
-        window.location.href = "/";
+    async cerrarSesion() {
+        try {
+            const response = await fetch('/logout', { method: 'POST' });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                }
+            } else {
+                console.error('Logout fallido');
+            }
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
     }
 }
 

@@ -1,5 +1,7 @@
 import express from "express";
 import consultaDb from "../config/consultas.js";
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import path from 'path';
 import { Factura } from "../../public/js/models/factura.js";
@@ -7,17 +9,23 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import session from 'express-session';
 
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+});
 
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'users-ecommerce',
+        allowed_formats: ['jpg', 'png', 'jpeg']
+    }
+});
 
-const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const upload = multer({ storage: storage });
 
-
-router.use(express.json());
-router.use(express.urlencoded({ extended: true }));
-
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         if (file.fieldname == 'FOTO' || file.fieldname == 'pdf') {
             const productDir = path.join(__dirname, '../../public/img/users');
@@ -30,8 +38,16 @@ const storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, `${file.originalname.replace(/\s+/g, '-').toLowerCase()}`);
     }
-});
-const upload = multer({ storage: storage });
+});*/
+
+const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+
 
 //guardar pdf de factura
 router.post("/guardarFactura/:id", upload.single('pdf'), async (req, res, next) => {
@@ -598,28 +614,32 @@ router.post('/registro', async (req, res) => {
 
 //Actualizar usuario con foto
 router.post("/update/profile/:userNumber", upload.single('FOTO'), async (req, res) => {
-
-    console.log(req.file);
     const userId = Number(req.params.userNumber);
+
     try {
         if (req.file) {
-            const targetDir = path.join(__dirname, `../../public/img/users/${userId}`);
-            await fs.mkdir(targetDir, { recursive: true });
-            const extension = path.extname(req.file.originalname) || '.jpg';
-            const targetPath = path.join(targetDir, userId + extension);
+            // Con CloudinaryStorage, req.file.path es la URL de la imagen en la nube
+            const imagePath = req.file.path;
 
-            await fs.rename(req.file.path, targetPath);
+            console.log('La URL de la foto en Cloudinary es: ' + imagePath);
 
-            const imagePath = `/img/users/${userId}/${userId}${extension}`;
-
-            console.log('La ruta de la foto es : ' + imagePath);
+            // Guardamos la URL directa en la base de datos de Aiven
             const [result] = await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
 
             if (result && result.affectedRows > 0) {
-                res.json({ 'message': 'Perfil actualizado', success: true, 'foto': imagePath });
+                return res.json({
+                    message: 'Perfil actualizado',
+                    success: true,
+                    foto: imagePath
+                });
             } else {
-                res.status(400).json({ message: 'No se pudo actualizar la foto en la base de datos', success: false });
+                return res.status(400).json({
+                    message: 'No se pudo actualizar la foto en la base de datos',
+                    success: false
+                });
             }
+        } else {
+            return res.status(400).json({ message: 'No se recibió ninguna imagen', success: false });
         }
     } catch (err) {
         console.error('Error al actualizar el perfil', err);

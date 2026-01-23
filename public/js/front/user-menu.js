@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             try {
                 const response = await fetch('/logout', { method: 'POST' });
-                // Check for JSON response indicating success
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
@@ -57,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.location.href = '/login';
                     }
                 } else {
-                    console.error('Logout failed');
+                    console.error('Logout fallido');
                 }
             } catch (error) {
                 console.error('Error logging out:', error);
