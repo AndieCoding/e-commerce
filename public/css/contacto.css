@@ -59,7 +59,6 @@
     margin: 0 auto;
 }
 
-/* Contact Info Section */
 .contacto-info {
     background-color: #f8f9fa;
     padding: 30px;
@@ -67,15 +66,18 @@
 }
 
 .contacto-info h2 {
-    font-size: 1.5rem;
-    margin-bottom: 30px;
+    font-size: 1rem;
     color: #2c3e50;
+
+    @media (width<900px) {
+        text-align: center;
+    }
 }
 
 .item-info {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .item-info .icon {
@@ -86,7 +88,7 @@
 }
 
 .item-info p {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     color: #555;
 }
 
@@ -94,6 +96,7 @@
     margin-top: 40px;
     display: flex;
     gap: 15px;
+    justify-content: center;
 }
 
 .icono-social {
@@ -143,6 +146,7 @@
 }
 
 button[type="submit"] {
+    display: block;
     background-color: #0a9d10;
     color: white;
     border: none;
@@ -153,6 +157,8 @@ button[type="submit"] {
     cursor: pointer;
     transition: background-color 0.2s;
     width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
 }
 
 button[type="submit"]:hover {
