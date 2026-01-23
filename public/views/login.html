@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Iniciar sesión - El fan del Mate</title>
     <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
     <link rel="stylesheet" href="/css/front.css">
@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
     <script type="module" src="/js/front/login.js"></script>
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
 </head>
 
 <body class="login">
@@ -18,25 +19,44 @@
     <menu-del-mate></menu-del-mate>
 
     <main class="login">
+
+
         <form action="" class="login">
+            <h3>Iniciar Sesión</h3>
             <div>
                 <label for="email"></label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" placeholder="Email" required>
             </div>
             <div>
                 <label for="pass"></label>
-                <input type="password" id="pass" name="pass" required>
+                <input type="password" id="pass" name="pass" placeholder="Contraseña" required>
             </div>
 
             <button>Ingresar</button>
-            <a href="/registro">Crear una cuenta</a>
+            <!--   <a href="/registro">Crear una cuenta</a> -->
+
+            <p> <span class="decoration-span"></span> o <span class="decoration-span"></span></p>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/google.png" alt="Google Logo" loading="lazy">
+                Ingresar con Google
+            </a>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/facebook.png" alt="Facebook Logo" loading="lazy">
+                Ingresar con Facebook
+            </a>
+            <a href="/login/federated/google" class="google-login-btn">
+                <img src="/img/icons/redes/instagram.png" alt="Instagram Logo" loading="lazy">
+                Ingresar con Instagram
+            </a>
         </form>
+
     </main>
 
 
     <footer>
         <footer-del-mate></footer-del-mate>
     </footer>
+    <mobile-nav-bar></mobile-nav-bar>
 </body>
 
 </html>

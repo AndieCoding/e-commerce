@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let allProducts = [];
 
             for (const cat of categories) {
-                const response = await fetch(`http://localhost:3000/api/products/${cat.replace('s', '')}`);
+                const response = await fetch(`/api/products/${cat.replace('s', '')}`);
                 const data = await response.json();
                 if (data.products) {
                     allProducts = [...allProducts, ...data.products];

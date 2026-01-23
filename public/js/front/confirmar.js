@@ -8,7 +8,7 @@ import { ConfirmarCompra } from '../components/products/confirmar-compra.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.fontFamily = 'Segoe UI';
-    document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.fontWeight = '200';
+    document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.fontWeight = '100';
     document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.textAlign = 'center';
     document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.margin = '30px auto';
     document.querySelector('confirm-cart').shadowRoot.querySelector('.empty-message').style.fontSize = '14px';

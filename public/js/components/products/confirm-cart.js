@@ -1,18 +1,16 @@
 import { Carrito } from "../cart/carrito.js";
 export class ConfirmCart extends Carrito {
     constructor() {
-        super();        
+        super();
     }
     getStyles() {
         return `
-        <style>
-                
+        <style>                
         .carrito-cerrar, 
         div.carrito-header,
         div.carrito-controles {
         display: none;
         }
-
         div.carrito-item {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
@@ -21,31 +19,26 @@ export class ConfirmCart extends Carrito {
             border-bottom: 1px solid #ddd;
             text-align: center;
         }
-
         .carrito-item-imagen {
             width: 80px;
             height: 80px;
             object-fit: cover;
             margin-right: 20px;
         }
-
         .carrito-item-detalles {
             flex-grow: 0.3;
         }
-
         .carrito-item-nombre {
             margin: 0;
             font-size: 18px;
             text-align: left;
         }
-
         .carrito-item-controles {
             display: flex;
             align-items: center;
             gap: 10px;
             justify-content: center;
         }
-
         .cantidad-restar,
         .cantidad-sumar {
             background-color: #28a745;
@@ -55,34 +48,28 @@ export class ConfirmCart extends Carrito {
             cursor: pointer;
             border-radius: 3px;
         }
-
         .carrito-item-cantidad {
             width: 30px;
             text-align: center;
         }
-
         .carrito-item-subtotal {
             width: 100px;
             text-align: center;
         }
-
         .carrito-item-precio {
             font-size: 18px;
             color: #333;
             text-align: right;
         }
-
         .eliminar-item {
             background-color: transparent;
             border: none;
             cursor: pointer;
         }
-
         .eliminar-item img {
             width: 40px;
             height: 40px;
         }
-
         @media (max-width: 768px) {
             .carrito-item {
                 grid-template-columns: 1fr 1fr;
@@ -108,7 +95,6 @@ export class ConfirmCart extends Carrito {
                 grid-column: 1 / -1;
             }
         }
-
         @media (max-width: 480px) {
             .carrito-item-imagen {
                 width: 50px;
@@ -123,7 +109,7 @@ export class ConfirmCart extends Carrito {
                 width: 30px;
             }
         }
-        </style>`;    
+        </style>`;
     }
     template() {
 

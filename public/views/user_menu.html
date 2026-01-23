@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Configuración</title>
     <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
     <link rel="stylesheet" href="/css/front.css">
@@ -12,84 +12,44 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
 </head>
 
 <body>
     <menu-del-mate></menu-del-mate>
 
     <main class="user-panel">
-        <div class="mobile-tabs">
-            <button id="tab-datos" class="tab-btn active">Mis Datos</button>
-            <button id="tab-compras" class="tab-btn">Mis Compras</button>
+        <div class="quick-links-mobile">
+            <a href="/mis_datos" class="quick-link" id="link-mis-datos">
+                <span class="icon">👤</span>
+                <span class="text">Mis Datos</span>
+                <span class="arrow">›</span>
+            </a>
+            <a href="/mis_compras" class="quick-link">
+                <span class="icon">🛍️</span>
+                <span class="text">Mis Compras</span>
+                <span class="arrow">›</span>
+            </a>
+            <a href="/contacto" class="quick-link">
+                <span class="icon">✉️</span>
+                <span class="text">Contacto</span>
+                <span class="arrow">›</span>
+            </a>
+            <a href="/nosotros" class="quick-link">
+                <span class="icon">👥</span>
+                <span class="text">Nosotros</span>
+                <span class="arrow">›</span>
+            </a>
+            <a href="#" id="logout-btn" class="quick-link">
+                <span class="icon">🚪</span>
+                <span class="text">Cerrar Sesión</span>
+                <span class="arrow">›</span>
+            </a>
         </div>
 
-        <div class="user-card" id="user-card-section">
-            <div class="profile-header">
-                <h2>Mi Perfil</h2>
-                <p>Gestiona tu información personal</p>
-            </div>
 
-            <form id="editar" class="user-form">
-                <div class="profile-image-section">
-                    <div class="image-container">
-                        <div class="previewImage" id="previewImage"></div>
-                        <div class="image-overlay">
-                            <span class="camera-icon">✏️</span>
-                            <span>Editar</span>
-                        </div>
-                        <input type="file" id="fileInput" name="image" accept="image/*" hidden />
-                    </div>
-                    <button id="saveBtn" class="upload-btn">Guardar Nueva Foto</button>
-                    <div id="uploadStatus"></div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <user-tools name="NOMBRE">
-                            <label slot="label">Nombre</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="APELLIDO">
-                            <label slot="label">Apellido</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="CIUDAD">
-                            <label slot="label">Ciudad</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="EMAIL">
-                            <label slot="label">Email</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <user-tools name="PASSWORD">
-                            <label slot="label">Contraseña</label>
-                        </user-tools>
-                    </div>
-                </div>
-
-                <div class="danger-zone">
-                    <a id="eliminar_cuenta" class="delete-account-btn">Eliminar cuenta</a>
-                </div>
-            </form>
-        </div>
-
-        <div class="history-card" id="history-card-section">
-            <div class="card-header">
-                <h2>Mis Compras</h2>
-                <p>Historial de facturación</p>
-            </div>
-            <historial-facturas></historial-facturas>
-        </div>
     </main>
-
+    <mobile-nav-bar></mobile-nav-bar>
     <footer>
         <footer-del-mate></footer-del-mate>
     </footer>

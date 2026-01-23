@@ -2,6 +2,7 @@ import { CartController } from './components/cart/cart-controller.js';
 import { Carrito } from './components/cart/carrito.js';
 import { Menu } from './components/navigation/menu.js';
 import { AdminNav } from './components/navigation/admin-nav.js';
+import { AdminMobileNavBar } from './components/navigation/admin-mobile-nav-bar.js';
 import { Footer } from './components/navigation/footer.js';
 import { Producto } from './models/producto.js';
 
@@ -52,7 +53,7 @@ async function GuardarFactura() {
 	formData.append("image", imagenInput.files[0]);
 
 	try {
-		const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/alta-productos`, {
+		const response = await fetch(`/api/alta-productos`, {
 			method: "POST",
 			body: formData
 		})
@@ -129,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.querySelector('title').textContent = 'Modificar producto';
 		document.querySelector('h1')?.textContent && (document.querySelector('h1').textContent = 'Modificar producto');
 
-		fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/product/${editId}`)
+		fetch(`/api/product/${editId}`)
 			.then(res => res.json())
 			.then(data => {
 				if (data.success) {
@@ -193,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 
 		try {
-			const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/products/${id}`, {
+			const response = await fetch(`/api/products/${id}`, {
 				method: "PUT",
 				body: formData
 			});

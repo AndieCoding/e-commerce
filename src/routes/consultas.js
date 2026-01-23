@@ -5,10 +5,14 @@ import path from 'path';
 import { Factura } from "../../public/js/models/factura.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import session from 'express-session';
+
+
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -38,18 +42,12 @@ router.post("/guardarFactura/:id", upload.single('pdf'), async (req, res, next) 
         const actualDir = path.join(__dirname, `../../public/img/users/${req.params.id}`);
         if (req.file) {
             await fs.mkdir(actualDir, { recursive: true });
-            const targetPath = path.join(actualDir, req.file.originalname);
+            const extension = path.extname(req.file.originalname);
+            const targetPath = path.join(actualDir, `factura-${nfactura}${extension}`);
 
-            await fs.rename(req.file.path, targetPath, (err) => {
-                if (err) {
-                    console.error('File moving error:', err);
-                    return res.status(500).json({ message: 'Error moving file' });
-                }
-            });
-            const baseDir = path.join(__dirname, '../../public');
-            const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
+            await fs.rename(req.file.path, targetPath);
 
-            const imagePath = '/img/users/' + req.params.id + '/' + req.file.originalname;
+            const imagePath = `/img/users/${req.params.id}/factura-${nfactura}${extension}`;
 
             const result = await consultaDb.guardarFactura(imagePath, req.params.id, nfactura, factura);
             if (result) {
@@ -58,9 +56,9 @@ router.post("/guardarFactura/:id", upload.single('pdf'), async (req, res, next) 
                 res.status(400).json({ message: 'Error guardando factura' });
             }
         }
-
     } catch (err) {
-        console.log(err);
+        console.error('Error guardando factura:', err);
+        res.status(500).json({ message: 'Error interno al guardar factura' });
     }
 });
 
@@ -73,18 +71,12 @@ router.post("/guardarFactura/sistema/:nfactura", upload.single('pdf'), async (re
         const actualDir = path.join(__dirname, `../../public/img/bills/${nFactura}`);
         if (req.file) {
             await fs.mkdir(actualDir, { recursive: true });
-            const targetPath = path.join(actualDir, req.file.originalname);
+            const extension = path.extname(req.file.originalname);
+            const targetPath = path.join(actualDir, `${nFactura}${extension}`);
 
-            await fs.rename(req.file.path, targetPath, (err) => {
-                if (err) {
-                    console.error('File moving error:', err);
-                    return res.status(500).json({ message: 'Error moving file' });
-                }
-            });
-            const baseDir = path.join(__dirname, '../../public');
-            const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
+            await fs.rename(req.file.path, targetPath);
 
-            const imagePath = '/img/bills/' + nFactura + '/' + req.file.originalname;
+            const imagePath = `/img/bills/${nFactura}/${nFactura}${extension}`;
             const result = await consultaDb.guardarFacturaUsuarioSinCuenta(imagePath, formData);
             if (result) {
                 res.json({ 'message': 'Factura guardada', 'success': true, 'factura': result });
@@ -92,9 +84,9 @@ router.post("/guardarFactura/sistema/:nfactura", upload.single('pdf'), async (re
                 res.status(400).json({ message: 'Error guardando factura' });
             }
         }
-
     } catch (err) {
-        console.log(err);
+        console.error('Error guardando factura sistema:', err);
+        res.status(500).json({ message: 'Error interno al guardar factura' });
     }
 });
 
@@ -107,18 +99,12 @@ router.post("/guardarRemito", upload.single('pdf'), async (req, res, next) => {
         const actualDir = path.join(__dirname, `../../public/img/bills/remitos/${nRemito}`);
         if (req.file) {
             await fs.mkdir(actualDir, { recursive: true });
-            const targetPath = path.join(actualDir, req.file.originalname);
+            const extension = path.extname(req.file.originalname);
+            const targetPath = path.join(actualDir, `${nRemito}${extension}`);
 
-            await fs.rename(req.file.path, targetPath, (err) => {
-                if (err) {
-                    console.error('File moving error:', err);
-                    return res.status(500).json({ message: 'Error moving file' });
-                }
-            });
-            const baseDir = path.join(__dirname, '../../public');
-            const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
+            await fs.rename(req.file.path, targetPath);
 
-            const imagePath = '/img/bills/remitos/' + nRemito + '/' + req.file.originalname;
+            const imagePath = `/img/bills/remitos/${nRemito}/${nRemito}${extension}`;
             const result = await consultaDb.guardarRemito(imagePath, nRemito);
             if (result) {
                 res.json({ 'message': 'Remito guardado', 'success': true, 'remito': result });
@@ -126,9 +112,9 @@ router.post("/guardarRemito", upload.single('pdf'), async (req, res, next) => {
                 res.status(400).json({ message: 'Error guardando factura' });
             }
         }
-
     } catch (err) {
-        console.log(err);
+        console.error('Error guardando remito:', err);
+        res.status(500).json({ message: 'Error interno al guardar remito' });
     }
 });
 
@@ -405,7 +391,7 @@ router.get("/productos/:categoria", async (req, res) => {
 router.get("/indexProducts", async (req, res) => {
     try {
 
-        const indexProducts = await consultaDb.ObtenerTresProductos();
+        const indexProducts = await consultaDb.productosIndex();
         console.log('Productos de index enviados.');
         res.json(indexProducts);
     } catch (err) {
@@ -619,25 +605,25 @@ router.post("/update/profile/:userNumber", upload.single('FOTO'), async (req, re
         if (req.file) {
             const targetDir = path.join(__dirname, `../../public/img/users/${userId}`);
             await fs.mkdir(targetDir, { recursive: true });
-            const targetPath = path.join(targetDir, userId + '.jpg');
+            const extension = path.extname(req.file.originalname) || '.jpg';
+            const targetPath = path.join(targetDir, userId + extension);
 
-            await fs.rename(req.file.path, targetPath, (err) => {
-                if (err) {
-                    console.error('File moving error:', err);
-                    return res.status(500).json({ message: 'Error moving file' });
-                }
-            });
-            const baseDir = path.join(__dirname, '../../public');
-            const image1 = path.relative(baseDir, targetPath).replace(/\\/g, '/'); // Replace backslashes with forward slashes
-            let imagePath = '/' + image1;
+            await fs.rename(req.file.path, targetPath);
+
+            const imagePath = `/img/users/${userId}/${userId}${extension}`;
 
             console.log('La ruta de la foto es : ' + imagePath);
-            await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
-            res.json({ 'message': 'Perfil actualizado', success: true, 'foto': imagePath });
+            const [result] = await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
+
+            if (result && result.affectedRows > 0) {
+                res.json({ 'message': 'Perfil actualizado', success: true, 'foto': imagePath });
+            } else {
+                res.status(400).json({ message: 'No se pudo actualizar la foto en la base de datos', success: false });
+            }
         }
     } catch (err) {
         console.error('Error al actualizar el perfil', err);
-        res.status(500).json({ message: 'Error al actualizar el perfil' });
+        res.status(500).json({ message: 'Error al actualizar el perfil', success: false });
     }
 });
 

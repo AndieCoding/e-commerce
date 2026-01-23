@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mis Compras - Configuración</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+    <link rel="stylesheet" href="/css/front.css">
+    <link rel="stylesheet" href="/css/props.css" />
+    <script type="module" src="/js/front/mis-compras.js"></script>
+    <script type="module" src="/js/front/user-menu.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
+</head>
+
+<body>
+    <menu-del-mate></menu-del-mate>
+
+    <main class="user-panel">
+        <div class="history-card" id="history-card-section" style="margin: 0 auto; max-width: 800px;">
+            <div class="card-header">
+                <h2>Mis Compras</h2>
+                <p>Historial de facturación</p>
+            </div>
+            <historial-facturas></historial-facturas>
+        </div>
+    </main>
+    <mobile-nav-bar></mobile-nav-bar>
+    <footer>
+        <footer-del-mate></footer-del-mate>
+    </footer>
+</body>
+
+</html>

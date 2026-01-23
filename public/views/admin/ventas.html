@@ -1,112 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Ventas</title>
-		<link rel="stylesheet" href="/css/props.css" />
-		<link rel="stylesheet" href="/css/ficha-de-stock.css" />
-		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-		<script type="module" src="./js/ventas.js"></script>
-		<script type="module" src="/js/components/facturas/facturaC.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-	</head>
-	<body>
-		<menu-del-mate></menu-del-mate>
-		<div class="main">
-			<admin-nav></admin-nav>
-			
-			<div class="flex column color-main">
 
-				<h2 class="text-center">Factura de Venta</h2>
-				
-				<form autocomplete="off" action="" class="nuevaFactura flex column align-center m-bottom-3em justify-center w-100porciento" id="nfacturaForm">					
-					<div class="flex space-between w-600px gap-2em">
-						<div class="flex">
-							<label for="nuevaf-fecha">Fecha</label>
-							<input type="date" name="fecha" id="nuevaf-fecha" required />
-						</div>
-						<div class="flex start">
-							<label for="nuevaf-tipo">Tipo de Factura</label>
-							<select name="tipo" id="nuevaf-tipo" required>
-								<option value="original">C</option>
-								<option value="original">X</option>
-							</select>
-						</div>						
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Ventas</title>
+	<link rel="stylesheet" href="/css/props.css" />
+	<link rel="stylesheet" href="/css/ficha-de-stock.css" />
+	<link rel="stylesheet" href="/css/admin.css" />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+		rel="stylesheet">
+	<script type="module" src="./js/ventas.js"></script>
+	<script type="module" src="/js/components/facturas/facturaC.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+	<menu-del-mate></menu-del-mate>
+	<div class="main">
+		<admin-nav></admin-nav>
+
+		<div class="flex column color-main">
+
+			<h2 class="text-center">Factura de Venta</h2>
+
+			<form autocomplete="off" action=""
+				class="nuevaFactura flex column align-center m-bottom-3em justify-center w-100porciento"
+				id="nfacturaForm">
+				<div class="flex space-between w-600px gap-2em">
+					<div class="flex">
+						<label for="nuevaf-fecha">Fecha</label>
+						<input type="date" name="fecha" id="nuevaf-fecha" required />
+					</div>
+					<div class="flex start">
+						<label for="nuevaf-tipo">Tipo de Factura</label>
+						<select name="tipo" id="nuevaf-tipo" required>
+							<option value="original">C</option>
+							<option value="original">X</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="flex space-between m-top-1em w-600px gap-2em">
+					<div class="relative flex start">
+						<label for="nuevaf-cte">Cliente</label>
+						<input type="text" name="cliente" id="nuevaf-cte" required />
 					</div>
 
-					<div class="flex space-between m-top-1em w-600px gap-2em">
-						<div class="relative flex start">
-							<label for="nuevaf-cte">Cliente</label>
-							<input 
-								type="text" 
-								name="cliente" 
-								id="nuevaf-cte" 
-								required 
-							/>
-						</div>
-						
-					</div>
+				</div>
 
-					<div class="flex space-between m-top-1em w-600px gap-2em">
+				<div class="flex space-between m-top-1em w-600px gap-2em">
 					<div class="relative flex start">
 						<label for="nuevaf-dom">Domicilio</label>
-						<input 
-							type="text" 
-							name="domicilio" 
-							id="nuevaf-dom" 
-							required 
-						/>
+						<input type="text" name="domicilio" id="nuevaf-dom" required />
 					</div>
 					<div class="relative flex start">
 						<label for="nuevaf-loc">Localidad</label>
-						<input 
-							type="text" 
-							name="localidad" 
-							id="nuevaf-loc" 
-							required 
-						/>
+						<input type="text" name="localidad" id="nuevaf-loc" required />
 					</div>
 				</div>
 
-					<div class="flex m-top-1em"><!-- align-center h-150px justify-center gap-2em-->
-						
-						<table class="tabla-carga">
-							<thead class='tabla-carga-head'>
-								<tr>
-									<th>Tipo</th>
-									<th>Nombre</th>
-									<th>Marca</th>
-									<th>Descripción</th>									
-									<th>Cantidad</th>
-									<th>Pr. compra</th>
-									<th>Pr. venta</th>
-									<th>Total</th>
-									<th>Producto</th>
-									<th>Stock</th>
-								</tr>
-							</thead>
-							<tbody class="tabla-carga-body">								
-								<!-- Mostrará las celdas para ingresar la compra -->
-							</tbody>
-						</table>	
-							
-					</div>
-				</form>
-				<h4 id="total-facturado"></h4>
-				<!--<p class="stock text-center"></p>-->
-				<div class="guardar flex justify-center m-top-3em relative">
-					<button class="formButton enviar w-140px" disabled>Guardar</button>
-					<!--<button class="formButton font-size-14px w-140px m-left-1em" onclick="window.print()" class="">Imprimir</button>-->
+				<div class="flex m-top-1em"><!-- align-center h-150px justify-center gap-2em-->
+
+					<table class="tabla-carga">
+						<thead class='tabla-carga-head'>
+							<tr>
+								<th>Tipo</th>
+								<th>Nombre</th>
+								<th>Marca</th>
+								<th>Descripción</th>
+								<th>Cantidad</th>
+								<th>Pr. compra</th>
+								<th>Pr. venta</th>
+								<th>Total</th>
+								<th>Producto</th>
+								<th>Stock</th>
+							</tr>
+						</thead>
+						<tbody class="tabla-carga-body">
+							<!-- Mostrará las celdas para ingresar la compra -->
+						</tbody>
+					</table>
+
 				</div>
+			</form>
+			<h4 id="total-facturado"></h4>
+			<!--<p class="stock text-center"></p>-->
+			<div class="guardar flex justify-center m-top-3em relative">
+				<button class="formButton enviar w-140px" disabled>Guardar</button>
+				<!--<button class="formButton font-size-14px w-140px m-left-1em" onclick="window.print()" class="">Imprimir</button>-->
 			</div>
 		</div>
-		<factura-del-mate></factura-del-mate>
+	</div>
+	<factura-del-mate></factura-del-mate>
 
-		<footer-del-mate></footer-del-mate>
-		
-		<script>
-		</script>
-	</body>
+	<footer-del-mate></footer-del-mate>
+	<admin-mobile-nav-bar></admin-mobile-nav-bar>
+
+	<script>
+	</script>
+</body>
+
 </html>

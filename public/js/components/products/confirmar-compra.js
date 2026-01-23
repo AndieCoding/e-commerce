@@ -35,7 +35,7 @@ export class ConfirmarCompra extends HTMLElement {
       this.vaciarCarrito();
     });
 
-    this.shadowRoot.querySelector('.carrito-seguir').addEventListener('click', () => {
+    this.shadowRoot.querySelector('.back-arrow').addEventListener('click', () => {
       window.location.href = '/';
     });
   }
@@ -104,56 +104,53 @@ export class ConfirmarCompra extends HTMLElement {
       font-size: 18px;
       font-weight: bold; 
     }
-    
-    .carrito-seguir {
-      background-color: white;
-      color: #0084ffff;
-      border: none;
-      padding: 10px 15px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-top: 10px;
-      display:flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;        
-      transition: all 0.1s ease;
-      &:hover {
-        box-shadow: 0 0 0 0;
-        color: #00d9ffff;
-      }
-    }    
     .cantidad-productos{
-      font-size: 42px; 
-      font-weight: bold; 
+      font-size: 36px; 
+      font-weight: 500; 
       text-align: center;
-      margin-bottom: 15px; 
-      color: #249900;
+      margin: 0;
+      color: #78b764;
     }
 
     .botones-inferiores {
-      margin-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      margin-top: 25px;
+      display: flex;      
+      gap: 15px;      
+      justify-content: space-around;
+      flex-direction: row-reverse;
+      gap: 3em;
+      @media (max-width: 768px) {
+        
+      }
     }
-    .curve-arrow {
-      font-size: 16px;
+    .back-arrow {
+      width: 25px;
+      height: 25px;
+      position:absolute;
+      top: 7em;
+      left: 15%;
+      @media (max-width: 768px) {
+        top: 6em;
+        left: 10%;
+      }
     }
+      p {
+        font-weight: 200;
+      }
     </style>
     <div class="detalle-pedido">
+    <div>
+      <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
       <p>Total de productos: </p>
       <p id="cantidad-productos" class="cantidad-productos"></p>
       <p>Total: <span id="total-precio"></span></p>
-      <a href="/envio"><button class="carrito-comprar">Confirmar</button></a>
-      <div class="botones-inferiores">
-        <button class="carrito-seguir">Seguir Comprando <span class="curve-arrow">&#8618;</span></button>
+      </div>
+      <div class="botones-inferiores">        
+        <a href="/envio"><button class="carrito-comprar">Confirmar</button></a>      
         <button class="boton-vaciar-carrito">Vaciar</button>
       </div>
     </div>
     `;
   }
 }
-
 customElements.define('confirmar-compra', ConfirmarCompra);

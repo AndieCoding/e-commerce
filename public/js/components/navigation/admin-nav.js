@@ -15,6 +15,9 @@ export class AdminNav extends HTMLElement {
                 height: 100%;
                 display: grid;
                 place-items: center;
+                @media (width < 800px) {
+                    display: none;
+                }
             }
                     
             .aside ul {
@@ -22,16 +25,29 @@ export class AdminNav extends HTMLElement {
                 justify-items: center;
                 max-width: 500px;                
                 margin: auto;
+                padding: 0;
+                list-style: none;
+                
                 li {
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     height: 40px;   
+                    width: 100%;
                 }
-                    @media (width < 900px) {
-                     grid-template-columns: repeat(3, 1fr);
-                     gap: 30px;
-                    }
+                
+                @media (width < 900px) {
+                     display: flex;
+                     flex-wrap: wrap;
+                     justify-content: center;
+                     gap: 10px;
+                     max-width: 100%;
+                     
+                     li {
+                         width: auto;
+                         height: auto;
+                     }
+                }
             }
             .aside ul li:hover {
                 font-weight: 600;
@@ -40,10 +56,13 @@ export class AdminNav extends HTMLElement {
                 display: inline-block;
                 color: rgb(63, 63, 63);
                 text-decoration: none;
+                padding: 8px 16px;
+                border-radius: 20px;
+                transition: color 0.2s ease;
             }
             a.active {
                 font-weight: 600;
-                color: var(--color-secundario);
+                color: var(--color-secundario);                
             }
         </style>
         `

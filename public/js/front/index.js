@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 async function indexProducts() {
-    const response = await fetch('http://localhost:3000/api/indexProducts');
+    const response = await fetch('/api/indexProducts');
     const data = await response.json();
     const cardsContainer = document.querySelector('.destacados');
 

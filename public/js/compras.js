@@ -2,6 +2,7 @@ import { CartController } from './components/cart/cart-controller.js';
 import { Carrito } from './components/cart/carrito.js';
 import { Menu } from './components/navigation/menu.js';
 import { AdminNav } from './components/navigation/admin-nav.js';
+import { AdminMobileNavBar } from './components/navigation/admin-mobile-nav-bar.js';
 import { Footer } from './components/navigation/footer.js';
 
 
@@ -84,7 +85,7 @@ async function GuardarFactura() {
 
 	;
 	try {
-		const response = await fetch(`${window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app/'}api/images`, {
+		const response = await fetch(`/api/images`, {
 			method: "POST",
 			body: formData
 		})

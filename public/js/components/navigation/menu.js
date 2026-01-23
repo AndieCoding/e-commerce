@@ -7,10 +7,40 @@ export class Menu extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        this.cartController = "";
+        this.cartController = new CartController();
         const logged = localStorage.getItem('user');
         const loggedUser = JSON.parse(logged);
         this.user = loggedUser ? new User(loggedUser) : null;
+    }
+
+    async checkAuth() {
+        try {
+            const response = await fetch('/api/me');
+            const auth = await response.json();
+            if (auth.logged) {
+                this.user = new User(auth.user);
+                localStorage.setItem('user', JSON.stringify(this.user));
+            } else {
+                this.user = null;
+                localStorage.removeItem('user');
+            }
+            this.render();
+            console.log('Usuario: ', this.user);
+            window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
+        } catch (error) {
+            console.error("Error al verificar sesión:", error);
+        }
+    }
+
+    render() {
+        const nav = this.shadowRoot.querySelector('nav');
+        if (nav) nav.remove();
+
+        this.shadowRoot.prepend(this.template());
+        if (this.carrito && !this.shadowRoot.contains(this.carrito)) {
+            this.shadowRoot.appendChild(this.carrito);
+        }
+        this.addEventListeners();
     }
     getStyles() {
         return `
@@ -21,6 +51,8 @@ export class Menu extends HTMLElement {
                 box-sizing: border-box;
             }
             nav {
+                position: relative;
+                z-index: 100;
                 height: 70px;
                 padding: 0 20px;
                 padding-top: 10px;
@@ -30,28 +62,50 @@ export class Menu extends HTMLElement {
                 font-family: Roboto Condensed;
                 font-size: 12px;
                 color: white;
+                ${window.location.pathname === '/' ? 'position: absolute; width: 100%;z-index: 100;background: linear-gradient(rgb(41, 126, 49, 0.8), rgb(41, 126, 49, 0));' : ''}
                 @media (width<800px) {
                     padding: 5px 10px;
                 }  
+            }
+            .logo {
+                margin-top: 1em;
+                @media (width<800px) {
+                    display: none;
+                }
+            }
+            a{
+                text-decoration: none;
+                color: white;
+                font-size: 14px;
             }
             .menu {
                 padding-inline: 40px;
                 height: 100%;
                 flex-wrap: nowrap;
                 margin: auto;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
+                grid-template-columns: auto 1fr auto;
+                display: grid;
+                place-content: center;
                 max-width: 1100px;       
                 position: relative;
-                margin: 5px auto;  
-                margin-top:0;
-                ul {
-                    display: inherit;
-                    justify-content: end;
+                
+                @media (width<800px) {
+                    padding-inline: 25px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;                   
+                }  
+            }       
+                .contenedor-lista {
+                    display: flex;
+                    justify-content: space-between;
                     align-items: center;
                     list-style: none;
                     gap: 2em;
+              
+                @media (width<800px) {
+                    display: none;
+                }
                     a {
                         text-decoration: none;
                         color: white;
@@ -71,30 +125,17 @@ export class Menu extends HTMLElement {
                                 display: none;
                             }
                         }
-                        .ingresar-text {
-                            display:block;
-                            @media (width<900px) {
-                                display: block;
-                                margin:0;
-                            }                         
-                        }
                         .ingresar-icon {                            
-                                display: none;
-                            
+                                display: none;                            
                         }
                     }       
-                }
-                .li-contenedor-dropdown-usuario {
-                    position: relative;
-                    display: block;
-                }
-            }            
+                }     
             .menu a img {
                 height: 35px;
             }
             .buscar {
                 position: relative;
-                width:50%;
+                width:clamp(180px, 50%, 350px);
                 input {
                     box-sizing: border-box;
                     min-width: 100px;
@@ -124,8 +165,10 @@ export class Menu extends HTMLElement {
                     color: gray;
                 }
             }
+            
             .cart-icon {
                 width: 30px;
+                position: relative;                
                 img {
                     width: 100%;
                     height: 100%;
@@ -133,63 +176,26 @@ export class Menu extends HTMLElement {
                     color: white;
                     cursor: pointer;
                 }
-            }
-
-            nav .sm-menu{
-                @media (width<900px) {        
+                @media (width<800px) {
                     display: none;
-                    transform: translateX(100px);
-                    background-color: rgb(41, 126, 49);
-                    position: absolute;
-                    top: 55px;
-                    right: -100px;
-                    flex-direction: column;
-                    justify-content: center;
-                    z-index: 100;
-                    width: 0;
-                    margin: 0;
-                    padding-left: 0;
-                    opacity: 0;
-                    transition: transform 0.3s ease, opacity 0.5s ease, width 0.4s ease ;    
-                    border-radius: 0 0 0 5px;
-                    gap: 0;
-                    li {
-                            width: 100%;    
-                            text-wrap: nowrap  ;
-                            padding-left: 24px;
-                            &:hover {
-                                cursor: pointer;
-                                background-color: rgb(38, 115, 38);
-                            }                    
-                        a { 
-                            display: block;
-                            width: 100%;
-                            text-decoration: none;
-                            font-size: 14px;
-                            padding: 15px 0;
-                            color: white;
-                            font-weight: 500;
-                            letter-spacing: 1px;
-                        }
-                    }           
                 }
             }
-            nav .sm-menu.open {
-                opacity: 1;
-                right: -30px;                    
-                width: 50%;
-                max-width: 200px;
-                transform: translateX(0);
-            }
-            .burguer {
-                width: 20px;
-                margin-top: 5px;
-                display: none;
-                @media (width<900px) {
-                    display: block;
-                    cursor: pointer;
-                }    
-            }         
+            .badge {
+                position: absolute;
+                top: -5px;
+                right: -10px;
+                background-color: white;
+                color: var(--custom-green);
+                font-size: 16px;
+                font-weight: bold;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                pointer-events: none;
+            }       
             .user {
                 width: 30px;
                 cursor: pointer;
@@ -207,19 +213,15 @@ export class Menu extends HTMLElement {
             .menu a img.logo {
                     width: 50px;
                     height: 35px;
-                    @media (width<900px) {
-                        width: 40px;
-                        height: 30px;
-                    }
                 }
-            .contenedor-busqueda-carrito {
-               width: 50%;
+            .contenedor-busqueda {
+               width: 100%;
                display: flex;
-               justify-content: space-between;
+               justify-content: center;
                align-items: center;               
                @media (width<900px) {
                    width: 80%;
-                   justify-content: space-around;
+                   justify-content: center;
                    align-items: center;
                }
             }
@@ -230,55 +232,24 @@ export class Menu extends HTMLElement {
                     display: none;
                 }
             }
-
-            nav .sm-menu .li-contenedor-dropdown-usuario {
-                @media (width<900px) {
-                    padding-left: 0;
-                }
+            #contenedor-desplegable {
+                position: absolute;
+                top: 52px;         
+                left: -90px;       
+                width: 200px;
+                height: 135px;
+                z-index: 1;
+                overflow:hidden;
             }
-            dropdown-usuario{
-                opacity: 0;
-                width: 0px;
-                transform: translateX(-100px);
-                transition: opacity 0.3s ease, width 0.5s ease-in-out, transform 0.4s ease-in-out;
-                @media (width<900px) {
-                    opacity: 1;
-                    width: 100%;
-                    transform: translateX(0px);
-                }
+            .dropdown-usuario-dinamico{   
+                position: absolute;             
+                transform: translateY(-135px);
+                transition: transform 0.3s ease-in-out;
+                pointer-events: none;
             }
-            dropdown-usuario.open{
-                opacity: 1;
-                transform: translateX(0px);
-                width: 150px;
-            }                
-            .dropdown-usuario-dinamico{
-                opacity: 0;
-                width: 0;
-                transform: translateY(-15px);
-                transition: opacity 0.1s ease, width 0.2s ease-in-out, transform 0.2s ease-in-out;
-            }
-            .dropdown-usuario-dinamico.open{
-                opacity: 1;
+            .dropdown-usuario-dinamico.open{                
                 transform: translateY(0px);
-                width: 150px;
-            }
-            .dropdown-ingresar {                
-                padding: 0;
-                
-                width: 100%;
-                a{
-                    width: 100%;
-                }
-                @media (width<900px) {
-                    padding-left: 24px;
-                }
-            }
-            .pantallas-grandes-ingresar{
-                display:block;
-                @media (width<900px) {
-                    display: none;
-                }
+                pointer-events: all;
             }
         </style>
         `
@@ -288,44 +259,30 @@ export class Menu extends HTMLElement {
         template.innerHTML = `            
             <nav>
                 <div class="menu">
-                    <a href="${window.location.pathname === '/' ? '#' : '/'}">                    
-                        <img src="/img/icons/mate.svg" alt="logo">
+                    <a class="logo" href="${window.location.pathname === '/' ? '#' : '/'}">                    
+                        <img src="/img/icons/mate.svg" alt="logo" loading="lazy">
                     </a>
-                    <div class="contenedor-busqueda-carrito">
-                        <div class="cart-icon">
-                            <img src="/img/icons/cart.png" alt="icono de carrito">
-                        </div>              
+                    <div class="contenedor-busqueda">                                   
                         <div class="buscar">
                             <input type="text" placeholder="Mate, yerba, termo..." name="buscar">
                             <span class="lupa">&#9906;</span>
                         </div>
-                    </div>
-                    <img class="nav-icons burguer" src="/img/icons/menu.svg" />
-                    
-                    <ul class="sm-menu">
-                        <li><a href="/productos">Productos</a></li>                        
-                        <li><a href="/nosotros">Nosotros</a></li>
-                        <li><a href="/contacto">Contacto</a></li>
-                        <li class="li-contenedor-dropdown-usuario"> ${this.user ? `
-                                <dropdown-usuario></dropdown-usuario>
-                            `
-                :
-                `<ul class="dropdown-ingresar">
-                                <a href="/login">
-                                <img class="ingresar-icon" src="/img/icons/login.svg" alt="login" /><p class="ingresar-text">Ingresar</p>
-                                </a>
-                                </ul>`}    
-
+                    </div>              
+                    <ul class="contenedor-lista">
+                        <li>
+                            <div class="cart-icon">
+                                <img src="/img/icons/cart.png" alt="icono de carrito" loading="lazy">
+                                <span id="cart-badge-desktop" class="badge">${this.cartController.getTotalProducts()}</span>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="contenedor-imagen-usuario">
+                            ${this.user ?
+                `<img id="icono-usuario" class="nav-icons user" src="${this.user.FOTO !== null ? this.user.FOTO : "../../img/icons/sin-foto.svg"}" loading="lazy" />`
+                : `<a class="nav-item" href="/login">Ingresar</a>`}                                
+                            </div>
                         </li>
                     </ul>
-                    ${this.user ?
-
-                `<div class="contenedor-imagen-usuario">
-                            <img id="icono-usuario" class="nav-icons user" src="../../img/icons/sin-foto.svg" />                            
-                </div>
-                `
-                :
-                ``}
                 </div>   
             </nav>
             ${this.getStyles()}
@@ -334,35 +291,57 @@ export class Menu extends HTMLElement {
     }
 
     connectedCallback() {
-        this.shadowRoot.appendChild(this.template());
-        this.carrito = new Carrito();
-        this.shadowRoot.appendChild(this.carrito);
-        const cartIcon = this.shadowRoot.querySelector('.cart-icon');
+        if (!this.shadowRoot.querySelector('nav')) {
+            this.shadowRoot.appendChild(this.template());
+        }
+
+        if (!this.carrito) {
+            this.carrito = new Carrito();
+        }
+
+        if (!this.shadowRoot.contains(this.carrito)) {
+            this.shadowRoot.appendChild(this.carrito);
+        }
 
         this.addEventListeners();
 
-        cartIcon.addEventListener('click', () => {
-            this.toggleCart();
-        });
+        if (!this.hasGlobalListeners) {
+            document.addEventListener('actualizarTotalProducts', () => {
+                const badge = this.shadowRoot.querySelector('#cart-badge-desktop');
+                if (badge) {
+                    badge.textContent = this.cartController.getTotalProducts();
+                }
+            });
+            this.hasGlobalListeners = true;
+        }
+
+        this.checkAuth();
     }
 
     addEventListeners() {
         const searchInput = this.shadowRoot.querySelector('.buscar input');
         const searchIcon = this.shadowRoot.querySelector('.buscar span');
-        const burguerIcon = this.shadowRoot.querySelector('.burguer');
         const iconoUsuario = this.shadowRoot.querySelector('#icono-usuario');
-        const menuEnMovil = this.shadowRoot.querySelector('.sm-menu');
+        const cartIcon = this.shadowRoot.querySelector('.cart-icon');
+
+        if (cartIcon) {
+            cartIcon.addEventListener('click', () => {
+                this.toggleCart();
+            });
+        }
 
         if (iconoUsuario) {
             iconoUsuario.addEventListener('click', () => {
                 let desplegable = this.shadowRoot.querySelector('#desplegable-dinamico');
+                let div = this.shadowRoot.querySelector('#contenedor-desplegable');
                 if (!desplegable) {
                     desplegable = document.createElement('dropdown-usuario');
                     desplegable.classList.add('dropdown-usuario-dinamico');
                     desplegable.setAttribute('id', 'desplegable-dinamico');
-                    desplegable.style.position = 'absolute';
-                    desplegable.style.zIndex = '500';
-                    desplegable.style.top = "-3px";
+                    div = document.createElement('div');
+                    div.setAttribute('id', 'contenedor-desplegable');
+                    div.classList.add('contenedor-dropdown');
+                    div.appendChild(desplegable);
                 }
                 if (desplegable.classList.contains('open')) {
                     requestAnimationFrame(() => {
@@ -377,7 +356,7 @@ export class Menu extends HTMLElement {
                     });
                 }
 
-                this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(desplegable);
+                this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(div);
             });
         }
 
@@ -394,27 +373,12 @@ export class Menu extends HTMLElement {
                 searchIcon.click();
             }
         });
-        burguerIcon.addEventListener('click', () => {
-            if (menuEnMovil.classList.contains('open')) {
-                menuEnMovil.classList.toggle('open');
-                menuEnMovil.addEventListener('transitionend', () => {
-                    requestAnimationFrame(() => {
-                        menuEnMovil.style.display = 'none';
-                    });
-                }, { once: true });
-            } else {
-                menuEnMovil.style.display = 'flex';
-                requestAnimationFrame(() => {
-                    menuEnMovil.classList.toggle('open');
-                });
-            }
-        });
     }
 
     toggleCart() {
-        const carritoElement = this.carrito.shadowRoot.querySelector('.carrito');
-        carritoElement.classList.toggle('open');
+        document.dispatchEvent(new CustomEvent('toggleCarrito'));
     }
+
     showLookupInput() {
         const searchInput = this.shadowRoot.querySelector('.buscar input');
         searchInput.style.display = searchInput.style.display === 'block' ? 'none' : 'block';

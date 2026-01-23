@@ -33,7 +33,7 @@ export class Categoria extends HTMLElement {
            div {
                 width: 120px;
                 height: 120px;
-                background-color: #bbffbbff;
+                background-color: #6ca3565d;
                 box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
                 border-radius: 10px;
                 overflow: hidden;
@@ -52,9 +52,9 @@ export class Categoria extends HTMLElement {
                 text-transform: uppercase;
                 font-family: Roboto;
                 text-align: center;
-                margin-top: 10px;
+                margin-top: 5px;
                 font-weight: 100;
-                font-size: 14px;
+                font-size: 12px;
                 @media (width<900px){
                     font-size: 12px;
                     margin-top: 5px;
@@ -68,7 +68,7 @@ export class Categoria extends HTMLElement {
         template.innerHTML = `
             ${this.getStyles()}
             <div>
-                <img src="${this.img}" alt="${this.name}">
+                <img src="${this.img}" alt="${this.name}" loading="lazy">
             </div>
             <h3>${this.name}</h3>
         `;

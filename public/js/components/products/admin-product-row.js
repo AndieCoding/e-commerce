@@ -25,6 +25,9 @@ export class AdminProductRow extends HTMLElement {
                 box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                 transition: transform 0.2s, box-shadow 0.2s;
                 border: 1px solid #eee;
+                @media (width < 500px) {
+                    flex-direction: column;
+                }
             }
             .row:hover {
                 transform: translateY(-2px);
@@ -73,6 +76,11 @@ export class AdminProductRow extends HTMLElement {
                 display: flex;
                 gap: 1em;
                 align-items: center;
+                @media (width < 500px) {
+                    gap: 0;
+                    justify-content: space-around;
+                    width: 90%;   
+                }
             }
             .btn-icon {
                 background: transparent;
@@ -106,7 +114,7 @@ export class AdminProductRow extends HTMLElement {
 
     getTemplate() {
         const id = this.getAttribute('id');
-        const image = this.getAttribute('image') || '/img/placeholder.png';
+        const image = this.getAttribute('image') || '/img/img/placeholder.png';
         const name = this.getAttribute('name') || 'Producto sin nombre';
         const type = this.getAttribute('type') || 'General';
         const stock = this.getAttribute('stock') || '0';
@@ -122,7 +130,7 @@ export class AdminProductRow extends HTMLElement {
                 <div class="info">
                     <div class="name">${name}</div>
                     <div class="details">${type} | Stock total: ${stock} | $${price}</div>
-                    <a href="/ficha?id=${id}" class="stock-link">Ver detalle de stock</a>
+                    <!--<a href="/ficha?id=${id}" class="stock-link">Ver detalle de stock</a>-->
                 </div>
                 <div class="actions">
                     <button class="btn-icon btn-edit" title="Modificar">
