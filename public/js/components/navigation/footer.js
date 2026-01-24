@@ -17,7 +17,9 @@ export class Footer extends HTMLElement {
                 padding: 1em;
                 text-align: center;
                 font-family: Roboto Condensed;
+                ${window.location.pathname === '/' ? 'position: absolute; z-index: 100;background: linear-gradient(rgb(41, 126, 49, 0), rgb(41, 126, 49, 0.6),rgb(41, 126, 49, 0.9)); width: 100%; bottom: 0;' : ''}
                 height: 150px;
+                
                 gap: 30px;
             }
             a {
@@ -29,8 +31,14 @@ export class Footer extends HTMLElement {
                 height: 50px;
             }
             p{
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: 200;
+                backdrop-filter: blur(3px);
+                border-radius: 5px;
+                
+                @media (max-width: 900px) {
+                    font-size: 12px;
+                }
             }
             .redes{
                 display: flex;
@@ -44,12 +52,12 @@ export class Footer extends HTMLElement {
         const template = document.createElement('template');
         template.innerHTML = this.getStyles() +
             `
-            <p>2024 Fan del Mate. Todos los derechos reservados.</p>
+            <p>© 2024 Fan del Mate. Todos los derechos reservados.</p>
             <div class="redes">
                 <a href="#"><img src="/img/icons/redes/facebook.png" alt="Facebook" loading="lazy"></a>
                 <a href="#"><img src="/img/icons/redes/instagram.png" alt="Instagram" loading="lazy"></a>
                 <a href="#"><img src="/img/icons/redes/twitter.png" alt="Twitter" loading="lazy"></a>
-            </div>
+            </div>            
         `;
         return template.content.cloneNode(true);
     }

@@ -50,51 +50,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function consultarProductos(categoria, query) {
     const contenedor = document.querySelector('.resultados');
-    const response = await fetch(`/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
-
-    const data = await response.json();
-
+    mostrarSkeletons(contenedor, 8);
     contenedor.innerHTML = '';
-    data.products.forEach(p => {
-        const card = document.createElement('product-card');
-        card.setAttribute('id', p.ID_PROD);
-        card.setAttribute('image', p.P_IMG);
-        card.setAttribute('name', p.P_NOMBRE);
-        card.setAttribute('price', p.P_PRECIO);
-        card.setAttribute('oferta', p.P_PR_OFERTA || 0);
-        card.setAttribute('marca', p.P_MARCA);
-        card.setAttribute('description', p.P_DESCRIPCION);
-        card.setAttribute('stock', p.P_CANTIDAD);
-        card.setAttribute('type', p.P_TIPO);
-        if (document.querySelector('.resultados').classList.contains('grid')) {
-            card.setAttribute('tipo', 'grid');
-        } else {
-            card.setAttribute('tipo', 'list');
-        }
-        document.querySelector('.resultados').appendChild(card);
-    });
+    try {
+        const response = await fetch(`/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
+        const data = await response.json();
+        contenedor.innerHTML = '';
+        data.products.forEach(p => {
+            crearCards(document.querySelector('.resultados'), p);
+        });
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 async function searchProducts(query) {
     const contenedor = document.querySelector('.resultados');
     const response = await fetch(`/api/search/${query}`);
-
     const data = await response.json();
-
     contenedor.innerHTML = '';
     data.products.forEach(p => {
-        const card = document.createElement('product-card');
-        card.setAttribute('id', p.ID_PROD);
-        card.setAttribute('image', p.P_IMG);
-        card.setAttribute('name', p.P_NOMBRE);
-        card.setAttribute('price', p.P_PRECIO);
-        card.setAttribute('oferta', p.P_PR_OFERTA || 0);
-        card.setAttribute('marca', p.P_MARCA);
-        card.setAttribute('description', p.P_DESCRIPCION);
-        card.setAttribute('stock', p.P_CANTIDAD || 0);
-        card.setAttribute('type', p.P_TIPO);
-        document.querySelector('.resultados').appendChild(card);
+        crearCards(document.querySelector('.resultados'), p);
     });
     localStorage.removeItem('query');
     localStorage.removeItem('categoria');
+}
+function mostrarSkeletons(container, cantidad) {
+    const skeletonsHTML = Array(cantidad).fill(`
+        <div class="skeleton-card">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-title"></div>
+            <div class="skeleton-price"></div>
+        </div>
+    `).join('');
+
+    container.innerHTML = skeletonsHTML;
+}
+function crearCards(container, producto) {
+    const card = document.createElement('product-card');
+    card.setAttribute('id', producto.ID_PROD);
+    card.setAttribute('image', producto.P_IMG);
+    card.setAttribute('name', producto.P_NOMBRE);
+    card.setAttribute('price', producto.P_PRECIO);
+    card.setAttribute('oferta', producto.P_PR_OFERTA || 0);
+    card.setAttribute('marca', producto.P_MARCA);
+    card.setAttribute('description', producto.P_DESCRIPCION);
+    card.setAttribute('stock', producto.P_CANTIDAD);
+    card.setAttribute('type', producto.P_TIPO);
+    if (document.querySelector('.resultados').classList.contains('grid')) {
+        card.setAttribute('tipo', 'grid');
+    } else {
+        card.setAttribute('tipo', 'list');
+    }
+    container.appendChild(card);
 }

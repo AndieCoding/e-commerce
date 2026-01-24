@@ -101,7 +101,7 @@ export class Menu extends HTMLElement {
                     justify-content: space-between;
                     align-items: center;
                     list-style: none;
-                    gap: 2em;
+                    gap: 3em;
               
                 @media (width<800px) {
                     display: none;
@@ -197,7 +197,10 @@ export class Menu extends HTMLElement {
                 pointer-events: none;
             }       
             .user {
-                width: 30px;
+                width: 40px;
+                height: 40px;
+                object-position: center;
+                object-fit: cover;
                 cursor: pointer;
                 transition: box-shadow 0.1s ease;
                 border-radius: 50%;
@@ -274,6 +277,9 @@ export class Menu extends HTMLElement {
                                 <img src="/img/icons/cart.png" alt="icono de carrito" loading="lazy">
                                 <span id="cart-badge-desktop" class="badge">${this.cartController.getTotalProducts()}</span>
                             </div>
+                        </li>
+                        <li>
+                            <a class="nav-item" href="/productos">Productos</a>
                         </li>
                         <li>
                             <div class="contenedor-imagen-usuario">
