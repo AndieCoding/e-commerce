@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
 async function consultarProductos(categoria, query) {
     const contenedor = document.querySelector('.resultados');
     mostrarSkeletons(contenedor, 8);
-    contenedor.innerHTML = '';
     try {
         const response = await fetch(`/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
         const data = await response.json();
