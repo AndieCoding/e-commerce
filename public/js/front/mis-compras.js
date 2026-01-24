@@ -3,7 +3,7 @@ import { Footer } from '../components/navigation/footer.js';
 import { HistorialFacturas } from "../components/user/historial-facturas.js";
 import { User } from "../models/user.js";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const userData = JSON.parse(localStorage.getItem('user'));
     const user = new User(userData);
     if (!userData || !user) {

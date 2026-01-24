@@ -99,7 +99,7 @@ async function GuardarFactura() {
 }
 
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("turbo:load", function () {
 
 	cargarCampos();
 

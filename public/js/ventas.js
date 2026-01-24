@@ -145,7 +145,7 @@ async function completadoAutomatico(item, row) {
 	document.querySelector('.suggestions').remove();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("turbo:load", function () {
 
 	cargarCampos();
 

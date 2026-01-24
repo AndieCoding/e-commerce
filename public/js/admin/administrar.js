@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const productList = document.getElementById('productList');
     const searchInput = document.getElementById('searchInput');
 

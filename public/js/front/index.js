@@ -4,16 +4,7 @@ import { Menu } from '../components/navigation/menu.js';
 import { PortadaImg } from '../components/index/portada-img.js';
 import { Footer } from '../components/navigation/footer.js';
 
-window.addEventListener('load', async () => {
-    setTimeout(() => {
-        document.querySelector('main').classList.remove('hidden');
-        document.querySelector('portada-img').classList.remove('hidden');
-        document.querySelector('.loader').style.display = 'none';
-    }, 1000);
-
-});
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     indexProducts();
 })
 

@@ -34,7 +34,7 @@ function limpiarTabla() {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("turbo:load", function () {
 	const select = document.querySelector("select[name='lista']");
 	const fecha_body = document.querySelector("#fecha tbody");
 	const bodys = Array.from(document.querySelectorAll("tbody"));

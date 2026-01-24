@@ -370,18 +370,25 @@ export class Menu extends HTMLElement {
             });
         }
 
-        searchIcon.addEventListener('click', async () => {
-            window.location.href = "/productos";
-            const searchTerm = searchInput.value;
-            const regex = new RegExp(searchTerm, 'i');
+        const ejecutarBusqueda = () => {
+            const valor = searchInput.value.trim();
+            if (valor === "") return;
             localStorage.setItem('categoria', 'busqueda');
-            localStorage.setItem('query', regex.source);
-        });
+            localStorage.setItem('query', valor);
+            searchInput.value = "";
+            searchInput.blur();
 
-        searchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                searchIcon.click();
+            if (window.location.pathname === '/productos') {
+                document.dispatchEvent(new Event('turbo:load'));
+            } else {
+                Turbo.visit("/productos");
             }
+        };
+
+        searchIcon.addEventListener('click', ejecutarBusqueda);
+
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') ejecutarBusqueda();
         });
     }
 

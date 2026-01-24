@@ -30,7 +30,7 @@ const checkbox_todas = document.querySelector('#checkbox-facturas');
 	});	
 }*/
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("turbo:load", () => {
 	crearGraficos();
 	selectMes.onchange = async function () {
 		try {

@@ -7,7 +7,7 @@ import path from 'path';
 import { Factura } from "../../public/js/models/factura.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
-import session from 'express-session';
+import nodemailer from 'nodemailer';
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -43,7 +43,6 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -389,7 +388,6 @@ router.get("/ganancias-brutas", async (req, res) => {
     }
 });
 
-
 //PRODUCTOS
 //!Revisar llamada a las categorias
 router.get("/productos/:categoria", async (req, res) => {
@@ -435,15 +433,11 @@ router.get("/marcas/:categoria", async (req, res) => {
     }
 });
 
-//Obtener productos por categoria o filtrados
-router.get("/products/:product/:query?", async (req, res) => {
+//Obtener productos por categoria
+router.get("/products/:categoria", async (req, res) => {
     try {
-        let product = req.params.product;
-        let query = req.params.query || "";
-        if (query) {
-            query = JSON.parse(query);
-        }
-        const [products] = await consultaDb.ObtenerProductosPorCategoria(product, query);
+        let categoria = req.params.categoria;
+        const [products] = await consultaDb.ObtenerProductosPorCategoria(categoria);
         res.json({ products });
     } catch (err) {
         console.error("Error fetching records:", err);
@@ -451,15 +445,13 @@ router.get("/products/:product/:query?", async (req, res) => {
     }
 })
 
-//buscar productos
-router.get("/search/:query", async (req, res) => {
+//buscar productos por busqueda
+router.get("/products/search/:query", async (req, res) => {
     res.set('Cache-Control', 's-maxage=60, stale-while-revalidate');
+    const query = req.params.query;
     try {
-        const query = req.params.query;
-        console.log('Valor ingresado: ' + query);
-        console.log(query);
+        console.log('Valor a buscar: ', query);
         const [products] = await consultaDb.getProductsByQuery(query);
-        console.log('primera funcion de search: ' + products);
         res.json({ products });
     } catch (err) {
         console.error("Error fetching records:", err);
@@ -482,20 +474,6 @@ router.get("/product/:id", async (req, res) => {
         res.status(500).json({ success: false, message: 'Error retrieving product' });
     }
 });
-
-router.get("/search/:query", async (req, res) => {
-    try {
-        const query = req.params.query;
-
-        const [products] = await consultaDb.getProductsByQuery(query);
-        console.log('Valor ingresado: ' + query + '. Valores obtenidos: ' + products.length);
-        res.json({ products });
-    } catch (err) {
-        console.error("Error fetching records:", err);
-        res.status(500).json({ message: "Error retrieving records" });
-    }
-});
-
 
 //Eliminar producto
 router.delete("/products/:id", async (req, res) => {
@@ -550,7 +528,7 @@ router.put("/products/:id", upload.single('image'), async (req, res) => {
 
 //USUARIO
 //Login de usuario
-router.post('/user', async (req, res) => {
+/*router.post('/user', async (req, res) => {
     try {
         console.log(req.body);
         const { email, pass } = { ...req.body };
@@ -580,7 +558,7 @@ router.post('/user', async (req, res) => {
             message: 'Error al ingresar'
         });
     }
-});
+});*/
 
 router.post('/registro', async (req, res) => {
     try {
@@ -657,19 +635,15 @@ router.post("/update/profile", upload.single('FOTO'), async (req, res) => {
     }
 });
 
-import nodemailer from 'nodemailer';
+
 
 router.post("/contact", async (req, res) => {
     const { nombre, email, asunto, mensaje } = req.body;
-
-    // Validate input
     if (!nombre || !email || !asunto || !mensaje) {
         return res.status(400).json({ success: false, message: 'Todos los campos son obligatorios' });
     }
 
     try {
-        // Create transporter
-        // Note: Ideally, use environment variables for sensitive data
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -677,10 +651,8 @@ router.post("/contact", async (req, res) => {
                 pass: process.env.EMAIL_PASS
             }
         });
-
-        // Email content
         const mailOptions = {
-            from: `"${nombre}" <${email}>`, // Filtered as 'Sender Name <sender@email.com>'
+            from: `"${nombre}" <${email}>`,
             to: process.env.EMAIL_USER,
             subject: `Nuevo mensaje de Contacto: ${asunto}`,
             text: `
@@ -704,7 +676,7 @@ router.post("/contact", async (req, res) => {
             `
         };
 
-        // Send email
+
         await transporter.sendMail(mailOptions);
 
         console.log('Email sent successfully');
@@ -756,8 +728,5 @@ router.get("/compras_usuario/:userId", async (req, res) => {
         res.status(500).json({ message: "Error retrieving records" });
     }
 });
-
-
-
 
 export default router;

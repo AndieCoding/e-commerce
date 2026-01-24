@@ -14,17 +14,19 @@
         rel="stylesheet">
     <script type="module" src="/js/front/index.js"></script>
     <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
+    <script type="module" src="/js/turbo.js"></script>
 </head>
 
+
 <body>
-    <div class="loader">Cargando...
+    <!-- <div class="loader">Cargando...
         <div class="spinner"></div>
-    </div>
+    </div> -->
     <header class="index">
 
-        <menu-del-mate></menu-del-mate>
+        <menu-del-mate id="menu-del-mate"></menu-del-mate>
 
-        <portada-img class="hidden"></portada-img>
+        <portada-img></portada-img>
 
     </header>
 
@@ -46,7 +48,7 @@
     <div class="banner-conoce">
         <h1>Conoce nuestros productos</h1>
     </div>
-    <main class="hidden">
+    <main>
         <div class="main">
 
             <section class="destacados">
@@ -103,10 +105,10 @@
         <div class="banner-contacto">
             <img src="/img/banner/contacto.png" alt="Whatsapp icon" loading="lazy">
         </div>
-        <footer-del-mate></footer-del-mate>
+        <footer-del-mate id="footer-del-mate"></footer-del-mate>
     </footer>
 
-    <mobile-nav-bar></mobile-nav-bar>
+    <mobile-nav-bar id="mobile-nav-bar"></mobile-nav-bar>
 </body>
 
 </html>

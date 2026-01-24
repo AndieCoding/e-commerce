@@ -202,10 +202,10 @@ async function getProductsByQuery(query) {
 		const [rows] = await conn.query(
 			`SELECT * 
 			FROM productos 
-			WHERE p_nombre LIKE '%${query}%' 
-			OR p_marca LIKE '%${query}%' 
-			OR p_descripcion LIKE '%${query}%'`,
-			[query]
+			WHERE p_nombre LIKE ? 
+			OR p_descripcion LIKE ?
+			OR p_tipo LIKE ?`,
+			[`%${query}%`, `%${query}%`, `%${query}%`]
 		);
 		return [rows];
 	} catch (err) {
@@ -682,36 +682,16 @@ async function ObtenerMarcas(categoria) {
 	}
 }
 
-async function ObtenerProductosPorCategoria(categoria, query) {
+async function ObtenerProductosPorCategoria(categoria) {
 
 	console.log('Estableciendo conexión con la base de datos.');
 	let conn = await getConn();
 	console.log('Conexión establecida.');
 	try {
-		let rows = [];
 		console.log('Consultando productos por categoría.');
-		if (query === "" || query === null || query === undefined) {
-			[rows] = await conn.query(`SELECT * FROM productos WHERE p_tipo LIKE '%${categoria}%'`);
-			return [rows];
-		}
-		if (query !== "" && query.marca && query.price) {
-			[rows] = await conn.query(
-				`SELECT * FROM productos 
-				WHERE p_tipo LIKE '%${categoria}%'
-				AND p_marca LIKE '${query.marca}'
-				AND ${query.price}`);
-		} else if (query !== "" && query.price) {
-			[rows] = await conn.query(
-				`SELECT * FROM productos 
-				WHERE p_tipo LIKE '%${categoria}%' 
-				AND ${query.price}`);
-		} else if (query !== "" && query.marca) {
-			[rows] = await conn.query(
-				`SELECT * FROM productos 
-				WHERE p_tipo LIKE '%${categoria}%'
-				AND p_marca LIKE '${query.marca}'`);
-		}
-		console.log("Query es: " + JSON.stringify(query));
+		let [rows] = await conn.query(
+			`SELECT * FROM productos WHERE p_tipo LIKE '%${categoria}%'`);
+		console.log('Respuesta de la base de datos afirmativa')
 		return [rows];
 
 	}

@@ -76,7 +76,7 @@ async function GuardarFactura() {
 	}
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("turbo:load", function () {
 	const imagenInput = document.getElementById('imagen');
 	const imgPreview = document.getElementById('image-preview');
 	const uploadText = document.getElementById('upload-text');

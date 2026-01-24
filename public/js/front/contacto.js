@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const form = document.getElementById('formularioContacto');
     const statusDiv = document.getElementById('estadoFormulario');
     const submitBtn = document.getElementById('botonEnviar');

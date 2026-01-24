@@ -12,6 +12,7 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+    "@hotwired/turbo": "^8.0.21",
     "chart.js": "^4.0.0",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.5",

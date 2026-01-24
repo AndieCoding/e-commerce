@@ -4,7 +4,7 @@ import { Footer } from '../components/navigation/footer.js';
 
 let manager = new Manager();
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
 
     const form = document.querySelector('form');
 

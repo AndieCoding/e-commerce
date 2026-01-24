@@ -11,69 +11,45 @@ document.querySelector('filtros-del-mate').addEventListener('filtrar', (event) =
     consultarProductos(localStorage.getItem('categoria'), JSON.stringify(query));
 })
 
-document.addEventListener('DOMContentLoaded', () => {
-
-    const categoria = localStorage.getItem('categoria');
-    if (categoria === 'busqueda') {
-        searchProducts(localStorage.getItem('query'));
-    } else if (!categoria) {
-        console.log('sin categoria');
-        localStorage.setItem('categoria', 'mates')
-        consultarProductos('mates')
-    } else {
-        consultarProductos(categoria);
-    };
-
-    document.getElementById('boton-filtro').addEventListener('click', () => {
-        document.querySelector('.filtros').classList.toggle('mostrar');
-        console.log(document.querySelector('.filtros').classList)
-    })
-    document.getElementById('grid').addEventListener('click', () => {
-        document.querySelector('.resultados').classList.add('grid');
-        document.querySelector('.resultados').classList.remove('list');
-        const cards = document.querySelectorAll('product-card');
-        cards.forEach(card => {
-            card.setAttribute('tipo', 'grid');
-        })
-    })
-
-    document.getElementById('list').addEventListener('click', () => {
-        document.querySelector('.resultados').classList.add('list');
-        document.querySelector('.resultados').classList.remove('grid');
-        const cards = document.querySelectorAll('product-card');
-        cards.forEach(card => {
-            card.setAttribute('tipo', 'list');
-        })
-    })
-
-})
+document.addEventListener('turbo:load', () => {
+    const contenedor = document.querySelector('.resultados');
+    if (contenedor) {
+        const categoria = localStorage.getItem('categoria') || 'mates';
+        const query = localStorage.getItem('query');
+        if (categoria === 'busqueda' && query) {
+            consultarProductos(null, query);
+        } else {
+            consultarProductos(categoria);
+        }
+    }
+});
 
 async function consultarProductos(categoria, query) {
     const contenedor = document.querySelector('.resultados');
+    if (!contenedor) return;
     mostrarSkeletons(contenedor, 8);
     try {
-        const response = await fetch(`/api/products/${categoria.replace('s', '')}${query ? "/" + query : ""}`);
+        let url = query
+            ? `/api/products/search/${encodeURIComponent(query)}`
+            : `/api/products/${categoria.replace('s', '')}`
+        const response = await fetch(url);
         const data = await response.json();
+
         contenedor.innerHTML = '';
-        data.products.forEach(p => {
-            crearCards(document.querySelector('.resultados'), p);
-        });
+        if (data.products && data.products.length > 0) {
+            data.products.forEach(p => {
+                crearCards(document.querySelector('.resultados'), p);
+            });
+        } else {
+            contenedor.innerHTML = '<p>No se encontraron productos</p>';
+        }
     } catch (error) {
-        console.log(error);
+        console.error("Error en el servidor: ", error);
+        contenedor.innerHTML = '<p>Error de conexión. Reintente más tarde</p>';
     }
 }
 
-async function searchProducts(query) {
-    const contenedor = document.querySelector('.resultados');
-    const response = await fetch(`/api/search/${query}`);
-    const data = await response.json();
-    contenedor.innerHTML = '';
-    data.products.forEach(p => {
-        crearCards(document.querySelector('.resultados'), p);
-    });
-    localStorage.removeItem('query');
-    localStorage.removeItem('categoria');
-}
+
 function mostrarSkeletons(container, cantidad) {
     const skeletonsHTML = Array(cantidad).fill(`
         <div class="skeleton-card">
@@ -108,3 +84,22 @@ function crearCards(container, producto) {
     card.classList.add('fade-in-card');
     container.appendChild(card);
 }
+
+document.addEventListener('click', (e) => {
+
+    if (e.target.closest('#boton-filtro')) {
+        document.querySelector('.filtros').classList.toggle('mostrar');
+    }
+
+    if (e.target.closest('#grid')) {
+        const resultados = document.querySelector('.resultados');
+        resultados.classList.replace('list', 'grid');
+        document.querySelectorAll('product-card').forEach(card => card.setAttribute('tipo', 'grid'));
+    }
+
+    if (e.target.closest('#list')) {
+        const resultados = document.querySelector('.resultados');
+        resultados.classList.replace('grid', 'list');
+        document.querySelectorAll('product-card').forEach(card => card.setAttribute('tipo', 'list'));
+    }
+});

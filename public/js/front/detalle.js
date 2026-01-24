@@ -2,7 +2,7 @@ import { Menu } from '../components/navigation/menu.js';
 import { Footer } from '../components/navigation/footer.js';
 import { CartController } from '../components/cart/cart-controller.js';
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('turbo:load', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('id');
     const cartController = new CartController();
@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderProduct(data.product);
         } else {
             console.error('Producto no encontrado');
-            // Podrías mostrar un mensaje de error en el DOM
         }
     } catch (error) {
         console.error('Error al obtener el producto:', error);
@@ -32,15 +31,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         const infoContainer = document.querySelector('.detalles-producto');
         const locationSpan = document.querySelector('.ubicacion-producto a');
 
-        // Update breadcrumb
         if (locationSpan) {
             locationSpan.textContent = product.P_NOMBRE;
         }
 
-        // Update Image
         imgContainer.innerHTML = `<img src="${product.P_IMG}" alt="${product.P_NOMBRE}" id="product-image" class="product-image" loading="lazy">`;
 
-        // Update Info
         infoContainer.innerHTML = `
             <style>        
             .cantidad-container {

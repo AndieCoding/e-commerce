@@ -10,7 +10,7 @@ if (backArrow) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData) {
         window.location.href = '/login';

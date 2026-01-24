@@ -3,7 +3,7 @@ import { Manager } from '../models/manager.js';
 import { Footer } from '../components/navigation/footer.js';
 
 let manager = new Manager();
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
 
   const emailInput = document.querySelector('#email');
   const errorMessage = document.querySelector('#error-message');
