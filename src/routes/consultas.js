@@ -613,24 +613,33 @@ router.post('/registro', async (req, res) => {
 });
 
 //Actualizar usuario con foto
-router.post("/update/profile/:userNumber", upload.single('FOTO'), async (req, res) => {
-    const userId = Number(req.params.userNumber);
-
+router.post("/update/profile", upload.single('FOTO'), async (req, res) => {
+    const userId = Number(req.body.id);
     try {
         if (req.file) {
-            // Con CloudinaryStorage, req.file.path es la URL de la imagen en la nube
+            // En CloudinaryStorage, req.file.path es la URL de la imagen en la nube
             const imagePath = req.file.path;
 
             console.log('La URL de la foto en Cloudinary es: ' + imagePath);
-
-            // Guardamos la URL directa en la base de datos de Aiven
             const [result] = await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
 
             if (result && result.affectedRows > 0) {
-                return res.json({
-                    message: 'Perfil actualizado',
-                    success: true,
-                    foto: imagePath
+                if (req.user) {
+                    req.user.FOTO = imagePath;
+                }
+                req.login(req.user, (err) => {
+                    if (err) {
+                        console.error("Error al re-loguear:", err);
+                        return res.status(500).json({ success: false });
+                    }
+
+                    req.session.save(() => {
+                        return res.json({
+                            message: 'Perfil actualizado',
+                            success: true,
+                            foto: imagePath
+                        });
+                    });
                 });
             } else {
                 return res.status(400).json({

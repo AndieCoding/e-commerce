@@ -21,9 +21,9 @@
 
     <main class="user-panel">
         <div class="user-card" id="user-card-section" style="margin: 0 auto; max-width: 600px;">
-            <div class="profile-header">
+            <div class="user-header">
+                <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
                 <h2>Mi Perfil</h2>
-                <p>Gestiona tu información personal</p>
             </div>
 
             <form id="editar" class="user-form">
@@ -31,8 +31,8 @@
                     <div class="image-container">
                         <div class="previewImage" id="previewImage"></div>
                         <div class="image-overlay">
-                            <span class="camera-icon">✏️</span>
-                            <span>Editar</span>
+                            <span class="camera-icon"><img class="edit-icon" src="/img/icons/upload.png"
+                                    alt="Editar"></span>
                         </div>
                         <input type="file" id="fileInput" name="image" accept="image/*" hidden />
                     </div>

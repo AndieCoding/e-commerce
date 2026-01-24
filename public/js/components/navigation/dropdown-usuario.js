@@ -10,8 +10,7 @@ export class dropdownUsuario extends HTMLElement {
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');  
             :host {
-                display: block;
-                    
+                display: block;                    
             }    
             * {
                 --custom-green: rgba(41, 126, 49, 0.35); 

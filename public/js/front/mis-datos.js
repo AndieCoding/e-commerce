@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '/login';
         return;
     }
-
     const $imageContainer = document.querySelector('.image-container');
     const $previewImage = document.querySelector('#previewImage');
     const $fileInput = document.querySelector('#fileInput');
@@ -64,9 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData();
             formData.append('FOTO', file);
             formData.append('type', 'profile');
+            formData.append('id', user.ID);
 
             try {
-                const response = await fetch(`/api/update/profile/${user.ID}`, {
+                const response = await fetch(`/api/update/profile`, {
                     method: "POST",
                     body: formData
                 });
@@ -74,14 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 if (data.success) {
                     user.FOTO = data.foto;
-                    user.setProperty('FOTO', data.foto);
-                    localStorage.setItem('user', user.stringify());
+                    localStorage.removeItem('user');
+                    localStorage.setItem('user', JSON.stringify(user));
                     const timestamp = new Date().getTime();
                     $previewImage.style.backgroundImage = `url('${user.FOTO}?t=${timestamp}')`;
 
                     $saveBtn.style.display = 'none';
                     $saveBtn.disabled = false;
-                    $uploadStatus.innerHTML = '<span style="color: green;">¡Foto actualizada correctamente!</span>';
+                    $uploadStatus.innerHTML = '<span class="mensaje-foto-upload">¡Foto actualizada correctamente!</span>';
+
+                    window.dispatchEvent(new CustomEvent('userUpdated', { detail: user }));
                     setTimeout(() => { $uploadStatus.innerHTML = ''; }, 3000);
                 } else {
                     throw new Error(data.message || 'Error al subir la imagen');
@@ -90,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Upload error:', error);
                 $saveBtn.textContent = 'Reintentar';
                 $saveBtn.disabled = false;
-                $uploadStatus.innerHTML = '<span style="color: red;">Error al actualizar la foto.</span>';
+                $uploadStatus.innerHTML = '<span class="mensaje-foto-upload">Error al actualizar la foto.</span>';
             }
         });
     }

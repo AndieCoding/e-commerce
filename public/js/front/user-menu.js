@@ -2,6 +2,14 @@ import { Menu } from "../components/navigation/menu.js";
 import { Footer } from '../components/navigation/footer.js';
 import { User } from "../models/user.js";
 
+
+const backArrow = document.querySelector('.back-arrow');
+if (backArrow) {
+    backArrow.addEventListener('click', () => {
+        window.history.back();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const userData = JSON.parse(localStorage.getItem('user'));
     if (!userData) {
@@ -32,14 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (user.FOTO && user.FOTO !== "null") {
         const misDatosLink = document.querySelector('#link-mis-datos .icon');
         if (misDatosLink) {
-            misDatosLink.innerHTML = `<img src="${user.FOTO}" alt="Foto de perfil" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-            misDatosLink.style.display = 'flex';
-            misDatosLink.style.justifyContent = 'center';
-            misDatosLink.style.alignItems = 'center';
-            misDatosLink.style.overflow = 'hidden';
-            misDatosLink.style.padding = '0';
-            misDatosLink.style.width = '50px'; // Ensure consistent size
-            misDatosLink.style.height = '50px';
+            misDatosLink.innerHTML = `<div id="foto-perfil-icon" class="foto-perfil-icon" alt="Foto de perfil">`;
+            const fotoPerfilIcon = document.getElementById('foto-perfil-icon');
+            fotoPerfilIcon.style.backgroundImage = `url(${user.FOTO})`;
         }
     }
 

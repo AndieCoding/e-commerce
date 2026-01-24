@@ -1094,22 +1094,9 @@ async function updateUserData(userId, data) {
 			`UPDATE usuarios SET ${option} = ? WHERE ID_US = ?`, [
 			value, userId
 		]);
-
 		console.log(`${option} updated`);
 		return [rows];
 
-		/*if (option === 'user') { 
-				const [newUser] = await conn.query(
-					`SELECT * FROM users WHERE user = ?`,
-					[ value ]
-				);
-				return [newUser];
-		}
-		const [updatedData] = await conn.query(
-			`SELECT * FROM users WHERE user = ?`,
-			[ user ]
-		);
-		return [updatedData];*/
 	} catch (err) {
 		console.log("Update error", err);
 	} finally {
