@@ -16,6 +16,12 @@ document.addEventListener('turbo:load', () => {
     if (contenedor) {
         const categoria = localStorage.getItem('categoria') || 'mates';
         const query = localStorage.getItem('query');
+
+        if (!categoria || categoria === 'undefined') {
+            categoria = 'mates';
+            localStorage.setItem('categoria', 'mates');
+        }
+
         if (categoria === 'busqueda' && query) {
             consultarProductos(null, query);
         } else {
