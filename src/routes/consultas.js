@@ -453,6 +453,7 @@ router.get("/products/:product/:query?", async (req, res) => {
 
 //buscar productos
 router.get("/search/:query", async (req, res) => {
+    res.set('Cache-Control', 's-maxage=60, stale-while-revalidate');
     try {
         const query = req.params.query;
         console.log('Valor ingresado: ' + query);
