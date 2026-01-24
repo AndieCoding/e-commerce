@@ -18,8 +18,7 @@ export class Footer extends HTMLElement {
                 text-align: center;
                 font-family: Roboto Condensed;
                 ${window.location.pathname === '/' ? 'position: absolute; z-index: 100;background: linear-gradient(rgb(41, 126, 49, 0), rgb(41, 126, 49, 0.6),rgb(41, 126, 49, 0.9)); width: 100%; bottom: 0;' : ''}
-                height: 150px;
-                
+                height: 150px;                
                 gap: 30px;
             }
             a {

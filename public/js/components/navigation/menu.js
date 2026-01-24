@@ -18,8 +18,7 @@ export class Menu extends HTMLElement {
             const response = await fetch('/api/me');
             const auth = await response.json();
             if (auth.logged) {
-                this.user = new User(auth.user);
-                localStorage.setItem('user', JSON.stringify(this.user));
+                return;
             } else {
                 this.user = null;
                 localStorage.removeItem('user');
@@ -363,6 +362,11 @@ export class Menu extends HTMLElement {
                 }
 
                 this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(div);
+            });
+
+            window.addEventListener('userUpdated', (e) => {
+                this.user = e.detail;
+                this.render();
             });
         }
 

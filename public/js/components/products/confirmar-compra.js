@@ -111,7 +111,6 @@ export class ConfirmarCompra extends HTMLElement {
       margin: 0;
       color: #78b764;
     }
-
     .botones-inferiores {
       margin-top: 25px;
       display: flex;      
@@ -139,11 +138,11 @@ export class ConfirmarCompra extends HTMLElement {
       }
     </style>
     <div class="detalle-pedido">
-    <div>
-      <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
-      <p>Total de productos: </p>
-      <p id="cantidad-productos" class="cantidad-productos"></p>
-      <p>Total: <span id="total-precio"></span></p>
+      <div>
+        <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
+        <p>Total de productos: </p>
+        <p id="cantidad-productos" class="cantidad-productos"></p>
+        <p>Total: <span id="total-precio"></span></p>
       </div>
       <div class="botones-inferiores">        
         <a href="/envio"><button class="carrito-comprar">Confirmar</button></a>      

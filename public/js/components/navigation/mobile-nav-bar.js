@@ -9,8 +9,6 @@ export class MobileNavBar extends HTMLElement {
         try {
             const logged = localStorage.getItem('user');
             this.user = logged ? new User(JSON.parse(logged)) : null;
-
-            //programar con jwt
         } catch (e) {
             this.user = null;
         }
@@ -23,7 +21,6 @@ export class MobileNavBar extends HTMLElement {
             if (auth.logged) {
                 this.user = new User(auth.user);
                 localStorage.setItem('user', JSON.stringify(this.user));
-                //programar con jwt
             } else {
                 this.user = null;
                 localStorage.removeItem('user');
@@ -67,7 +64,7 @@ export class MobileNavBar extends HTMLElement {
                 pointer-events: none;
             }
 
-            @media (max-width: 800px) {
+            @media (max-width: 700px) {
                 :host {
                     display: block;
                 }
@@ -210,6 +207,14 @@ export class MobileNavBar extends HTMLElement {
                 document.dispatchEvent(new CustomEvent('toggleCarrito'));
             });
         }
+        this.addEventListeners();
+    }
+
+    addEventListeners() {
+        window.addEventListener('userUpdated', (e) => {
+            this.user = e.detail;
+            this.render();
+        });
     }
 }
 
