@@ -87,8 +87,12 @@ function mostrarSkeletons(container, cantidad) {
 }
 function crearCards(container, producto) {
     const card = document.createElement('product-card');
+    const imagenOptimizada = producto.P_IMG.includes('cloudinary')
+        ? producto.P_IMG.replace('/upload/', '/upload/w_400,c_fill,f_auto,q_auto/')
+        : producto.P_IMG;
+
     card.setAttribute('id', producto.ID_PROD);
-    card.setAttribute('image', producto.P_IMG);
+    card.setAttribute('image', imagenOptimizada);
     card.setAttribute('name', producto.P_NOMBRE);
     card.setAttribute('price', producto.P_PRECIO);
     card.setAttribute('oferta', producto.P_PR_OFERTA || 0);
@@ -101,5 +105,6 @@ function crearCards(container, producto) {
     } else {
         card.setAttribute('tipo', 'list');
     }
+    card.classList.add('fade-in-card');
     container.appendChild(card);
 }
