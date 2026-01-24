@@ -27,7 +27,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
-app.use(
+/*app.use(
     helmet({
         contentSecurityPolicy: {
             directives: {
@@ -38,6 +38,23 @@ app.use(
                 "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com"],
                 "frame-src": ["https://vercel.live", "https://vercel.com"],
                 "connect-src": ["'self'", "https://cdn.jsdelivr.net", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app"],
+            },
+        },
+    })
+);*/
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            useDefaults: true,
+            directives: {
+                "default-src": ["'self'"],
+                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live"],
+                "script-src-elem": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live"],
+                "connect-src": ["'self'", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app"],
+                "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://vercel.com"],
+                "frame-src": ["'self'", "https://vercel.live"],
+                "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://vercel.live"],
+                "font-src": ["'self'", "https://fonts.gstatic.com"],
             },
         },
     })
