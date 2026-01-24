@@ -8,31 +8,16 @@ export class HistorialFacturas extends HTMLElement {
     <style>
         :host {
           display: block;
-          max-width: 400px;
-          height: 300px;
-          font-family: arial;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           box-sizing: border-box;          
-        }
-        .icon {
-          width: 25px;
-          height: 25px;
-          padding: 15px 0;
-
-          @media (width>900px) {
-            display: none;
-          }
         }
         .historial-facturas {
           display: flex;
           flex-direction: column;
-          height: 95%;
+          width: 100%;
           align-items: start;
           padding: 20px;
-          min-width: 250px;
-          padding-top: 0;
-          background-color: white;          
-          box-shadow: 1px 1px 2px 0px rgba(0, 0, 0, 0.1);    
-          border-radius: 10px;
+          padding-top: 0;         
         }
         .historial-facturas h4 {
           width: 100%;
@@ -46,9 +31,9 @@ export class HistorialFacturas extends HTMLElement {
           margin: 0;
           padding: 0;
           width: 100%;
-          overflow-y: scroll;
-          scrollbar-color: #0a9d10 #3a713c70;
-          scrollbar-width: thin;
+          //overflow-y: scroll;
+          //scrollbar-color: #4a854dff #41464170;
+          //scrollbar-width: thin;
         }
         .factura {
           display: flex;
@@ -82,8 +67,6 @@ export class HistorialFacturas extends HTMLElement {
     ${this.getStyles()}
     
     <div class="historial-facturas">
-      <img class="icon" src="../../img/icons/doc.svg" alt="accesos">
-      <h4>MIS COMPRAS</h4>
       <ul class="lista-facturas">
         <li class="factura">No hay compras para mostrar</a></li>
       </ul>
@@ -93,16 +76,17 @@ export class HistorialFacturas extends HTMLElement {
   }
   connectedCallback() {
     this.render();
-    this.addEventListeners();
+    //this.consultaHistorialFacturas();
   }
   async render() {
     this.shadowRoot.innerHTML = '';
     this.shadowRoot.appendChild(this.template());
   }
 
-  async addEventListeners() {
+  async consultaHistorialFacturas() {
     try {
       this.userId = JSON.parse(localStorage.getItem('user')).ID;
+      // revisar fetch - no pasar query params
       const response = await fetch(`/api/compras_usuario/${this.userId}`);
       const data = await response.json();
       console.log(data);
