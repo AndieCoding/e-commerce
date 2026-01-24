@@ -32,11 +32,12 @@ app.use(
         contentSecurityPolicy: {
             directives: {
                 "default-src": ["'self'"],
-                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com"],
+                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live", "https://vercel.com"],
                 "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
                 "font-src": ["'self'", "https://fonts.gstatic.com"],
                 "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com"],
-                "connect-src": ["'self'", "https://cdn.jsdelivr.net"],
+                "frame-src": ["https://vercel.live", "https://vercel.com"],
+                "connect-src": ["'self'", "https://cdn.jsdelivr.net", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app"],
             },
         },
     })
