@@ -70,6 +70,13 @@ export class ConfirmCart extends Carrito {
             width: 40px;
             height: 40px;
         }
+        .empty-message {
+            font-family: 'Segoe UI';
+            font-weight: 100;
+            text-align: center;
+            margin: 30px auto;
+            font-size: 14px;
+        }
         @media (max-width: 768px) {
             .carrito-item {
                 grid-template-columns: 1fr 1fr;

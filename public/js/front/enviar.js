@@ -1,9 +1,5 @@
-import { Menu } from '../components/navigation/menu.js';
-import { CartController } from '../components/cart/cart-controller.js';
-import { Carrito } from '../components/cart/carrito.js';
 import { MetPago } from '../components/products/metpago.js';
 import { DireEnvio } from '../components/products/envio.js';
-import { Footer } from '../components/navigation/footer.js';
 import { ModalAgradecimiento } from '../components/user/modal-agradecimiento.js';
 
 /*document.addEventListener('facturaCargada', () => {

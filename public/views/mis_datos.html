@@ -8,22 +8,19 @@
     <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
     <link rel="stylesheet" href="/css/front.css">
     <link rel="stylesheet" href="/css/props.css" />
-    <script type="module" src="/js/front/mis-datos.js"></script>
-    <script type="module" src="/js/front/user-menu.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-    <script type="module" src="/js/components/navigation/mobile-nav-bar.js"></script>
-    <script type="module" src="/js/turbo.js"></script>
+    <script type="module" src="/js/dependencias.js"></script>
 </head>
 
 <body>
     <menu-del-mate></menu-del-mate>
 
-    <main class="user-panel">
+    <main class="user-panel" id="mis-datos-container">
         <div class="user-card" id="user-card-section" style="margin: 0 auto; max-width: 600px;">
             <div class="user-header">
-                <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
+                <img id="back-arrow" src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
                 <h2>Mi Perfil</h2>
             </div>
 
@@ -41,36 +38,7 @@
                     <div id="uploadStatus"></div>
                 </div>
 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <user-tools name="NOMBRE">
-                            <label slot="label">Nombre</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="APELLIDO">
-                            <label slot="label">Apellido</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="CIUDAD">
-                            <label slot="label">Ciudad</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group">
-                        <user-tools name="EMAIL">
-                            <label slot="label">Email</label>
-                        </user-tools>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <user-tools name="PASSWORD">
-                            <label slot="label">Contraseña</label>
-                        </user-tools>
-                    </div>
+                <div class="form-grid" id="user-form-section">
                 </div>
 
                 <div class="danger-zone">

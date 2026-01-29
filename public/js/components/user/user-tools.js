@@ -6,12 +6,8 @@ export class UserTools extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.edit = false;
-        try {
-            this.userData = JSON.parse(localStorage.getItem('user')) || {};
-        } catch (e) {
-            this.userData = {};
-        }
         this.manager = new Manager();
+        this.userData = window.user;
     }
     static get observedAttributes() {
         return ['name'];
@@ -38,7 +34,7 @@ export class UserTools extends HTMLElement {
         }
         p{
             font-size: 14px;
-            color: gray;
+            color: #232f22;
         }
         img {
             display: inline-block;
@@ -50,6 +46,14 @@ export class UserTools extends HTMLElement {
             width: 20px;
             margin-left: 5px;
         }   
+        label{
+            font-size: 10px;
+            font-weight: 500;
+            color: #434e42ff;
+        }
+        .placeholder{
+            color: #80808073;
+        }
         </style>
         `;
     }
@@ -58,8 +62,8 @@ export class UserTools extends HTMLElement {
         template.innerHTML = `
             <div>
             <label><slot name="label"></slot></label>
-            <p id="${this.name}">
-            ${this.userData[this.name] == "" || !this.userData[this.name] || this.name === 'PASSWORD' ? "" : this.userData[this.name]}</p>
+            <p id="${this.name}" ${this.userData[this.name] == null || this.userData[this.name] == undefined ? "class='placeholder'" : ""}>
+            ${this.checkProperty() ? this.verificarValor(this) : ""}</p>
             </div>
         `;
         if (!this.edit) {
@@ -97,11 +101,34 @@ export class UserTools extends HTMLElement {
     connectedCallback() {
         this.render();
         this.addEventListeners();
-        window.addEventListener('userUpdated', (e) => {
+        this._onUserUpdated = (e) => {
             this.userData = e.detail;
-            this.render();
-            this.addEventListeners();
-        });
+            if (this.isConnected && this.userData) {
+                this.render();
+                if (typeof this.addEventListeners === 'function') {
+                    this.addEventListeners();
+                }
+            }
+        };
+        window.addEventListener('userUpdated', this._onUserUpdated);
+    }
+
+    checkProperty() {
+        return this.userData[this.name] !== "" ||
+            this.userData[this.name] !== 'PASSWORD' ||
+            this.userData.hasOwn(this.name);
+    }
+
+    verificarValor() {
+        if (this.userData[this.name] == null || this.userData[this.name] == undefined) {
+            return 'Agregar ' + this.name.toLowerCase()
+        } else {
+            return this.userData[this.name];
+        }
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('userUpdated', this._onUserUpdated);
     }
 
     render() {

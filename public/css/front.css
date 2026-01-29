@@ -15,7 +15,7 @@ body {
     width: 100%;
     scrollbar-color: #0a9d10 #3a713c70;
     scrollbar-width: thin;
-    overflow-y: scroll;
+
     overflow-x: hidden;
 }
 
@@ -1289,6 +1289,7 @@ dire-envio {
     grid-template-columns: 1fr;
     width: 100%;
     row-gap: 1em;
+    justify-items: center;
 }
 
 .form-group {
@@ -1304,7 +1305,7 @@ dire-envio {
 }
 
 user-tools {
-    width: 100%;
+    width: clamp(200px, 100%, 350px);
     font-family: 'Roboto Condensed', sans-serif;
 }
 

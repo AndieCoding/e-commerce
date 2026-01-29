@@ -1,6 +1,5 @@
-import { Menu } from '../components/navigation/menu.js';
 import { Manager } from '../models/manager.js';
-import { Footer } from '../components/navigation/footer.js';
+
 
 let manager = new Manager();
 

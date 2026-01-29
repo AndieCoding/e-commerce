@@ -2,33 +2,18 @@ import { Carrito } from '../cart/carrito.js';
 import { CartController } from '../cart/cart-controller.js';
 import { User } from '../../models/user.js';
 import { dropdownUsuario } from './dropdown-usuario.js';
+import '../../front/app.js';
 
 export class Menu extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
-        const logged = localStorage.getItem('user');
-        const loggedUser = JSON.parse(logged);
-        this.user = loggedUser ? new User(loggedUser) : null;
-    }
-
-    async checkAuth() {
-        try {
-            const response = await fetch('/api/me');
-            const auth = await response.json();
-            if (auth.logged) {
-                return;
-            } else {
-                this.user = null;
-                localStorage.removeItem('user');
-            }
+        window.addEventListener('userUpdated', (e) => {
+            this.user = e.detail;
             this.render();
-            console.log('Usuario: ', this.user);
-            window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
-        } catch (error) {
-            console.error("Error al verificar sesión:", error);
-        }
+        });
+
     }
 
     render() {
@@ -278,7 +263,7 @@ export class Menu extends HTMLElement {
                             </div>
                         </li>
                         <li>
-                            <a class="nav-item" href="/productos">Productos</a>
+                            <a class="nav-item" id="link-productos">Productos</a>
                         </li>
                         <li>
                             <div class="contenedor-imagen-usuario">
@@ -320,7 +305,19 @@ export class Menu extends HTMLElement {
             this.hasGlobalListeners = true;
         }
 
-        this.checkAuth();
+        this._onUserUpdated = (e) => {
+            this.user = e.detail;
+            if (this.isConnected && this.user) {
+                this.render();
+                if (typeof this.addEventListeners === 'function') {
+                    this.addEventListeners();
+                }
+            }
+        };
+
+        window.addEventListener('userUpdated', this._onUserUpdated);
+
+        checkAuth();
     }
 
     addEventListeners() {
@@ -363,11 +360,6 @@ export class Menu extends HTMLElement {
 
                 this.shadowRoot.querySelector('.contenedor-imagen-usuario').appendChild(div);
             });
-
-            window.addEventListener('userUpdated', (e) => {
-                this.user = e.detail;
-                this.render();
-            });
         }
 
         const ejecutarBusqueda = () => {
@@ -390,6 +382,33 @@ export class Menu extends HTMLElement {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') ejecutarBusqueda();
         });
+        /*document.addEventListener('click', (e) => {
+            if (e.target.closest('#link-productos')) {
+                localStorage.setItem('categoria', 'mates');
+                localStorage.removeItem('query');
+            }
+        });*/
+        this.shadowRoot.addEventListener('click', (e) => {
+            const link = e.target.closest('#link-productos');
+
+            if (link) {
+                e.preventDefault();
+                console.log("Navegando a productos vía Turbo...");
+
+                localStorage.setItem('categoria', 'mates');
+                localStorage.removeItem('query');
+                if (typeof Turbo !== 'undefined') {
+                    Turbo.visit("/productos");
+
+                } else {
+                    document.dispatchEvent(new Event('turbo:load'));
+                }
+            }
+        });
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('userUpdated', this._onUserUpdated);
     }
 
     toggleCart() {

@@ -15,7 +15,7 @@ router.get('/oauth2/redirect/google', passport.authenticate('google', {
 router.get('/api/me', (req, res) => {
     console.log('Checking auth status. Session:', req.sessionID);
     if (req.isAuthenticated()) {
-        console.log('User is authenticated:', req.user.NOMBRE);
+        console.log('User is authenticated:', req.user);
         res.json({
             logged: true,
             user: req.user
