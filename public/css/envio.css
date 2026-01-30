@@ -33,7 +33,7 @@ h3 {
     background: #fdfdfd;
     border: 2px solid #f0f0f0;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 0.5 1.5rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -44,8 +44,8 @@ h3 {
 }
 
 .shipment-card:hover {
-    border-color: #34db61ac;
-    transform: translateY(-5px);
+    border-color: #218f3eac;
+    transform: translateY(-2px);
     box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
 }
 
@@ -164,4 +164,86 @@ h3 {
     color: #999;
     font-size: 0.9rem;
     font-style: italic;
+}
+
+/* Shipping Summary Styles */
+.shipment-summary {
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    border-left: 4px solid #28a745;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.summary-info {
+    flex: 1;
+}
+
+.summary-label {
+    font-size: 0.85rem;
+    color: #666;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.summary-method {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.summary-location {
+    font-size: 0.9rem;
+    color: #555;
+    margin-top: 4px;
+}
+
+.summary-cost-section {
+    text-align: right;
+}
+
+.summary-cost {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #28a745;
+}
+
+.btn-change {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+    padding: 0;
+    margin-top: 5px;
+}
+
+.btn-change:hover {
+    color: #0056b3;
+}
+
+.btn-confirm {
+    margin-top: 20px;
+    width: 100%;
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-confirm:hover {
+    background: #218838;
 }

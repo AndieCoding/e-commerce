@@ -102,15 +102,15 @@ export class AdminMobileNavBar extends HTMLElement {
         this.shadowRoot.innerHTML = `
             ${this.getStyles()}
             <nav class="nav-container">
-                <a href="/altas" class="nav-item ${currentPath === '/altas' ? 'active' : ''}">
+                <a href="/panel-altas" class="nav-item ${currentPath === '/panel-altas' ? 'active' : ''}">
                     <img src="/img/icons/plus.svg" alt="Nuevo">
                     <span>Nuevo</span>
                 </a>
-                <a href="/administrar" class="nav-item ${currentPath === '/administrar' ? 'active' : ''}">
+                <a href="/panel-administrar" class="nav-item ${currentPath === '/panel-administrar' ? 'active' : ''}">
                     <img src="/img/icons/gear.svg" alt="Administrar">
                     <span>Administrar</span>
                 </a>
-                <a href="/panel" class="nav-item ${currentPath === '/panel' ? 'active' : ''}">
+                <a href="/panel-informes" class="nav-item ${currentPath === '/panel-informes' ? 'active' : ''}">
                     <img src="/img/icons/graph.svg" alt="Informes">
                     <span>Informes</span>
                 </a>

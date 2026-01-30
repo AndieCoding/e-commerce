@@ -30,8 +30,8 @@ export class AdminProductRow extends HTMLElement {
                 }
             }
             .row:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                transform: translateY(-1px);
+                box-shadow: 0 3px 6px rgba(76, 136, 90, 0.2);
             }
             .image-container {
                 width: 60px;

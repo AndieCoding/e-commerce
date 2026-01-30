@@ -73,12 +73,12 @@ export class AdminNav extends HTMLElement {
         template.innerHTML = `            
            <div class="aside">
 				<ul>
-                    <li><a href="/altas">Nuevo</a></li>
-                    <li><a href="/administrar">Administrar</a></li>
+                    <li><a href="/panel-altas">Nuevo</a></li>
+                    <li><a href="/panel-administrar">Administrar</a></li>
                     <!--<li><a href="/compras">Compras</a></li>
                     <li><a href="/ventas">Ventas</a></li>
 					<li><a href="/ficha">Ficha de Stock</a></li>-->
-					<li><a href="/panel">Informes</a></li>
+					<li><a href="/panel-informes">Informes</a></li>
 				</ul>
 			</div>
 

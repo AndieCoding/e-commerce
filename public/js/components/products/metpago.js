@@ -20,7 +20,7 @@ export class MetPago extends HTMLElement {
     getTemplate() {
         return `
         <link rel="stylesheet" href="../../css/metpago.css">
-        <div class="met-pago-container">
+        <div class="met-pago-container hidden">
             ${this.user ? this.renderCheckout() : this.renderRestriction()}
         </div>
         `;
@@ -71,20 +71,24 @@ export class MetPago extends HTMLElement {
                 </div>
 
                 <div id="details-tarjeta_directa" class="payment-details-section hidden">
-                    <label>Número de tarjeta</label>
-                    <input type="text" id="numeroTarjeta" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
-                    <div style="display: flex; gap: 1rem;">
-                        <div style="flex: 1;">
+                    <div class="payment-form-field">
+                        <label>Número de tarjeta</label>
+                        <input type="text" id="numeroTarjeta" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+                    </div>
+                    <div class="payment-form-row">
+                        <div class="payment-form-field">
                             <label>Vencimiento</label>
                             <input type="text" id="fechaVencimiento" placeholder="MM/AA" maxlength="5">
                         </div>
-                        <div style="flex: 1;">
+                        <div class="payment-form-field">
                             <label>CVV</label>
                             <input type="password" id="codigoSeguridad" placeholder="***" maxlength="4">
                         </div>
                     </div>
-                    <label>Titular</label>
-                    <input type="text" id="titular" placeholder="Nombre como figura en la tarjeta">
+                    <div class="payment-form-field">
+                        <label>Titular</label>
+                        <input type="text" id="titular" placeholder="Nombre como figura en la tarjeta">
+                    </div>
                 </div>
             </div>
 
@@ -115,6 +119,16 @@ export class MetPago extends HTMLElement {
         if (this.user) {
             this.setupListeners();
         }
+
+        // Listen for shipping confirmation to show payment
+        document.addEventListener('shippingConfirmed', () => {
+            this.shadowRoot.querySelector('.met-pago-container').classList.remove('hidden');
+        });
+
+        // Listen for shipping reset to hide payment again
+        document.addEventListener('shippingReset', () => {
+            this.shadowRoot.querySelector('.met-pago-container').classList.add('hidden');
+        });
     }
 
     setupListeners() {

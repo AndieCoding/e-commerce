@@ -7,6 +7,18 @@ export class Carrito extends HTMLElement {
         this.cartController = new CartController();
         this.lista = "";
         this.products = [];
+
+        this.handleCarrito = () => {
+            console.log('toggleCarrito detectado');
+            const carrito = this.shadowRoot.querySelector('.carrito');
+            if (carrito) {
+                if (carrito.classList.contains('open')) {
+                    this.ocultarCarrito();
+                } else {
+                    this.mostrarCarrito();
+                }
+            }
+        };
     }
 
     getStyles() {
@@ -172,24 +184,20 @@ export class Carrito extends HTMLElement {
         this.mostrarProductos();
         this.addEventListeners();
 
-        if (!this.hasGlobalListeners) {
-            document.addEventListener('actualizarCarrito', (event) => {
-                this.products = event.detail;
-                this.mostrarProductos();
-                this.mostrarCarrito();
-            });
+        document.addEventListener('actualizarCarrito', (event) => {
+            this.products = event.detail;
+            this.mostrarProductos();
+            this.mostrarCarrito();
+        });
 
-            document.addEventListener('toggleCarrito', () => {
-                const carrito = this.shadowRoot.querySelector('.carrito');
-                if (carrito.classList.contains('open')) {
-                    this.ocultarCarrito();
-                } else {
-                    this.mostrarCarrito();
-                }
-            });
-            this.hasGlobalListeners = true;
-        }
+        document.addEventListener('toggleCarrito', this.handleCarrito);
+
+
     }
+    disconnectedCallback() {
+        document.removeEventListener('toggleCarrito', this.handleCarrito);
+    }
+
     addEventListeners() {
         this.shadowRoot.querySelector('.boton-vaciar-carrito').addEventListener('click', () => {
             this.products = [];
@@ -223,6 +231,7 @@ export class Carrito extends HTMLElement {
 
     mostrarCarrito() {
         if (window.location.pathname === '/confirmar') { return; }
+        console.log('open classlist added')
         this.shadowRoot.querySelector('.carrito').classList.add('open');
     }
     ocultarCarrito() {

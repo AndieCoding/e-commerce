@@ -75,7 +75,7 @@ export class dropdownUsuario extends HTMLElement {
         <div class="contenedor-dropdown">
         <ul class="dropdown-usuario">    
             <li><a href="/user_menu">Mi cuenta</a></li>
-            ${this.admin ? `<li><a href="/panel">Panel de Control</a></li>` : ''}
+            ${this.admin ? `<li><a href="/panel-informes">Panel de Control</a></li>` : ''}
             <li id="logOut"><a href="">Salir</a></li>
         </ul>
         </div>

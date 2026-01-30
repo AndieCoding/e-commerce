@@ -15,13 +15,13 @@ export class DireEnvio extends HTMLElement {
         this.user = loggedUser ? loggedUser : false;
 
         this.costMapping = {
-            'santa fe': 1200,
-            'buenos aires': 4800,
-            'cordoba': 3600,
-            'rosario': 3000,
-            'entre rios': 4500
+            'santa fe': 4500,
+            'buenos aires': 5800,
+            'cordoba': 4600,
+            'rosario': 3800,
+            'entre rios': 5500
         };
-        this.defaultCost = 2500;
+        this.defaultCost = 4500;
     }
 
     getTemplate() {
@@ -83,6 +83,10 @@ export class DireEnvio extends HTMLElement {
                     <span>Costo de Envío:</span>
                     <span id="cost-display" class="cost-value">$0.00</span>
                 </div>
+                
+                <button id="btn-continue" class="btn-confirm hidden">
+                    CONTINUAR
+                </button>
             </div>
         `;
     }
@@ -113,6 +117,11 @@ export class DireEnvio extends HTMLElement {
         ocaInputs.forEach(input => {
             input.addEventListener('input', () => this.calculateShipping());
         });
+
+        const btnContinue = this.shadowRoot.querySelector('#btn-continue');
+        if (btnContinue) {
+            btnContinue.addEventListener('click', () => this.confirmShipping());
+        }
     }
 
     selectMethod(method, cards, detailsContainer) {
@@ -184,12 +193,75 @@ export class DireEnvio extends HTMLElement {
 
         this.shippingCost = cost;
 
+        // Show continue button when method is selected and cost is calculated
+        const btnContinue = this.shadowRoot.querySelector('#btn-continue');
+        if (btnContinue && this.selectedMethod && cost !== null) {
+            btnContinue.classList.remove('hidden');
+        }
+
         // Dispatch event for other components (like Total display)
         this.dispatchEvent(new CustomEvent('shippingCostUpdated', {
             detail: {
                 method: this.selectedMethod,
                 cost: this.shippingCost,
                 origin: this.origin
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    confirmShipping() {
+        const detailsContainer = this.shadowRoot.querySelector('#shipment-details');
+        const cardsContainer = this.shadowRoot.querySelector('.shipment-grid');
+        const title = this.shadowRoot.querySelector('h3');
+
+        // Hide selection UI
+        cardsContainer.classList.add('hidden');
+        detailsContainer.classList.add('hidden');
+
+        // Show Summary
+        const summary = document.createElement('div');
+        summary.className = 'shipment-summary';
+        summary.innerHTML = `
+            <div class="summary-card">
+                <div class="summary-info">
+                    <span  class="summary-label">Método de envío seleccionado</span>
+                    <p class="summary-method">${this.selectedMethod === 'sucursal' ? 'Retiro en Sucursal' : 'Envío a Domicilio'}</p>
+                    <div class="summary-location">
+                        ${this.selectedMethod === 'sucursal' ? 'Venado Tuerto, Santa Fe' : this.shadowRoot.querySelector('#localidad')?.value || 'Domicilio'}
+                    </div>
+                </div>
+                <div class="summary-cost-section">
+                    <span class="summary-cost">
+                        ${this.shippingCost === 0 ? 'GRATIS' : `$${this.shippingCost.toLocaleString('es-AR')}`}
+                    </span>
+                    <br>
+                    <button id="btn-change" class="btn-change">Cambiar</button>
+                </div>
+            </div>
+        `;
+
+        if (title) title.style.display = 'none';
+
+        const container = this.shadowRoot.querySelector('.shipment-container');
+        container.appendChild(summary);
+
+        // Add functionality to "Change" button
+        summary.querySelector('#btn-change').addEventListener('click', () => {
+            summary.remove();
+            if (title) title.style.display = 'block';
+            cardsContainer.classList.remove('hidden');
+            detailsContainer.classList.remove('hidden');
+
+            this.dispatchEvent(new CustomEvent('shippingReset', { bubbles: true, composed: true }));
+        });
+
+        // Dispatch completion event
+        this.dispatchEvent(new CustomEvent('shippingConfirmed', {
+            detail: {
+                method: this.selectedMethod,
+                cost: this.shippingCost
             },
             bubbles: true,
             composed: true

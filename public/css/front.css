@@ -15,7 +15,6 @@ body {
     width: 100%;
     scrollbar-color: #0a9d10 #3a713c70;
     scrollbar-width: thin;
-
     overflow-x: hidden;
 }
 
@@ -56,6 +55,10 @@ html::-webkit-scrollbar-thumb {
     background-color: #0a9d10;
     border-radius: 6px;
     border: 3px solid transparent;
+}
+
+body {
+    background-color: rgb(242, 252, 255);
 }
 
 .portada {
@@ -351,7 +354,6 @@ p.notFound {
 .filtros {
     color: black;
     font-family: Arial, Helvetica, sans-serif;
-    padding: 2em 0;
     position: relative;
 
     @media (width<900px) {
@@ -491,13 +493,8 @@ p.notFound {
 }
 
 main {
-    background-color: rgb(230, 250, 255);
     max-width: 1200px;
     margin: 0 auto;
-}
-
-body {
-    background-color: rgb(230, 250, 255);
 }
 
 /* producto detalle*/

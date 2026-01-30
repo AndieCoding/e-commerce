@@ -10,8 +10,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
-    <script type="module" src="/js/dependencias.js"></script>
+    <script type="module" src="/js/front/app.js"></script>
+    <script src="https://sdk.mercadopago.com/js/v2" data-turbo-track="reload"></script>
+    <!--<script type="module" src="/js/front/enviar.js"></script>-->
     <!--<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>-->
     <!-- jsPDF CDN -->
     <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>-->
@@ -22,7 +23,7 @@
 
     <carrito-del-mate></carrito-del-mate>
     <main>
-        <div class="contenedor">
+        <div class="contenedor" id="envio-container">
             <div class="dire-envio"><dire-envio></dire-envio></div>
             <div class="met-pago"><met-pago></met-pago></div>
         </div>
@@ -33,7 +34,6 @@
         <footer-del-mate></footer-del-mate>
     </footer>
 
-    <script type="module" src="/js/front/enviar.js"></script>
 
     <!--<factura-del-mate></factura-del-mate>
     <remito-del-mate></remito-del-mate>

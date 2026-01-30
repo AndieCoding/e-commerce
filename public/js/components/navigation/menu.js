@@ -257,7 +257,7 @@ export class Menu extends HTMLElement {
                     </div>              
                     <ul class="contenedor-lista">
                         <li>
-                            <div class="cart-icon">
+                            <div class="cart-icon" id="toggleCarrito">
                                 <img src="/img/icons/cart.png" alt="icono de carrito" loading="lazy">
                                 <span id="cart-badge-desktop" class="badge">${this.cartController.getTotalProducts()}</span>
                             </div>
@@ -309,15 +309,12 @@ export class Menu extends HTMLElement {
             this.user = e.detail;
             if (this.isConnected && this.user) {
                 this.render();
-                if (typeof this.addEventListeners === 'function') {
-                    this.addEventListeners();
-                }
             }
         };
 
         window.addEventListener('userUpdated', this._onUserUpdated);
 
-        checkAuth();
+        window.checkAuth;
     }
 
     addEventListeners() {
@@ -382,13 +379,6 @@ export class Menu extends HTMLElement {
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') ejecutarBusqueda();
         });
-        /*document.addEventListener('click', (e) => {
-            if (e.target.closest('#link-productos')) {
-                localStorage.setItem('categoria', 'mates');
-                localStorage.removeItem('query');
-            }
-        });*/
-
         this._handleClickProductos = (e) => {
             const link = e.target.closest('#link-productos');
             if (link) {
@@ -406,6 +396,7 @@ export class Menu extends HTMLElement {
 
     toggleCart() {
         document.dispatchEvent(new CustomEvent('toggleCarrito'));
+        console.log('toggleCarrito - icon pulsado');
     }
 
     showLookupInput() {

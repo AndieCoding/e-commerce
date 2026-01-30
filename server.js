@@ -27,32 +27,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(logger('dev'));
-/*app.use(
-    helmet({
-        contentSecurityPolicy: {
-            directives: {
-                "default-src": ["'self'"],
-                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live", "https://vercel.com"],
-                "style-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
-                "font-src": ["'self'", "https://fonts.gstatic.com"],
-                "img-src": ["'self'", "data:", "https:", "https://res.cloudinary.com"],
-                "frame-src": ["https://vercel.live", "https://vercel.com"],
-                "connect-src": ["'self'", "https://cdn.jsdelivr.net", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app"],
-            },
-        },
-    })
-);*/
 app.use(
     helmet({
         contentSecurityPolicy: {
             useDefaults: true,
             directives: {
                 "default-src": ["'self'"],
-                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live"],
-                "script-src-elem": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://vercel.live"],
-                "connect-src": ["'self'", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app"],
+                "script-src": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "'unsafe-inline'", "https://code.jquery.com", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
+                "script-src-elem": ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "'unsafe-inline'", "https://code.jquery.com", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
+                "connect-src": ["'self'", "https://cdn.jsdelivr.net", "'unsafe-inline'", "https://vercel.live", "https://*.vercel.app", "wss://*.vercel.app", "https://api.mercadopago.com"],
                 "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://vercel.com"],
-                "frame-src": ["'self'", "https://vercel.live"],
+                "frame-src": ["'self'", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com", "https://api.mercadopago.com"],
                 "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://vercel.live"],
                 "font-src": ["'self'", "https://fonts.gstatic.com"],
             },
@@ -95,6 +80,14 @@ app.use('/api', router);
 app.use('/api/shipping', shippingRouter);
 app.use('/api/payments', paymentRouter);
 
+const soloUsuarios = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    console.log("No autenticado");
+    res.redirect('/login');
+};
+
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -107,15 +100,15 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "login.html"));
 });
 
-app.get("/user_menu", (req, res) => {
+app.get("/user_menu", /*soloUsuarios*/(req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "user_menu.html"));
 });
 
-app.get("/mis_datos", (req, res) => {
+app.get("/mis_datos", /*soloUsuarios*/(req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "mis_datos.html"));
 });
 
-app.get("/mis_compras", (req, res) => {
+app.get("/mis_compras", /*soloUsuarios*/(req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "mis_compras.html"));
 });
 
@@ -148,27 +141,27 @@ app.get("/contacto", (req, res) => {
 });
 
 // Rutas de Administración
-app.get("/ventas", isAdmin, (req, res) => {
+app.get("/ventas", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ventas.html"));
 });
 
-app.get("/compras", isAdmin, (req, res) => {
+app.get("/compras", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "compras.html"));
 });
 
-app.get("/ficha", isAdmin, (req, res) => {
+app.get("/ficha", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ficha-stock.html"));
 });
 
-app.get("/panel", isAdmin, (req, res) => {
+app.get("/panel-informes", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "informes.html"));
 });
 
-app.get("/administrar", isAdmin, (req, res) => {
+app.get("/panel-administrar", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "administrar.html"));
 });
 
-app.get("/altas", isAdmin, (req, res) => {
+app.get("/panel-altas", /*soloUsuarios*/ isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "alta-productos.html"));
 });
 

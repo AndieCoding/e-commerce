@@ -1,8 +1,14 @@
+import '../turbo.js';
 import { Card } from '../components/products/card.js';
 import { Categoria } from '../components/index/categoria.js';
 import { Filtros } from '../components/products/filtros.js';
 import { User } from "../models/user.js";
 import { UserTools } from '../components/user/user-tools.js';
+import { Footer } from '../components/navigation/footer.js';
+import { Menu } from '../components/navigation/menu.js';
+import { MobileNavBar } from '../components/navigation/mobile-nav-bar.js';
+import { DireEnvio } from '../components/products/envio.js';
+import { MetPago } from '../components/products/metpago.js';
 
 window.indexProducts = async function indexProducts() {
     const cardsContainer = document.querySelector('#destacados');
@@ -40,6 +46,24 @@ window.consultarProductos = async function consultarProductos(categoria, query) 
         contenedor.innerHTML = '<p>Error de conexión. Reintente más tarde</p>';
     }
 }
+window.commonScales = {
+    y: {
+        beginAtZero: true,
+        ticks: {
+            stepSize: 1,
+            callback: (value) => Math.round(value)
+        }
+    }
+};
+
+window.lineOptions = {
+    responsive: true,
+    scales: {
+        ...window.commonScales,
+        x: { title: { display: true, text: 'Días' } },
+        y: { ...window.commonScales.y, title: { display: true, text: 'Ventas totales' } }
+    }
+};
 
 if (!window.user) {
     window.user = new User();
@@ -90,17 +114,23 @@ if (!window.appListenersAttached) {
         if (path.startsWith('/panel') || path.startsWith('/mis_datos')) {
             await checkAuth();
         }
+        if (path.startsWith('/admin') || path.startsWith('/panel-')) {
+            await cargarComponentesAdmin();
+        }
 
+        //productos-index
         const cardsContainer = document.querySelector('#destacados');
         if (cardsContainer) {
             indexProducts();
         }
 
+        //productos
         const contenedorResultados = document.querySelector('.resultados');
         if (contenedorResultados) {
             cargarProductos();
         }
 
+        //mi-cuenta
         const quickLinksContainer = document.querySelector('.quick-links-mobile');
         if (quickLinksContainer) {
             if (!document.querySelector('#link-panel')) {
@@ -117,12 +147,36 @@ if (!window.appListenersAttached) {
             cargarFotoPerfil(misDatosLink);
         }
 
+        //mis-datos
         const misDatosContainer = document.getElementById('mis-datos-container');
         if (misDatosContainer) {
             cargarMiFoto();
             cargarMisDatos();
         }
 
+        //panel-informes
+        const informesContainer = document.getElementById('informes-container');
+        if (informesContainer) {
+            // cargarInformes();
+        }
+
+        //panel-administrar 
+        const administrar_container = document.querySelector('#productList');
+        if (administrar_container) {
+            cargarProductosAdmin(administrar_container);
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', filtrar);
+            }
+        }
+
+        //enviar
+        const envioContainer = document.querySelector('#envio-container');
+        if (envioContainer) {
+            cargarEnvio(envioContainer);
+        }
+
+        //metpago
     })
 
     window.addEventListener('userUpdated', (event) => {
@@ -139,7 +193,7 @@ if (!window.appListenersAttached) {
 
     document.addEventListener("turbo:before-visit", (event) => {
         const urlDestino = event.detail.url;
-        const rutasProtegidas = ['/user_menu', '/mis_datos', '/mis_compras', '/panel', 'altas', 'administrar'];
+        const rutasProtegidas = ['/user_menu', '/mis_datos', '/mis_compras', '/panel', '/panel-altas', '/panel-administrar', '/panel-informes'];
         const esRutaProtegida = rutasProtegidas.some(ruta => urlDestino.startsWith(ruta));
 
         if (esRutaProtegida) {
@@ -190,6 +244,21 @@ if (!window.appListenersAttached) {
     window.appListenersAttached = true;
 }
 
+function cargarEnvio(container) {
+    container.innerHTML = '';
+    if (checkAuth(false)) {
+        container.appendChild(new DireEnvio());
+    }
+    if (document.querySelector('dire-envio')) {
+        container.appendChild(new MetPago());
+    }
+}
+
+function cargarMetpago(container) {
+    container.innerHTML = '';
+    container.appendChild(new MetPago());
+}
+
 function mostrarSkeletons(container, cantidad) {
     const skeletonsHTML = Array(cantidad).fill(`
         <div class="skeleton-card">
@@ -202,8 +271,8 @@ function mostrarSkeletons(container, cantidad) {
     container.innerHTML = skeletonsHTML;
 }
 
-function crearCards(container, producto) {
-    const card = document.createElement('product-card');
+function crearCards(container, producto, admin = false) {
+    const card = document.createElement(admin ? 'admin-product-row' : 'product-card');
     const imagenOptimizada = producto.P_IMG.includes('cloudinary')
         ? producto.P_IMG.replace('/upload/', '/upload/w_400,c_fill,f_auto,q_auto/')
         : producto.P_IMG;
@@ -221,8 +290,44 @@ function crearCards(container, producto) {
             card.setAttribute('tipo', 'list');
         }
     }
+
+    if (admin) {
+        card.addEventListener('delete-product', async (e) => {
+            const id = e.detail.id;
+            await deleteProduct(id);
+        });
+
+        card.addEventListener('edit-product', (e) => {
+            const id = e.detail.id;
+            window.location.href = `/panel-altas?edit=${id}`;
+        });
+
+    }
+
     card.classList.add('fade-in-card');
     container.appendChild(card);
+}
+
+async function cargarProductosAdmin(container) {
+    //mostrarSkeletons(container, 10);
+    let productos = [];
+    try {
+        const categories = ['mates', 'termos', 'yerbas'];
+        for (const cat of categories) {
+            const response = await fetch(`/api/products/${cat.replace('s', '')}`);
+            const data = await response.json();
+            if (data.products) {
+                productos = [...productos, ...data.products];
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        container.innerHTML = '<div class="error">Error al cargar productos.</div>';
+    }
+    container.innerHTML = '';
+    productos.forEach(producto => {
+        crearCards(container, producto, true);
+    });
 }
 
 function cargarProductos() {
@@ -248,7 +353,7 @@ function cargarPanelUsuario(quickLinksContainer) {
 
         if (quickLinksContainer) {
             const adminLink = document.createElement('a');
-            adminLink.href = '/panel';
+            adminLink.href = '/panel-informes';
             adminLink.className = 'quick-link';
             adminLink.id = 'link-panel';
             adminLink.innerHTML = `
@@ -397,8 +502,48 @@ function cerrarSesion(btn) {
     });
 }
 
+async function cargarComponentesAdmin() {
+    try {
+        await Promise.all([
+            import('../components/navigation/admin-nav.js'),
+            import('../components/navigation/admin-mobile-nav-bar.js'),
+            import('../components/products/admin-product-row.js')
+        ]);
+    } catch (error) {
+        console.error("Error cargando los componentes admin:", error);
+    }
+}
 
+async function deleteProduct(id) {
+    try {
+        const response = await fetch(`/api/products/${id}`, {
+            method: 'DELETE'
+        });
+        const data = await response.json();
+        if (data.success) {
+            alert('Producto eliminado correctamente');
+            cargarProductosAdmin(document.querySelector('.product-list'));
+        } else {
+            alert('Error: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        alert('Error al conectar con el servidor');
+    }
+}
 
+const filtrar = (e) => {
+    const term = e.target.value.toLowerCase();
+    const rows = productList.querySelectorAll('admin-product-row');
+    rows.forEach(row => {
+        const name = row.getAttribute('name').toLowerCase();
+        if (name.includes(term)) {
+            row.style.display = 'block';
+        } else {
+            row.style.display = 'none';
+        }
+    })
+};
 
 
 /*

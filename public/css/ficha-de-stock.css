@@ -271,8 +271,6 @@ table.monotributo tbody tr th:nth-child(2) {
 	text-align: center;
 }
 
-
-
 /*Nueva Factura*/
 .informes-y-tabla {
 	grid-template-columns: 1fr 1fr 1fr;
@@ -294,15 +292,6 @@ form.nuevaFactura {
 		font-family: Roboto, sans-serif;
 		width: 150px;
 	}
-
-	/*input:valid {
-		border: 1px solid green;
-		outline: 1px solid rgb(10, 183, 10);		
-	}
-	input:after {
-		content:"\2714";
-		color: green;
-	};*/
 
 	label {
 		width: 100px;
@@ -349,14 +338,11 @@ form.nuevaFactura {
 		margin: auto;
 	}
 
-
-
 	.tabla-carga-head.altas tr {
 		th:nth-child(5) {
 			width: 150px;
 		}
 	}
-
 
 	.tabla-carga td {
 		padding: 5px 10px;
@@ -390,7 +376,6 @@ form.nuevaFactura {
 }
 
 .tabla-carga-head tr {
-
 
 	th:first-child {
 		width: 80px;
@@ -674,7 +659,6 @@ factura-del-mate {
 .sector-ganancias {
 	padding-left: 30px
 }
-
 
 /* Alta de Productos*/
 .form-alta-producto {

@@ -12,8 +12,9 @@
 	<link
 		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
 		rel="stylesheet">
+	<script type="module" src="/js/front/app.js"></script>
 	<script type="module" src="../../js/informes.js"></script>
-	<script type="module" src="/js/turbo.js"></script>
+
 </head>
 
 <body class="admin-panel">
@@ -26,38 +27,38 @@
 				<h1>Informes</h1>
 			</div>
 
-			<div class="informes-y-tabla grid maxw-85porc m-auto">
+			<div class="informes-y-tabla grid maxw-85porc m-auto" id="informes-container">
 				<h3>General</h3>
 				<div style="width:100%">
-					<canvas id="myBarChart"></canvas>
+					<div id="myBarChart"></div>
 				</div>
 				<div style="width:100%">
-					<canvas id="myLineChart"></canvas>
+					<div id="myLineChart"></div>
 				</div>
 				<h3>Por Unidad</h3>
 				<!-- Ventas mates -->
 				<div style="width:100%">
-					<canvas id="MateVentasDiariasChart"></canvas>
+					<div id="MateVentasDiariasChart"></div>
 				</div>
 				<!-- Ventas termos -->
 				<div style="width:100%">
-					<canvas id="TermoVentasDiariasChart"></canvas>
+					<div id="TermoVentasDiariasChart"></div>
 				</div>
 				<!-- Ventas yerbas -->
 				<div style="width:100%">
-					<canvas id="YerbaVentasDiariasChart"></canvas>
+					<div id="YerbaVentasDiariasChart"></div>
 				</div>
 				<!-- Ingresos-egresos mates -->
 				<div style="width:90%">
-					<canvas id="MateIng-EgresosChart"></canvas>
+					<div id="MateIng-EgresosChart"></div>
 				</div>
 				<!-- Ingresos-egresos termos -->
 				<div style="width:90%">
-					<canvas id="TermoIng-EgresosChart"></canvas>
+					<div id="TermoIng-EgresosChart"></div>
 				</div>
 				<!-- Ingresos-egresos yerbas -->
 				<div style="width:90%">
-					<canvas id="YerbaIng-EgresosChart"></canvas>
+					<div id="YerbaIng-EgresosChart"></div>
 				</div>
 				<div class="flex align-center gap-1em select-mes-informes">
 					<p class="m-bottom-15em">Mes seleccionado: </p>
