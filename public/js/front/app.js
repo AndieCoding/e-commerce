@@ -30,8 +30,10 @@ window.consultarProductos = async function consultarProductos(categoria, query) 
             data.products.forEach(p => {
                 crearCards(contenedor, p);
             });
+            return;
         } else {
             contenedor.innerHTML = '<p>No se encontraron productos</p>';
+            return;
         }
     } catch (error) {
         console.error("Error en el servidor: ", error);
@@ -65,7 +67,6 @@ window.checkAuth = async function checkAuth(force = false) {
             window.user = auth.user;
             localStorage.setItem('user', JSON.stringify(auth.user));
             localStorage.setItem('lastAuthCheck', ahora);
-            console.log('Usuario: ', window.user);
         } else {
             window.user = null;
             localStorage.removeItem('user');
@@ -81,13 +82,13 @@ window.checkAuth = async function checkAuth(force = false) {
     }
 }
 
-checkAuth();
+await checkAuth();
 
 if (!window.appListenersAttached) {
     document.addEventListener('turbo:load', async () => {
         const path = window.location.pathname;
         if (path.startsWith('/panel') || path.startsWith('/mis_datos')) {
-            checkAuth();
+            await checkAuth();
         }
 
         const cardsContainer = document.querySelector('#destacados');
@@ -100,21 +101,20 @@ if (!window.appListenersAttached) {
             cargarProductos();
         }
 
-        //panel de usuario
         const quickLinksContainer = document.querySelector('.quick-links-mobile');
         if (quickLinksContainer) {
             if (!document.querySelector('#link-panel')) {
                 cargarPanelUsuario(quickLinksContainer);
+            }
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                cerrarSesion(logoutBtn)
             }
         }
 
         const misDatosLink = document.querySelector('#link-mis-datos .icon');
         if (misDatosLink) {
             cargarFotoPerfil(misDatosLink);
-        }
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            cerrarSesion(logoutBtn)
         }
 
         const misDatosContainer = document.getElementById('mis-datos-container');
@@ -226,7 +226,7 @@ function crearCards(container, producto) {
 }
 
 function cargarProductos() {
-    const categoria = localStorage.getItem('categoria') || 'mates';
+    let categoria = localStorage.getItem('categoria') || 'mates';
     const query = localStorage.getItem('query');
 
     if (!categoria || categoria === 'undefined' || categoria === 'null') {
@@ -236,9 +236,9 @@ function cargarProductos() {
     console.log('categoria: ', categoria);
     console.log('query: ', query);
     if (categoria === 'busqueda' && query) {
-        consultarProductos(null, query);
+        window.consultarProductos(null, query);
     } else {
-        consultarProductos(categoria);
+        window.consultarProductos(categoria);
     }
 }
 

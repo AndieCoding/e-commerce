@@ -263,7 +263,7 @@ export class Menu extends HTMLElement {
                             </div>
                         </li>
                         <li>
-                            <a class="nav-item" id="link-productos">Productos</a>
+                            <a class="nav-item" id="link-productos" href="/productos">Productos</a>
                         </li>
                         <li>
                             <div class="contenedor-imagen-usuario">
@@ -388,27 +388,20 @@ export class Menu extends HTMLElement {
                 localStorage.removeItem('query');
             }
         });*/
-        this.shadowRoot.addEventListener('click', (e) => {
+
+        this._handleClickProductos = (e) => {
             const link = e.target.closest('#link-productos');
-
             if (link) {
-                e.preventDefault();
-                console.log("Navegando a productos vía Turbo...");
-
                 localStorage.setItem('categoria', 'mates');
                 localStorage.removeItem('query');
-                if (typeof Turbo !== 'undefined') {
-                    Turbo.visit("/productos");
-
-                } else {
-                    document.dispatchEvent(new Event('turbo:load'));
-                }
             }
-        });
+        };
+        this.shadowRoot.addEventListener('click', this._handleClickProductos);
     }
 
     disconnectedCallback() {
         window.removeEventListener('userUpdated', this._onUserUpdated);
+        this.shadowRoot.removeEventListener('click', this._handleClickProductos);
     }
 
     toggleCart() {
