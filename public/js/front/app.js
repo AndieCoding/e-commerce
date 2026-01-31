@@ -180,9 +180,9 @@ if (!window.appListenersAttached) {
     })
 
     window.addEventListener('userUpdated', (event) => {
-        let foto = event.detail.FOTO;
         const $previewImage = document.querySelector('#previewImage');
         if ($previewImage) {
+            let foto = event.detail.FOTO;
             if (foto && foto !== null) {
                 $previewImage.style.backgroundImage = `url(${foto})`;
             } else {

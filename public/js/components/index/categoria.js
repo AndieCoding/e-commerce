@@ -81,9 +81,15 @@ export class Categoria extends HTMLElement {
         this.addEventListeners();
     }
     addEventListeners() {
-        this.addEventListener('click', async () => {
+        this.addEventListener('click', async (e) => {
+            e.preventDefault();
             localStorage.setItem('categoria', this.name.toLowerCase());
-            window.location.href = '/productos'
+            if (window.location.pathname === '/productos') {
+                Turbo.visit('/productos', { action: 'replace' });
+            } else {
+                Turbo.visit('/productos');
+            }
+
         });
     }
 }
