@@ -61,6 +61,36 @@ body {
     background-color: rgb(242, 252, 255);
 }
 
+menu-del-mate:not(:defined) {
+    opacity: 0;
+    background-color: rgb(62, 104, 62);
+    display: block;
+    min-height: 50px;
+}
+
+portada-img:not(:defined) {
+    opacity: 0;
+    display: block;
+    min-height: 300px;
+    background-color: rgb(197, 197, 197);
+}
+
+menu-del-mate:defined,
+portada-img:defined {
+    animation: fadeIn 0.3s ease-in;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
 .portada {
     height: calc(100vh - 60px);
     position: relative;
