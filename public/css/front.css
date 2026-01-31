@@ -71,8 +71,12 @@ menu-del-mate:not(:defined) {
 portada-img:not(:defined) {
     opacity: 0;
     display: block;
-    min-height: 300px;
+    min-height: 600px;
     background-color: rgb(197, 197, 197);
+
+    @media (width<700px) {
+        min-height: 700px;
+    }
 }
 
 menu-del-mate:defined,
