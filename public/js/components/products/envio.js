@@ -7,10 +7,8 @@ export class DireEnvio extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.selectedMethod = null;
         this.shippingCost = 0;
-        this.origin = 'Venado Tuerto, Santa Fe';
-        const logged = localStorage.getItem('user');
-        const loggedUser = JSON.parse(logged);
-        this.user = loggedUser ? loggedUser : false;
+        //this.origin = 'Venado Tuerto, Santa Fe';
+        this.user = window.user ? window.user : false;
 
         this.costMapping = {
             'santa fe': 4500,
