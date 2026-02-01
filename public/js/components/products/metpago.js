@@ -14,7 +14,7 @@ export class MetPago extends HTMLElement {
 
     getTemplate() {
         return `
-        <link rel="stylesheet" href="../../css/metpago.css">
+        <link rel="stylesheet" href="/css/metpago.css">
         <div class="met-pago-container hidden">
             ${this.user ? this.renderCheckout() : this.renderRestriction()}
         </div>

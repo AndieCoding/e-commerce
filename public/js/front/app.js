@@ -175,8 +175,6 @@ if (!window.appListenersAttached) {
         if (envioContainer) {
             cargarEnvio(envioContainer);
         }
-
-        //metpago
     })
 
     window.addEventListener('userUpdated', (event) => {
@@ -252,11 +250,6 @@ function cargarEnvio(container) {
     if (document.querySelector('dire-envio')) {
         container.appendChild(new MetPago());
     }
-}
-
-function cargarMetpago(container) {
-    container.innerHTML = '';
-    container.appendChild(new MetPago());
 }
 
 function mostrarSkeletons(container, cantidad) {

@@ -22,7 +22,7 @@ export class DireEnvio extends HTMLElement {
 
     getTemplate() {
         return `
-        <link rel="stylesheet" href="../../css/envio.css">
+        <link rel="stylesheet" href="/css/envio.css">
         <style>
             .legend {
                 font-size: 0.6em;
