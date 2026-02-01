@@ -33,8 +33,8 @@ app.use(
             useDefaults: true,
             directives: {
                 "default-src": ["'self'"],
-                "script-src": ["'self'", "https://vercel.live", "'unsafe-inline'", "https://cdn.jsdelivr.net", "'unsafe-inline'", "https://code.jquery.com", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
-                "script-src-elem": ["'self'", "https://vercel.live", "'unsafe-inline'", "https://cdn.jsdelivr.net", "'unsafe-inline'", "https://code.jquery.com", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
+                "script-src": ["'self'", "https://vercel.live", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
+                "script-src-elem": ["'self'", "https://vercel.live", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://code.jquery.com", "https://sdk.mercadopago.com", "https://www.mercadopago.com"],
                 "connect-src": ["'self'", "https://vercel.live", "https://cdn.jsdelivr.net", "https://*.vercel.app", "wss://*.vercel.app", "https://api.mercadopago.com"],
                 "img-src": ["'self'", "data:", "https://res.cloudinary.com", "https://vercel.com"],
                 "frame-src": ["'self'", "https://vercel.live", "https://sdk.mercadopago.com", "https://www.mercadopago.com", "https://api.mercadopago.com"],
