@@ -15,9 +15,6 @@ export class MetPago extends HTMLElement {
     getTemplate() {
         return `
         <link rel="stylesheet" href="/css/metpago.css">
-        <div class="met-pago-container hidden">
-            ${this.user ? this.renderCheckout() : this.renderRestriction()}
-        </div>
         `;
     }
 
@@ -58,18 +55,6 @@ export class MetPago extends HTMLElement {
             </button>
         `;
     }
-
-    renderRestriction() {
-        return `
-        <div class="restriction-container">
-            <h3>Debe estar logueado para comprar</h3>
-            <img src="../../img/banner/imagen-necesita-login.jpg" alt="Login required">
-            <br>
-            <a href="/login" class="btn-login">Iniciar Sesión</a>
-        </div>
-        `;
-    }
-
     connectedCallback() {
         this.render();
     }

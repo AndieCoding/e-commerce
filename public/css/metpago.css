@@ -188,36 +188,6 @@ h3 {
     }
 }
 
-/* User restricted messaging */
-.restriction-container {
-    padding: 3rem;
-    text-align: center;
-}
-
-.restriction-container img {
-    max-width: 200px;
-    border-radius: 50%;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-}
-
-.btn-login {
-    display: inline-block;
-    background: #1a1a1a;
-    color: white;
-    padding: 0.8rem 2.5rem;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: 500;
-    margin-top: 1rem;
-    transition: background 0.3s;
-}
-
-.btn-login:hover {
-    background: #333;
-}
-
-/* Payment Form Styles */
 .payment-form-row {
     display: flex;
     gap: 1rem;

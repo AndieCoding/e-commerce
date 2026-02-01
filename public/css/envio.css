@@ -19,11 +19,38 @@ html {
     box-sizing: border-box;
 }
 
-h3 {
-    font-size: 1.5rem;
+.restriction-container {
+    padding: 3rem;
+    text-align: center;
+}
+
+.restriction-container img {
+    max-width: 200px;
+    border-radius: 50%;
     margin-bottom: 1.5rem;
-    font-weight: 700;
-    color: #1a1a1a;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-login {
+    display: inline-block;
+    color: green;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.8rem 1.5rem;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out, padding 0.3s ease-in-out;
+}
+
+.btn-login:hover {
+    background: #357635c1;
+    outline: 2px solid #4cc227;
+    color: white;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #3e4b3d;
 }
 
 .shipment-grid {

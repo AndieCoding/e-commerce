@@ -29,8 +29,8 @@ export class DireEnvio extends HTMLElement {
                 color: #666;
             }
         </style>
-        <div class="shipment-container">
-            ${this.user ? this.renderShipmentOptions() : ''}
+        <div class="shipment-container">         
+            ${this.user ? this.renderShipmentOptions() : this.renderRestriction()}
         </div>
         `;
     }
@@ -86,6 +86,17 @@ export class DireEnvio extends HTMLElement {
 
     connectedCallback() {
         this.render();
+    }
+
+    renderRestriction() {
+        return `
+        <div class="restriction-container">
+            <h3>Debe iniciar sesión para continuar</h3>
+            <img src="../../img/banner/imagen-necesita-login.jpg" alt="Login required">
+            <br>
+            <a href="/login" class="btn-login">Iniciar Sesión</a>
+        </div>
+        `;
     }
 
     render() {
