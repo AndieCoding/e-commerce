@@ -1,7 +1,5 @@
 import { CartController } from "../cart/cart-controller.js";
-import { Carrito } from "../cart/carrito.js";
-import { User } from "../../models/user.js";
-
+import { CheckoutCard } from "../checkout/checkout-card.js";
 
 export class MetPago extends HTMLElement {
     constructor() {
@@ -11,10 +9,7 @@ export class MetPago extends HTMLElement {
         this.total = this.cartController.getTotal();
         this.ticket = this.cartController.getProducts();
         this.selectedMethod = null;
-
-        const logged = localStorage.getItem('user');
-        const loggedUser = JSON.parse(logged);
-        this.user = loggedUser ? loggedUser : false;
+        this.user = window.user ? window.user : false;
     }
 
     getTemplate() {
@@ -28,29 +23,15 @@ export class MetPago extends HTMLElement {
 
     renderCheckout() {
         return `
-            <h3>Finalizar Compra</h3>
+            <h3>Medio de pago</h3>
             <div class="total-summary">
-                Total a pagar: <span class="total-amount">$${this.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
+                <span class="total-label">Total a pagar:</span>
+                <span class="total-amount">$${this.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
             </div>
 
             <div class="payment-grid">
-                <div class="payment-card" data-method="mercadopago">
-                    <img src="../../img/icons/mercadopago.png" alt="Mercado Pago" class="payment-icon">
-                    <h4>Mercado Pago</h4>
-                    <p>Tarjetas, Debito, Dinero en cuenta</p>
-                </div>
-
-                <div class="payment-card" data-method="transferencia">
-                    <img src="../../img/icons/bank-transfer.png" alt="Transferencia" class="payment-icon">
-                    <h4>Transferencia / Efectivo</h4>
-                    <p>10% OFF pagando por transferencia</p>
-                </div>
-
-                <div class="payment-card" data-method="tarjeta_directa">
-                    <img src="../../img/icons/credit-card.png" alt="Tarjeta" class="payment-icon">
-                    <h4>Tarjeta Directa</h4>
-                    <p>A través de nuestro gateway seguro</p>
-                </div>
+                <checkout-card img="/img/icons/mercadopago.png" title="Mercado Pago" description="Tarjetas, Debito, Dinero en cuenta" data-method="mercadopago"></checkout-card>
+                <checkout-card img="/img/icons/bank-transfer.png" title="Transferencia / Efectivo" description="10% OFF pagando por transferencia" data-method="transferencia"></checkout-card>
             </div>
 
             <div id="method-details" class="hidden">
@@ -69,32 +50,11 @@ export class MetPago extends HTMLElement {
                         <p>Una vez realizada la transferencia, envianos el comprobante por WhatsApp.</p>
                     </div>
                 </div>
-
-                <div id="details-tarjeta_directa" class="payment-details-section hidden">
-                    <div class="payment-form-field">
-                        <label>Número de tarjeta</label>
-                        <input type="text" id="numeroTarjeta" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
-                    </div>
-                    <div class="payment-form-row">
-                        <div class="payment-form-field">
-                            <label>Vencimiento</label>
-                            <input type="text" id="fechaVencimiento" placeholder="MM/AA" maxlength="5">
-                        </div>
-                        <div class="payment-form-field">
-                            <label>CVV</label>
-                            <input type="password" id="codigoSeguridad" placeholder="***" maxlength="4">
-                        </div>
-                    </div>
-                    <div class="payment-form-field">
-                        <label>Titular</label>
-                        <input type="text" id="titular" placeholder="Nombre como figura en la tarjeta">
-                    </div>
-                </div>
             </div>
 
             <button id="btn-confirmar" class="btn-confirm" disabled>
-                <span>Confirmar Compra</span>
-                <div id="spinner" class="spinner hidden"></div>
+                <div class="spinner hidden"></div>
+                <span id="btn-text">Confirmar Compra</span>                
             </button>
         `;
     }
@@ -116,26 +76,21 @@ export class MetPago extends HTMLElement {
 
     render() {
         this.shadowRoot.innerHTML = this.getTemplate();
-        if (this.user) {
+        if (window.user) {
             this.setupListeners();
         }
-
-        // Listen for shipping confirmation to show payment
         document.addEventListener('shippingConfirmed', () => {
             this.shadowRoot.querySelector('.met-pago-container').classList.remove('hidden');
         });
-
-        // Listen for shipping reset to hide payment again
         document.addEventListener('shippingReset', () => {
             this.shadowRoot.querySelector('.met-pago-container').classList.add('hidden');
         });
     }
 
     setupListeners() {
-        const cards = this.shadowRoot.querySelectorAll('.payment-card');
+        const cards = this.shadowRoot.querySelectorAll('checkout-card');
         const detailsContainer = this.shadowRoot.querySelector('#method-details');
         const confirmBtn = this.shadowRoot.querySelector('#btn-confirmar');
-        const spinner = this.shadowRoot.querySelector('#spinner');
 
         cards.forEach(card => {
             card.addEventListener('click', () => {
@@ -144,66 +99,50 @@ export class MetPago extends HTMLElement {
             });
         });
 
-        const cardNumInput = this.shadowRoot.querySelector('#numeroTarjeta');
-        if (cardNumInput) {
-            cardNumInput.addEventListener('input', (e) => this.formatCardNumber(e));
-        }
-
-        confirmBtn.addEventListener('click', () => this.handleConfirmation(confirmBtn, spinner));
+        confirmBtn.addEventListener('click', () => this.handleConfirmation(confirmBtn));
     }
 
     selectMethod(method, cards, detailsContainer, confirmBtn) {
         this.selectedMethod = method;
-
-        // Update selection UI
         cards.forEach(c => c.classList.remove('active'));
-        this.shadowRoot.querySelector(`.payment-card[data-method="${method}"]`).classList.add('active');
-
-        // Show details section
+        this.shadowRoot.querySelector(`checkout-card[data-method="${method}"]`).classList.add('active');
         detailsContainer.classList.remove('hidden');
         this.shadowRoot.querySelectorAll('.payment-details-section').forEach(s => s.classList.add('hidden'));
         this.shadowRoot.querySelector(`#details-${method}`).classList.remove('hidden');
 
-        // Enable button
         confirmBtn.disabled = false;
-
-        // Update button text contextually
         const btnText = confirmBtn.querySelector('span');
         if (method === 'mercadopago') {
-            btnText.innerHTML = '<div id="walletBrick_container"></div>';
-        } else if (method === 'transferencia') {
-            btnText.textContent = 'Finalizar y Acordar';
+            btnText.innerHTML = '<div id="walletBrick_container">Ir a Mercado Pago</div>';
         } else {
-            btnText.textContent = 'Realizar Pago';
+            btnText.textContent = 'Finalizar y Acordar';
         }
     }
 
-    formatCardNumber(e) {
-        let value = e.target.value.replace(/\D/g, '');
-        let formatted = value.match(/.{1,4}/g)?.join('-') || value;
-        e.target.value = formatted.substring(0, 19);
-    }
-
-    async handleConfirmation(btn, spinner) {
+    async handleConfirmation(btn) {
         btn.disabled = true;
-        spinner.classList.remove('hidden');
         const btnText = btn.querySelector('span');
         const originalText = btnText.textContent;
+        const spinner = btn.querySelector('.spinner');
+        spinner.classList.remove('hidden');
         btnText.textContent = 'Procesando...';
+
 
         try {
             if (this.selectedMethod === 'mercadopago') {
                 await this.procesarMercadoPago();
-            } else if (this.selectedMethod === 'transferencia') {
-                await this.procesarTransferencia(spinner, btn, btnText, originalText);
             } else {
-                alert('Método aún no implementado completamente.');
-                this.resetButton(btn, spinner, btnText, originalText);
+                await this.procesarTransferencia(btn, btnText, originalText);
             }
         } catch (error) {
             console.error('Error en el proceso de pago:', error);
-            alert('Hubo un error al procesar tu solicitud. Por favor intenta nuevamente.');
-            this.resetButton(btn, spinner, btnText, originalText);
+            btnText.classList.add('error');
+            btn.disabled = true;
+            setTimeout(() => {
+                btnText.textContent = originalText;
+                btnText.classList.remove('error');
+                btn.disabled = false;
+            }, 2000);
         }
     }
 
@@ -220,24 +159,17 @@ export class MetPago extends HTMLElement {
             body: JSON.stringify({
                 items: items,
                 payer: {
-                    email: 'fgcodear@gmail.com', //this.user.email,
-                    name: `${this.user.NOMBRE} ${this.user.APELLIDO}`
+                    email: this.user.email,
+                    name: `${this.user.NOMBRE}`
                 },
                 external_reference: `ORDER-${Date.now()}`
             })
         });
 
         const data = await response.json();
-
-
         const publicKey = "APP_USR-1c8ae308-1512-4004-a92f-9ef1454d008a";
-
         const preferenceId = data.id;
-
-
         const mp = new MercadoPago(publicKey);
-
-
         const bricksBuilder = mp.bricks();
         const renderWalletBrick = async (bricksBuilder) => {
             await bricksBuilder.create("wallet", "walletBrick_container", {
@@ -254,9 +186,10 @@ export class MetPago extends HTMLElement {
         } else {
             throw new Error('No se recibió el link de pago');
         }
+        spinner.classList.add('hidden');
     }
 
-    async procesarTransferencia(spinner, btn, btnText, originalText) {
+    async procesarTransferencia(btn, btnText, originalText) {
 
         const productosParaBackend = this.ticket.map(item => ({
             P_TIPO: item.productType,
@@ -284,12 +217,8 @@ export class MetPago extends HTMLElement {
         const result = await response.json();
 
         if (result.success) {
-
-            spinner.classList.add('hidden');
-            btnText.textContent = '¡Pedido Confirmado!';
+            btnText.textContent = '¡Compra Confirmada!';
             btn.style.background = '#28a745';
-
-
             this.cartController.vaciarCarrito();
 
             setTimeout(() => {
@@ -301,8 +230,7 @@ export class MetPago extends HTMLElement {
         }
     }
 
-    resetButton(btn, spinner, btnText, originalText) {
-        spinner.classList.add('hidden');
+    resetButton(btn, btnText, originalText) {
         btn.disabled = false;
         btnText.textContent = originalText;
     }

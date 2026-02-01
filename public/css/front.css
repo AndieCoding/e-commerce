@@ -8,6 +8,7 @@
 html {
     scrollbar-gutter: stable;
     overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -63,16 +64,16 @@ body {
 
 menu-del-mate:not(:defined) {
     opacity: 0;
-    background-color: rgb(62, 104, 62);
+    background-color: rgba(41, 126, 49, 0.8);
     display: block;
-    min-height: 50px;
+    min-height: 70px;
 }
 
 portada-img:not(:defined) {
     opacity: 0;
     display: block;
     min-height: 600px;
-    background-color: rgb(197, 197, 197);
+    background-color: rgb(98, 131, 112);
 
     @media (width<700px) {
         min-height: 700px;
@@ -892,10 +893,10 @@ header.index {
 
 /*Envios*/
 .contenedor {
-    display: flex;
-    gap: 50px;
-    justify-content: center;
+    display: grid;
     min-height: 90vh;
+    max-width: 1000px;
+    margin: 0 auto;
 
     @media (max-width: 700px) {
         flex-direction: column;
@@ -922,7 +923,6 @@ header.index {
 dire-envio {
     display: inline-block;
     margin: 0 auto;
-    width: 500px;
 
     @media (max-width: 700px) {
         width: 100%;

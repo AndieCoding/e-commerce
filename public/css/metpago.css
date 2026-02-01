@@ -5,7 +5,7 @@
 
 .met-pago-container {
     font-family: 'Poppins', 'Roboto Condensed', sans-serif;
-    padding: 2rem;
+    padding: 0.5em 1rem 4rem 1rem;
     background: #ffffff;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
@@ -24,17 +24,23 @@ h3 {
 
 .total-summary {
     font-size: 1.1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     color: #666;
 }
 
+.total-label {
+    font-size: 14px;
+}
+
 .total-amount {
-    color: #249900;
-    font-weight: 800;
+    color: #4e554c;
     font-size: 1.4rem;
+    margin-left: 0.5rem;
 }
 
 .payment-grid {
+    max-width: 800px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
@@ -45,7 +51,7 @@ h3 {
     background: #fdfdfd;
     border: 2px solid #f0f0f0;
     border-radius: 12px;
-    padding: 1.5rem;
+    padding: 0.5em 1.5rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -237,4 +243,39 @@ h3 {
     border-radius: 8px;
     font-size: 1rem;
     box-sizing: border-box;
+}
+
+checkout-card {
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+checkout-card:hover {
+    border-color: #32a350ac;
+    transform: translateY(-2px);
+    scale: 1.02;
+    box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
+}
+
+.active {
+    border-color: #249900;
+    background-color: #f7fff5;
+}
+
+.active::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #249900;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
 }

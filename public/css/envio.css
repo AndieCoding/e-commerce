@@ -3,6 +3,10 @@
     width: 100%;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 .shipment-container {
     font-family: 'Poppins', 'Roboto Condensed', sans-serif;
     padding: 2rem;
@@ -23,81 +27,34 @@ h3 {
 }
 
 .shipment-grid {
+    max-width: 800px;
+    margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.shipment-card {
-    background: #fdfdfd;
-    border: 2px solid #f0f0f0;
-    border-radius: 12px;
-    padding: 0.5 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    position: relative;
-}
-
-.shipment-card:hover {
-    border-color: #218f3eac;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
-}
-
-.shipment-card.active {
-    border-color: #249900;
-    background-color: #f7fff5;
-}
-
-.shipment-card.active::after {
-    content: '✓';
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #249900;
-    color: white;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.shipment-icon {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 1rem;
-    object-fit: contain;
-}
-
-.shipment-card h4 {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.shipment-card p {
-    font-size: 0.9rem;
-    color: #777;
-    margin: 0;
 }
 
 .details-section {
-    background: #f9f9f9;
     border-radius: 12px;
     padding: 1.5rem;
     margin-top: 1.5rem;
-    border-left: 4px solid #249900;
     animation: slideDown 0.4s ease-out;
+    box-sizing: border-box;
+    max-width: 100%;
+    animation: slideDown 0.4s ease-out;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3em;
 }
+
+.form-envio {
+    width: 100%;
+}
+
+.shipping-cost-summary {
+    width: 100%;
+}
+
 
 @keyframes slideDown {
     from {
@@ -145,15 +102,6 @@ h3 {
     color: #1a1a1a;
 }
 
-.shipping-cost-summary {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-}
 
 .cost-value {
     color: #249900;
@@ -166,12 +114,14 @@ h3 {
     font-style: italic;
 }
 
-/* Shipping Summary Styles */
-.shipment-summary {
-    margin-bottom: 1.5rem;
+.back-arrow {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
 }
 
 .summary-card {
+    max-width: 350px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -184,7 +134,17 @@ h3 {
 }
 
 .summary-info {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.summary-header {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .summary-label {
@@ -192,6 +152,13 @@ h3 {
     color: #666;
     display: block;
     margin-bottom: 2px;
+}
+
+.summary-method-price-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .summary-method {
@@ -207,43 +174,69 @@ h3 {
 }
 
 .summary-cost-section {
-    text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
 }
 
 .summary-cost {
-    font-weight: bold;
-    font-size: 1.2rem;
     color: #28a745;
 }
 
-.btn-change {
-    background: none;
-    border: none;
-    color: #007bff;
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 0.85rem;
-    padding: 0;
-    margin-top: 5px;
-}
-
-.btn-change:hover {
-    color: #0056b3;
-}
-
 .btn-confirm {
-    margin-top: 20px;
-    width: 100%;
+    display: block;
+    margin: 0 auto;
+    width: 300px;
     background: #28a745;
     color: white;
     border: none;
     padding: 12px;
     border-radius: 8px;
-    font-weight: bold;
     cursor: pointer;
     transition: background 0.3s ease;
 }
 
 .btn-confirm:hover {
     background: #218838;
+}
+
+checkout-card {
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+checkout-card:hover {
+    border-color: #32a350ac;
+    transform: translateY(-2px);
+    scale: 1.02;
+    box-shadow: 0 12px 20px rgba(52, 219, 97, 0.1);
+}
+
+.active {
+    border-color: #249900;
+    background-color: #f7fff5;
+}
+
+.active::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #249900;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    background-color: rgb(134, 117, 119);
+    box-shadow: 0 2px 5px rgba(82, 76, 76, 0.1);
 }

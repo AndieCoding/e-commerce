@@ -17,8 +17,6 @@ export const createPreference = async (req, res) => {
 
         const protocol = req.protocol || 'http';
         const host = req.get('host') || 'localhost:3000';
-
-        // Ensure successful URL construction
         const backUrls = {
             success: `https://tienda-mate.vercel.app/`,
             failure: `https://tienda-mate.vercel.app/confirmar-compra`,

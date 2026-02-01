@@ -1,7 +1,5 @@
-import { Menu } from "../navigation/menu.js";
-import { CartController } from "../cart/cart-controller.js";
-import { Carrito } from "../cart/carrito.js";
 import { MetPago } from "./metpago.js";
+import { CheckoutCard } from "../checkout/checkout-card.js";
 
 export class DireEnvio extends HTMLElement {
     constructor() {
@@ -27,6 +25,12 @@ export class DireEnvio extends HTMLElement {
     getTemplate() {
         return `
         <link rel="stylesheet" href="../../css/envio.css">
+        <style>
+            .legend {
+                font-size: 0.6em;
+                color: #666;
+            }
+        </style>
         <div class="shipment-container">
             ${this.user ? this.renderShipmentOptions() : ''}
         </div>
@@ -37,17 +41,8 @@ export class DireEnvio extends HTMLElement {
         return `
             <h3>Método de Envío</h3>
             <div class="shipment-grid">
-                <div class="shipment-card" data-method="sucursal">
-                    <img src="../../img/icons/sucursal.png" alt="Sucursal" class="shipment-icon">
-                    <h4>Retiro en Sucursal</h4>
-                    <p>¡Gratis! Retirá hoy mismo</p>
-                </div>
-
-                <div class="shipment-card" data-method="oca">
-                    <img src="../../img/icons/oca.png" alt="OCA" class="shipment-icon">
-                    <h4>Correo OCA</h4>
-                    <p>Envío a todo el país (3-5 días)</p>
-                </div>
+                <checkout-card img="/img/icons/sucursal.png" title="Retiro en Sucursal" description="¡Gratis! Retirá hoy mismo" data-method="sucursal"></checkout-card>
+                <checkout-card img="/img/icons/oca.png" title="Correo OCA" description="Envío a todo el país (3-5 días)" data-method="oca"></checkout-card>
             </div>
 
             <div id="shipment-details" class="hidden">
@@ -60,7 +55,8 @@ export class DireEnvio extends HTMLElement {
                     </div>
                 </div>
 
-                <div id="details-oca" class="details-section hidden">
+                <div id="details-oca" class="details-section">
+                <div class="form-envio">
                     <div class="form-group">
                         <label>Código Postal</label>
                         <input type="text" id="cp" placeholder="B2600">
@@ -77,13 +73,12 @@ export class DireEnvio extends HTMLElement {
                         <label>Calle y Altura</label>
                         <input type="text" id="calle" placeholder="Calle 123">
                     </div>
+                    </div>
+                    <div class="shipping-cost-summary">
+                        <p>Costo de Envío:</p>
+                        <p id="cost-display" class="cost-value">$0.00</p>
+                    </div>
                 </div>
-
-                <div class="shipping-cost-summary">
-                    <span>Costo de Envío:</span>
-                    <span id="cost-display" class="cost-value">$0.00</span>
-                </div>
-                
                 <button id="btn-continue" class="btn-confirm hidden">
                     CONTINUAR
                 </button>
@@ -103,9 +98,8 @@ export class DireEnvio extends HTMLElement {
     }
 
     setupListeners() {
-        const cards = this.shadowRoot.querySelectorAll('.shipment-card');
+        const cards = this.shadowRoot.querySelectorAll('checkout-card');
         const detailsContainer = this.shadowRoot.querySelector('#shipment-details');
-
         cards.forEach(card => {
             card.addEventListener('click', () => {
                 const method = card.dataset.method;
@@ -126,15 +120,16 @@ export class DireEnvio extends HTMLElement {
 
     selectMethod(method, cards, detailsContainer) {
         this.selectedMethod = method;
-
-        // Update selection UI
         cards.forEach(c => c.classList.remove('active'));
-        this.shadowRoot.querySelector(`.shipment-card[data-method="${method}"]`).classList.add('active');
-
-        // Show details section
+        this.shadowRoot.querySelector(`checkout-card[data-method="${method}"]`).classList.add('active');
         detailsContainer.classList.remove('hidden');
+
         this.shadowRoot.querySelectorAll('.details-section').forEach(s => s.classList.add('hidden'));
         this.shadowRoot.querySelector(`#details-${method}`).classList.remove('hidden');
+        if (method === 'sucursal') {
+            this.shadowRoot.querySelector(`#details-${method}`).style.gridTemplateColumns = '1fr';
+            this.shadowRoot.querySelector(`#details-${method}`).style.justifyItems = 'center';
+        }
 
         this.calculateShipping();
     }
@@ -171,9 +166,9 @@ export class DireEnvio extends HTMLElement {
                         cost = data.price;
                         display.innerHTML = `
                             $${cost.toLocaleString('es-AR', { minimumFractionDigits: 2 })}<br>
-                            <small style="font-size: 0.7em; color: #666;">
-                                ${data.service} (${data.deliveryTime})
-                            </small>
+                            <p class="legend">
+                                ${data.service} <br> (${data.deliveryTime})
+                            </p>
                         `;
                         display.classList.remove('cost-pending');
                     } else {
@@ -182,7 +177,7 @@ export class DireEnvio extends HTMLElement {
                 } catch (error) {
                     console.error('Shipping calculation error:', error);
                     display.textContent = 'Error al calcular. Reintente.';
-                    cost = 2500; // Fallback
+                    cost = 4500;
                 }
             } else {
                 cost = 0;
@@ -191,15 +186,13 @@ export class DireEnvio extends HTMLElement {
             }
         }
 
-        this.shippingCost = cost;
-
-        // Show continue button when method is selected and cost is calculated
         const btnContinue = this.shadowRoot.querySelector('#btn-continue');
         if (btnContinue && this.selectedMethod && cost !== null) {
             btnContinue.classList.remove('hidden');
         }
 
-        // Dispatch event for other components (like Total display)
+        /* Dispatch event for other components (like Total display)
+        this.shippingCost = cost;
         this.dispatchEvent(new CustomEvent('shippingCostUpdated', {
             detail: {
                 method: this.selectedMethod,
@@ -208,7 +201,7 @@ export class DireEnvio extends HTMLElement {
             },
             bubbles: true,
             composed: true
-        }));
+        }));*/
     }
 
     confirmShipping() {
@@ -226,18 +219,22 @@ export class DireEnvio extends HTMLElement {
         summary.innerHTML = `
             <div class="summary-card">
                 <div class="summary-info">
-                    <span  class="summary-label">Método de envío seleccionado</span>
-                    <p class="summary-method">${this.selectedMethod === 'sucursal' ? 'Retiro en Sucursal' : 'Envío a Domicilio'}</p>
-                    <div class="summary-location">
-                        ${this.selectedMethod === 'sucursal' ? 'Venado Tuerto, Santa Fe' : this.shadowRoot.querySelector('#localidad')?.value || 'Domicilio'}
+                    <div class="summary-header">
+                        <img id="back-arrow" src="/img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
+                        <span  class="summary-label">Método de envío seleccionado</span>
                     </div>
-                </div>
+                    <div class="summary-method-price-container">
+                        <p class="summary-method">${this.selectedMethod === 'sucursal' ? 'Retiro en Sucursal' : 'Envío a Domicilio'}</p>
+                        <p class="summary-cost">
+                            ${this.shippingCost === 0 ? 'GRATIS' : `$${this.shippingCost.toLocaleString('es-AR')}`}
+                        </p>
+                    </div>
+                    <div class="summary-location">
+                        ${this.selectedMethod === 'sucursal' ? 'Venado Tuerto, Santa Fe' : this.shadowRoot.querySelector('#localidad')?.value || 'Belgrano 768'}
+                    </div>
+                    </div>
                 <div class="summary-cost-section">
-                    <span class="summary-cost">
-                        ${this.shippingCost === 0 ? 'GRATIS' : `$${this.shippingCost.toLocaleString('es-AR')}`}
-                    </span>
-                    <br>
-                    <button id="btn-change" class="btn-change">Cambiar</button>
+                                        
                 </div>
             </div>
         `;
@@ -246,9 +243,9 @@ export class DireEnvio extends HTMLElement {
 
         const container = this.shadowRoot.querySelector('.shipment-container');
         container.appendChild(summary);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Add functionality to "Change" button
-        summary.querySelector('#btn-change').addEventListener('click', () => {
+        summary.querySelector('#back-arrow').addEventListener('click', () => {
             summary.remove();
             if (title) title.style.display = 'block';
             cardsContainer.classList.remove('hidden');
