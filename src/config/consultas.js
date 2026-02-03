@@ -1,6 +1,7 @@
 import { getConn } from "./db.js";
 import { Factura } from "../../public/js/models/factura.js";
 import { Producto } from "../../public/js/models/producto.js";
+import { UserB } from "../../public/js/models/user-b.js";
 
 
 async function AltaProductos(product) {
@@ -270,6 +271,30 @@ async function getSuggestions(tipo, value) {
 	}
 	catch (err) {
 		console.log("Error getting suggestions");
+		console.log(err);
+	}
+	finally {
+		conn.release();
+	}
+}
+
+async function getUser(id) {
+	let conn = await getConn();
+	try {
+		const [rows] = await conn.query(
+			`SELECT * FROM usuarios WHERE ID_US = ?`,
+			[id]
+		);
+
+		if (!rows || rows.length === 0) {
+			return null;
+		}
+
+		const user = new UserB(rows[0]);
+		return user;
+	}
+	catch (err) {
+		console.log("Error getting user");
 		console.log(err);
 	}
 	finally {
@@ -584,60 +609,45 @@ async function LoginOrRegisterWithGoogle(profile) {
 	let conn = await getConn();
 	try {
 		const issuer = 'https://accounts.google.com';
-		console.log('Buscando credenciales en DB.', profile.id);
+		const googleId = profile.id;
+		//Usuario y credenciales
 		const [rows] = await conn.query(
-			`SELECT * FROM federated_credentials WHERE provider = ? AND subject = ?`,
-			[issuer, profile.id]
+			`SELECT u.* FROM usuarios u
+			JOIN federated_credentials fc ON u.ID_US = fc.user_id
+			WHERE fc.provider = ? AND fc.subject = ?`,
+			[issuer, googleId]
+		);
+		if (rows.length > 0) {
+			return new UserB(rows[0]);
+		}
+
+		//Si no existe, chequeo email por si se registró manualmente
+		const email = profile.emails[0].value;
+		const [existing] = await conn.query('SELECT * FROM usuarios WHERE email = ?', [email]);
+
+		let user;
+		if (existing.length > 0) {
+			user = existing[0];
+		} else {
+			//Nuevo usuario
+			const [result] = await conn.query(
+				`INSERT INTO usuarios(nombre, email) VALUES (?, ?)`,
+				[profile.displayName, email]
+			);
+			user = { ID_US: result.insertId, nombre: profile.displayName, email: email, TIPO: 'us' };
+		}
+
+		// Insertar en tabla federada
+		await conn.query(
+			'INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)',
+			[user.ID_US, issuer, googleId]
 		);
 
-		if (rows.length > 0) {
-			const userId = rows[0].user_id || rows[0].USER_ID;
-			console.log('Conectando con registros locales');
-			const [userRows] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
+		return new UserB(user);
 
-			if (userRows.length === 0) {
-				console.log('No se encontro el usuario en registros locales');
-				return null;
-			}
-			return userRows[0];
-		} else {
-			console.log('Usuario no registrado');
-			const email = profile.emails[0].value;
-			console.log('Verificando si el email existe en DB local. \n', email);
-			const [existingUserRows] = await conn.query('SELECT * FROM usuarios WHERE email = ?', [email]);
-
-			let userId;
-			let user;
-
-			if (existingUserRows.length > 0) {
-				console.log('El usuario ya existe en DB local, ID:', existingUserRows[0].ID_US);
-				userId = existingUserRows[0].ID_US;
-				user = existingUserRows[0];
-			} else {
-				console.log('Creando nuevo usuario desde perfil de Google');
-				const nombre = profile.displayName;
-				const [result] = await conn.query(
-					`INSERT INTO usuarios(nombre, email) VALUES (?, ?)`,
-					[nombre, email]
-				);
-				userId = result.insertId;
-				console.log('Nuevo usuario creado con ID:', userId);
-
-				const [newUser] = await conn.query('SELECT * FROM usuarios WHERE ID_US = ?', [userId]);
-				user = newUser[0];
-			}
-
-			console.log('Creando enlace de credenciales federadas');
-			await conn.query(
-				'INSERT INTO federated_credentials (user_id, provider, subject) VALUES (?, ?, ?)',
-				[userId, issuer, profile.id]
-			);
-			console.log('Registro completado')
-			return user;
-		}
 	} catch (err) {
-		console.log("DB ERROR in LoginOrRegisterWithGoogle:", err);
-		return null;
+		console.error('Error en estrategia Google:', err);
+		throw err;
 	} finally {
 		conn.release();
 	}
@@ -1059,26 +1069,38 @@ async function selectStock(product, conn) {
 async function updateUserData(userId, data) {
 	let conn = await getConn();
 	try {
-		let option = Object.keys(data)[0];
-		const value = data[option];
+		const key = Object.keys(data)[0];
+		const value = data[key];
 
 		if (value === undefined || value === "") {
 			console.log('Sin valores para actualizar')
 			return;
 		}
 
-		if (option === 'PASSWORD') {
-			option = 'PASS';
+		const fieldMapping = {
+			'NOMBRE': 'NOMBRE',
+			'DOMICILIO': 'DOMIC',
+			'CIUDAD': 'CIUD',
+			'DNI': 'DNI',
+			'PASSWORD': 'PASS'
+		};
+		let dbColumn = fieldMapping[key];
+
+		if (!dbColumn) {
+			console.log(`Campo no permitido o desconocido: ${key}`);
+			return;
 		}
+
 		const [rows] = await conn.query(
-			`UPDATE usuarios SET ${option} = ? WHERE ID_US = ?`, [
+			`UPDATE usuarios SET ${dbColumn} = ? WHERE ID_US = ?`, [
 			value, userId
 		]);
-		console.log(`${option} updated`);
+		console.log(`${dbColumn} updated`);
 		return [rows];
 
 	} catch (err) {
 		console.log("Update error", err);
+		throw err;
 	} finally {
 		conn.release();
 	}
@@ -1160,6 +1182,7 @@ export default {
 	getFichaFacturacion,
 	getGananciasBrutas,
 	getNFactura,
+	getUser,
 	getVentasDiarias,
 	getVentasAcumuladas,
 	getVentasTotales,

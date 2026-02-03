@@ -1,6 +1,5 @@
 import { Carrito } from '../cart/carrito.js';
 import { CartController } from '../cart/cart-controller.js';
-import { User } from '../../models/user.js';
 import { dropdownUsuario } from './dropdown-usuario.js';
 import '../../front/app.js';
 
@@ -9,8 +8,8 @@ export class Menu extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
-        window.addEventListener('userUpdated', (e) => {
-            this.user = e.detail;
+        window.addEventListener('userUpdated', async (e) => {
+            this.user = await e.detail;
             this.render();
         });
 
@@ -268,7 +267,7 @@ export class Menu extends HTMLElement {
                         <li>
                             <div class="contenedor-imagen-usuario">
                             ${this.user ?
-                `<img id="icono-usuario" class="nav-icons user" src="${(this.user.FOTO && this.user.FOTO !== "null") ? this.user.FOTO : "/img/icons/sin-foto.svg"}" loading="lazy" />`
+                `<img id="icono-usuario" class="nav-icons user" src="${this.user.foto}" loading="lazy" />`
                 : `<a class="nav-item" href="/login">Ingresar</a>`}                                
                             </div>
                         </li>
@@ -313,7 +312,6 @@ export class Menu extends HTMLElement {
         };
 
         window.addEventListener('userUpdated', this._onUserUpdated);
-
         window.checkAuth;
     }
 
@@ -396,7 +394,6 @@ export class Menu extends HTMLElement {
 
     toggleCart() {
         document.dispatchEvent(new CustomEvent('toggleCarrito'));
-        console.log('toggleCarrito - icon pulsado');
     }
 
     showLookupInput() {

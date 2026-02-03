@@ -1,23 +1,8 @@
-import { User } from "./user.js";
+import { UserB } from "./user-b.js";
 
 export class Manager {
     constructor() {
     }
-    async consultarNFactura() {
-        let response, error;
-        try {
-            response = await fetch(`/api/nfactura`);
-        } catch (err) {
-            error = err;
-        }
-        const data = await response.json();
-        if (data.success) {
-            return data;
-        } else {
-            throw error;
-        }
-    }
-
     async registrarVenta(formData) {
         let response, error;
         try {
@@ -34,15 +19,11 @@ export class Manager {
             throw error;
         }
     }
-
-    async actualizar(data) {
+    async actualizar(data, id_user) {
         try {
-            const user = new User(JSON.parse(localStorage.getItem('user')));
-            const userId = user.ID;
-
             const isFormData = data instanceof FormData;
 
-            const response = await fetch(`/api/update/${userId}`, {
+            const response = await fetch(`/api/update/${id_user}`, {
                 method: "PUT",
                 body: isFormData ? data : JSON.stringify(data),  // Send FormData if available
                 headers: !isFormData
@@ -55,57 +36,14 @@ export class Manager {
             const dataResponse = await response.json();
 
             if (dataResponse.success) {
-                const dataValues = isFormData ? [...data.entries()] : Object.entries(data);
-                user.setProperty(dataValues[0][0], dataValues[0][1]);
-                localStorage.setItem('user', user.stringify());
-
+                console.log('Actualización exitosa', dataResponse);
             }
             return dataResponse;
 
         } catch (err) {
-            console.error("Error:", err);
+            console.error("Error al actualizar:", err);
         }
     };
-    async guardarFactura(image, nFactura) {
-        try {
-            const user = new User(JSON.parse(localStorage.getItem('user')));
-            let response;
-
-            if (nFactura) {
-                console.log('fetch segun el sistema')
-                response = await fetch(`/api/guardarFactura/sistema/${nFactura}`, {
-                    method: "POST",
-                    body: image
-                });
-            } else {
-                response = await fetch(`/api/guardarFactura/${user.ID}`, {
-                    method: "POST",
-                    body: image
-                });
-            }
-            return response.json();
-        }
-        catch (err) {
-            console.log(err);
-        }
-    }
-    async guardarRemito(image) {
-        try {
-            let response;
-
-
-            response = await fetch(`/api/guardarRemito`, {
-                method: "POST",
-                body: image
-            });
-
-            console.log(response);
-            return response.json();
-        }
-        catch (err) {
-            console.error(err);
-        }
-    }
     async registro(data) {
 
         try {
@@ -137,7 +75,6 @@ export class Manager {
             return { success: false, message: "Error de conexión al intentar registrarse." };
         };
     }
-
     async ingresar(data) {
 
         const credentials = { email: data.email, pass: data.pass };
@@ -154,7 +91,7 @@ export class Manager {
             const result = await response.json();
 
             if (result.success) {
-                const user = new User(result.user);
+                const user = new UserB(result.user);
                 localStorage.setItem('user', user.stringify());
             }
             return result;

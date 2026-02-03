@@ -2,7 +2,7 @@ import '../turbo.js';
 import { Card } from '../components/products/card.js';
 import { Categoria } from '../components/index/categoria.js';
 import { Filtros } from '../components/products/filtros.js';
-import { User } from "../models/user.js";
+import { UserB } from "../models/user-b.js";
 import { UserTools } from '../components/user/user-tools.js';
 import { Footer } from '../components/navigation/footer.js';
 import { Menu } from '../components/navigation/menu.js';
@@ -65,9 +65,6 @@ window.lineOptions = {
     }
 };
 
-if (!window.user) {
-    window.user = new User();
-}
 let verificandoActualmente = false;
 window.checkAuth = async function checkAuth(force = false) {
     if (verificandoActualmente) return;
@@ -97,7 +94,6 @@ window.checkAuth = async function checkAuth(force = false) {
             localStorage.removeItem('lastAuthCheck');
         }
         window.dispatchEvent(new CustomEvent('userUpdated', { detail: window.user }));
-
         return auth.logged;
     } catch (error) {
         console.error("Error al verificar sesión:", error);
@@ -180,7 +176,7 @@ if (!window.appListenersAttached) {
     window.addEventListener('userUpdated', (event) => {
         const $previewImage = document.querySelector('#previewImage');
         if ($previewImage) {
-            let foto = event.detail.FOTO;
+            let foto = event.detail.foto;
             if (foto && foto !== null) {
                 $previewImage.style.backgroundImage = `url(${foto})`;
             } else {
@@ -396,9 +392,9 @@ function cargarMiFoto() {
             $saveBtn.disabled = true;
 
             const formData = new FormData();
-            formData.append('FOTO', file);
+            formData.append('foto', file);
             formData.append('type', 'profile');
-            formData.append('id', user.ID);
+            formData.append('id', user.id);
 
             try {
                 const response = await fetch(`/api/update/profile`, {
@@ -450,25 +446,24 @@ function cargarMisDatos() {
     Object.keys(user).forEach(key => {
         const $userTools = document.createElement('user-tools');
         $userTools.setAttribute('name', key);
-        if (key == 'ID' || key == 'APELLIDO' || key === 'FOTO' || key === 'TIPO' || key === 'EMAIL_VERIF') {
+        if (key === 'foto' || key === 'tipo' || key === 'email_verif') {
             return;
         }
         $userTools.innerHTML = `
-            <label slot="label">${key}</label>
+            <label slot="label">${key.toUpperCase()}</label>
         `;
         $userFormSection.appendChild($userTools);
     });
-
 }
 
 function cargarFotoPerfil(misDatosLink) {
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user.FOTO && user.FOTO !== "null") {
+    if (user.foto) {
 
         if (misDatosLink) {
             misDatosLink.innerHTML = `<div id="foto-perfil-icon" class="foto-perfil-icon" alt="Foto de perfil">`;
             const fotoPerfilIcon = document.getElementById('foto-perfil-icon');
-            fotoPerfilIcon.style.backgroundImage = `url(${user.FOTO})`;
+            fotoPerfilIcon.style.backgroundImage = `url(${user.foto})`;
         }
     }
 }

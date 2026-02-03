@@ -951,12 +951,12 @@ dire-envio {
     margin-bottom: 10px;
 }
 
-
 /*CONFIGURAR USUARIO*/
 .user-panel {
-    margin: 40px auto;
+    margin: 5px auto;
+    margin-bottom: 40px;
     max-width: 1200px;
-    min-height: 80vh;
+    height: 80vh;
     display: grid;
     grid-template-columns: 1fr;
     justify-items: center;
@@ -1091,10 +1091,15 @@ dire-envio {
 
     .quick-links-mobile {
         display: flex;
+        flex-direction: column;
+        justify-content: center;
+        max-width: 800px;
+        height: 100%;
     }
 
     .user-card,
     .history-card {
+        box-sizing: border-box;
         padding: 20px;
         box-shadow: none;
         background: white;
@@ -1139,9 +1144,6 @@ dire-envio {
         margin-bottom: 15px;
     }
 
-    .user-panel {
-        display: block !important;
-    }
 }
 
 @media (min-width: 900px) {
@@ -1393,17 +1395,7 @@ user-tools {
 }
 
 historial-facturas {
-    opacity: 0;
-    transition: opacity 0.4s ease-in-out;
     border-radius: 10px;
-
-    @media (width<900px) {
-        display: none;
-    }
-
-    @media (width>=900px) {
-        opacity: 1;
-    }
 }
 
 form#editar {

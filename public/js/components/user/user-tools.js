@@ -114,13 +114,12 @@ export class UserTools extends HTMLElement {
     }
 
     checkProperty() {
-        return this.userData[this.name] !== "" ||
-            this.userData[this.name] !== 'PASSWORD' ||
+        return this.userData[this.name] !== 'foto' ||
             this.userData.hasOwn(this.name);
     }
 
     verificarValor() {
-        if (this.userData[this.name] == null || this.userData[this.name] == undefined) {
+        if (this.userData[this.name] == null || this.userData[this.name] == '') {
             return 'Agregar ' + this.name.toLowerCase()
         } else {
             return this.userData[this.name];
@@ -232,9 +231,11 @@ export class UserTools extends HTMLElement {
         this.userData[this.name] = newValue;
         p.textContent = newValue;
         input.replaceWith(p);
-        const response = this.manager.actualizar({ [this.name]: newValue });
+        const response = this.manager.actualizar({ [this.name]: newValue }, this.userData.ID);
+        console.log(this.userData.ID)
         if (response.success) {
-            this.userData[this.name] = newValue;
+            user[this.name] = newValue;
+            localStorage.setItem('user', JSON.stringify(user));
             this.render();
         }
     }

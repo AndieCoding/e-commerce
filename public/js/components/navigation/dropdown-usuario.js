@@ -3,7 +3,7 @@ export class dropdownUsuario extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         let user = JSON.parse(localStorage.getItem('user'));
-        this.admin = user.TIPO === 'ad' ? true : false;
+        this.admin = user.tipo;
     }
     getStyles() {
         return `
@@ -18,7 +18,7 @@ export class dropdownUsuario extends HTMLElement {
             .contenedor-dropdown {
                 position: relative;
                 width:200px;
-                height: 95px;
+                height: ${this.tipo ? '95px' : '50px'};
             }
             .dropdown-usuario{
                 font-family: 'Roboto', Arial;                

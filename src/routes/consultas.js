@@ -635,8 +635,6 @@ router.post("/update/profile", upload.single('FOTO'), async (req, res) => {
     }
 });
 
-
-
 router.post("/contact", async (req, res) => {
     const { nombre, email, asunto, mensaje } = req.body;
     if (!nombre || !email || !asunto || !mensaje) {
@@ -689,19 +687,33 @@ router.post("/contact", async (req, res) => {
 });
 
 //Actualizar usuario sin foto
-router.put("/update/:userNumber", upload.single('FOTO'), async (req, res) => {
-
+router.put("/update/:userNumber", async (req, res) => {
     try {
         const userId = Number(req.params.userNumber);
         const updateData = req.body;
 
         const [result] = await consultaDb.updateUserData(userId, updateData);
-        if (result.affectedRows > 0) {
-            console.log('Datos actualizados');
-            res.status(200).json({
-                success: true,
-                message: 'Datos actualizados',
-                userData: result[0]
+
+        if (result && result.affectedRows > 0) {
+            if (req.user) {
+                const key = Object.keys(updateData)[0];
+                const value = updateData[key];
+                req.user[key] = value;
+            }
+            req.login(req.user, (err) => {
+                if (err) {
+                    console.error("Error al re-loguear:", err);
+                    return res.status(500).json({ success: false });
+                }
+
+                req.session.save(() => {
+                    console.log(req.user)
+                    return res.json({
+                        message: 'Perfil actualizado',
+                        success: true,
+                        user: req.user
+                    });
+                });
             });
         } else {
             console.log('Datos no actualizados');
@@ -711,7 +723,8 @@ router.put("/update/:userNumber", upload.single('FOTO'), async (req, res) => {
             });
         }
     } catch (err) {
-        res.status(404).json({ success: false, message: "User not found" });
+        console.error("Error updating user:", err);
+        res.status(500).json({ success: false, message: "Error interno del servidor" });
     }
 });
 

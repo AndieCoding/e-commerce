@@ -3,6 +3,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import consultaDb from '../config/consultas.js';
 
+
 var router = express.Router();
 
 router.get('/login/federated/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
@@ -18,7 +19,7 @@ router.get('/api/me', (req, res) => {
         console.log('User is authenticated:', req.user);
         res.json({
             logged: true,
-            user: req.user
+            user: req.user.toClient()
         });
     } else {
         console.log('User is NOT authenticated');
@@ -26,20 +27,21 @@ router.get('/api/me', (req, res) => {
     }
 });
 
-passport.use(new GoogleStrategy({
+const GOOGLE_AUTH_CONFIG = {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: '/oauth2/redirect/google',
     proxy: true
-}, async function verify(accessToken, refreshToken, profile, cb) {
-    console.log('Google Verify Callback reached for:', profile.displayName);
+}
+
+passport.use(new GoogleStrategy(GOOGLE_AUTH_CONFIG, async function verify(accessToken, refreshToken, profile, cb) {
     try {
         const user = await consultaDb.LoginOrRegisterWithGoogle(profile);
         if (!user) {
             console.log('Error en el login o registro');
             return cb(null, false);
         }
-        console.log('Login exitoso. Usuario:', user.NOMBRE);
+        console.log('Login exitoso. Usuario:', user.nombre);
         return cb(null, user);
     } catch (err) {
         console.error("Error en autenticación Google:", err);
@@ -53,6 +55,7 @@ router.post('/logout', function (req, res, next) {
         res.json({ success: true, message: 'Usuario deslogueado exitosamente' });
     });
 });
+/*
 passport.serializeUser(function (user, cb) {
     process.nextTick(function () {
         cb(null, user);
@@ -64,5 +67,21 @@ passport.deserializeUser(function (user, cb) {
         return cb(null, user);
     });
 });
+*/
+passport.serializeUser(function (user, cb) {
+    cb(null, user.id);
+});
 
+// En cada petición, busco todos los datos
+passport.deserializeUser(async function (id, cb) {
+    try {
+        const user = await consultaDb.getUser(id);
+        if (!user) {
+            return cb(null, false);
+        }
+        cb(null, user);
+    } catch (err) {
+        cb(err);
+    }
+});
 export default router;

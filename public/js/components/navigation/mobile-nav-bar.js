@@ -1,56 +1,12 @@
 import { CartController } from '../cart/cart-controller.js';
-import { User } from '../../models/user.js';
 
 export class MobileNavBar extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
-        try {
-            const logged = localStorage.getItem('user');
-            this.user = logged ? new User(JSON.parse(logged)) : null;
-        } catch (e) {
-            this.user = null;
-        }
+        this.user = JSON.parse(localStorage.getItem('user'));
     }
-
-    async checkAuth() {
-        try {
-            const response = await fetch('/api/me');
-            const auth = await response.json();
-            if (auth.logged) {
-                this.user = new User(auth.user);
-                localStorage.setItem('user', JSON.stringify(this.user));
-            } else {
-                this.user = null;
-                localStorage.removeItem('user');
-            }
-            this.render();
-            window.dispatchEvent(new CustomEvent('userUpdated', { detail: this.user }));
-        } catch (error) {
-            console.error("Error al verificar sesión en móvil:", error);
-        }
-    }
-
-    connectedCallback() {
-        this.render();
-        this.checkAuth();
-
-        if (!this.hasGlobalListeners) {
-            document.addEventListener('actualizarTotalProducts', (event) => {
-                const badge = this.shadowRoot.querySelector('#cart-badge');
-                if (badge) {
-                    badge.textContent = event.detail !== undefined ? event.detail : this.cartController.getTotalProducts();
-                }
-            });
-            window.addEventListener('userUpdated', (e) => {
-                this.user = e.detail;
-                this.render();
-            });
-            this.hasGlobalListeners = true;
-        }
-    }
-
     getStyles() {
         return `
         <style>
@@ -167,16 +123,12 @@ export class MobileNavBar extends HTMLElement {
         </style>
         `;
     }
-
-    render() {
+    getTemplate() {
         const currentPath = window.location.pathname;
         const userLink = this.user ? '/user_menu' : '/login';
         const userLabel = this.user ? 'Perfil' : 'Ingresar';
-        const userIcon = (this.user && this.user.FOTO && this.user.FOTO !== 'null')
-            ? this.user.FOTO
-            : '/img/icons/sin-foto.svg';
-
-        this.shadowRoot.innerHTML = `
+        const template = document.createElement('template');
+        template.innerHTML = `
             ${this.getStyles()}
             <nav class="nav-container">
                 <a href="/" class="nav-item ${currentPath === '/' ? 'active' : ''}">
@@ -195,11 +147,16 @@ export class MobileNavBar extends HTMLElement {
                     <span>Carrito</span>
                 </div>
                 <a href="${userLink}" class="nav-item ${currentPath === userLink ? 'active' : ''} ${this.user ? 'profile-img' : ''}">
-                    <img src="${userIcon}" alt="${userLabel}">
+                    <img src="${this.user.foto ? this.user.foto : '/img/icons/user.svg'}" alt="${userLabel}" loading="lazy">
                     <span>${userLabel}</span>
                 </a>
             </nav>
         `;
+        return template.content.cloneNode(true);
+    }
+    render() {
+        this.shadowRoot.innerHTML = '';
+        this.shadowRoot.appendChild(this.getTemplate());
 
         const btnCarrito = this.shadowRoot.querySelector('#btn-carrito');
         if (btnCarrito) {
@@ -207,15 +164,31 @@ export class MobileNavBar extends HTMLElement {
                 document.dispatchEvent(new CustomEvent('toggleCarrito'));
             });
         }
-        this.addEventListeners();
+    }
+    connectedCallback() {
+        this.render();
+
+        this._actualizarBadge = () => {
+            const badge = this.shadowRoot.querySelector('#cart-badge');
+            if (badge) {
+                badge.textContent = this.cartController.getTotalProducts();
+            }
+        }
+        document.addEventListener('actualizarTotalProducts', this._actualizarBadge);
+
+        this._onUserUpdated = (e) => {
+            this.user = e.detail;
+            if (this.isConnected && this.user) { this.render(); }
+        };
+        window.addEventListener('userUpdated', this._onUserUpdated);
+
+    }
+    disconnectedCallback() {
+        document.removeEventListener('actualizarTotalProducts', this._actualizarBadge);
+        window.removeEventListener('userUpdated', this._onUserUpdated);
     }
 
-    addEventListeners() {
-        window.addEventListener('userUpdated', (e) => {
-            this.user = e.detail;
-            this.render();
-        });
-    }
 }
+
 
 customElements.define('mobile-nav-bar', MobileNavBar);

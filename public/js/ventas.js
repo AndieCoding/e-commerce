@@ -1,9 +1,3 @@
-import { CartController } from './components/cart/cart-controller.js';
-import { Carrito } from './components/cart/carrito.js';
-import { Menu } from './components/navigation/menu.js';
-import { AdminNav } from './components/navigation/admin-nav.js';
-import { AdminMobileNavBar } from './components/navigation/admin-mobile-nav-bar.js';
-import { Footer } from './components/navigation/footer.js';
 import { ModalAgradecimiento } from './components/user/modal-agradecimiento.js';
 
 
