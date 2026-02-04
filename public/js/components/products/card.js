@@ -1,9 +1,12 @@
+import { Producto } from '../../models/producto.js';
+
 export class Card extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
         this.tipo = 'grid';
         this.isLoading = false;
+        this.item = null;
     }
     static get observedAttributes() {
         return ['tipo', 'loading'];
@@ -17,6 +20,15 @@ export class Card extends HTMLElement {
             this.isLoading = newValue === 'true';
             this.render();
         }
+    }
+
+    set data(value) {
+        this._item = value instanceof Producto ? value : new Producto(value);
+        this.render();
+    }
+
+    get data() {
+        return this._item;
     }
 
     connectedCallback() {
@@ -114,28 +126,9 @@ export class Card extends HTMLElement {
     }
 
     renderContent() {
-        const productId = this.getAttribute('id');
-        const productImage = this.getAttribute('image') || '';
-        const productName = this.getAttribute('name') || 'Product Name';
-        const productPrice = this.getAttribute('price') || 0;
-        const productOferta = this.getAttribute('oferta') || '';
-        const productMarca = this.getAttribute('marca') || 'Product Marca';
-        const productDescription = this.getAttribute('description') || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
-        const productType = this.getAttribute('type') || 'Product Type';
-        let stock = this.getAttribute('stock') || 0;
-        let stockClass = '';
-        let stockState = '';
-
-        if (stock > 9) {
-            stockState = 'Disponible';
-            stockClass = 'green';
-        } else if (stock < 1) {
-            stockState = 'Agotado';
-            stockClass = 'gray';
-        } else if (stock < 10) {
-            stockState = stock;
-            stockClass = '#c5640aff';
-        }
+        const { id, nombre, imagen, stockInfo, precioHtml, estaAgotado } = this._item;
+        let stockClass = stockInfo.class;
+        let stockState = stockInfo.state;
 
         this.shadowRoot.innerHTML = `
         <style>
@@ -472,23 +465,23 @@ export class Card extends HTMLElement {
             </style>
 
             <div class="card ${this.tipo === 'list' ? 'list' : ''}">
-                <a href="/detalle?id=${productId}">
+                <a href="/detalle?id=${id}">
                     <div class="img">
-                        <img src="${productImage}" alt="${productName}" loading="lazy">
+                        <img src="${imagen}" alt="${nombre}" loading="lazy">
                     </div>
                 </a>
                 <section class="descripcion">
                     <div class="product-info">
-                        <a class="product-name" href="/detalle?id=${productId}">
-                            <p>${productName}</p>
+                        <a class="product-name" href="/detalle?id=${id}">
+                            <p>${nombre}</p>
                         </a>
                         <div class="product-price">
                             <p class="stock">
                                 <span class="dot">&#8226;</span>
-                                ${this.evaluarStock(stockClass, stockState, stock)}
+                                ${stockState}
                             </p>
                             <h4 class="price">
-                                ${this.evaluarOferta(stock, productPrice, productOferta)}
+                                ${precioHtml}
                             </h4>
                         </div>
                     </div>                 
@@ -498,7 +491,7 @@ export class Card extends HTMLElement {
                 </section>
                 <section class="buttons-section">
                     <div class="buttons">
-                        <a id="btn-agregar" class="agregar ${stock === 'Agotado' ? 'disabled' : ''}">
+                        <a id="btn-agregar" class="agregar ${estaAgotado ? 'disabled' : ''}">
                             <span class="btn-text">Agregar al carrito</span><img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart" loading="lazy">
                         </a>                        
                     </div>
@@ -506,55 +499,21 @@ export class Card extends HTMLElement {
             </div>
         `;
 
-        this.shadowRoot.querySelector('.agregar').addEventListener('click', (event) => {
+        this.addEventListeners();
+    }
+    addEventListeners() {
+        const btn = this.shadowRoot.querySelector('.agregar').addEventListener('click', (event) => {
             event.preventDefault();
-
-            this.productData = {
-                P_ID: productId,
-                P_IMG: productImage,
-                P_NOMBRE: productName,
-                P_PRECIO: productPrice,
-                P_DESCRIPCION: productDescription,
-                P_TIPO: productType,
-                P_CANTIDAD: 1,
-                P_STOCK: stock
-            };
-
+            this.shadowRoot.querySelector('.confirmacion').classList.add('show');
+            setTimeout(() => this.shadowRoot.querySelector('.confirmacion').classList.remove('show'), 4000);
             this.dispatchEvent(new CustomEvent('agregarProducto', {
-                detail: this.productData,
+                detail: this.item,
                 bubbles: true,
                 composed: true
             }));
         });
-        this.addEventListeners();
     }
 
-    addEventListeners() {
-        const btnAgregar = this.shadowRoot.querySelector('.agregar');
-        if (btnAgregar) {
-            btnAgregar.addEventListener('click', (event) => {
-                this.shadowRoot.querySelector('.confirmacion').classList.add('show');
-                setTimeout(() => {
-                    this.shadowRoot.querySelector('.confirmacion').classList.remove('show');
-                }, 4000);
-            });
-        }
-    }
-    evaluarStock(stockClass, stockState, stock) {
-        return stockClass === '#c5640aff' ? `${stockState} ${stock < 2 ? 'unidad' : 'unidades'}` : `${stockState}`;
-
-    }
-    evaluarOferta(stock, productPrice, productOferta) {
-        if (stock > 0) {
-            if (parseInt(productOferta) > 0) {
-                return `<span class="old-price">$ ${productPrice}</span><span class="offer-price">$ ${productOferta}</span>`;
-            } else {
-                return `$ ${productPrice}`;
-            }
-        } else {
-            return '$ -';
-        }
-    }
 }
 
 customElements.define('product-card', Card);

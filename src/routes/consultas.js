@@ -404,9 +404,8 @@ router.get("/productos/:categoria", async (req, res) => {
 //Productos para el index
 router.get("/indexProducts", async (req, res) => {
     try {
-
         const indexProducts = await consultaDb.productosIndex();
-        console.log('Productos de index enviados.');
+        console.log('Productos para index enviados correctamente.');
         res.json(indexProducts);
     } catch (err) {
         console.error("Error fetching records:", err);

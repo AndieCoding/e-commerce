@@ -7,8 +7,8 @@ export const isAuthenticated = (req, res, next) => {
 
 export const isAdmin = (req, res, next) => {
     if (req.isAuthenticated()) {
-        const userType = req.user.TIPO ? req.user.TIPO.toLowerCase() : '';
-        if (userType === 'ad') {
+        const esAdmin = req.user.rol === 'ad';
+        if (esAdmin) {
             return next();
         }
     }

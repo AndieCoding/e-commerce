@@ -718,9 +718,9 @@ async function productosIndex() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
-			`SELECT DISTINCT * FROM productos ORDER BY p_precio ASC LIMIT 6`
+			`SELECT * FROM productos ORDER BY p_precio ASC LIMIT 6`
 		);
-		return rows;
+		return rows.map(row => new Producto(row).toClient());
 	}
 	catch (err) {
 		console.log("Error getting top three products");

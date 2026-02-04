@@ -80,14 +80,6 @@ app.use('/api', router);
 app.use('/api/shipping', shippingRouter);
 app.use('/api/payments', paymentRouter);
 
-const soloUsuarios = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    console.log("No autenticado");
-    res.redirect('/login');
-};
-
 // Archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -100,15 +92,15 @@ app.get("/login", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "login.html"));
 });
 
-app.get("/user_menu", /*soloUsuarios*/(req, res) => {
+app.get("/user_menu", isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "user_menu.html"));
 });
 
-app.get("/mis_datos", /*soloUsuarios*/(req, res) => {
+app.get("/mis_datos", isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "mis_datos.html"));
 });
 
-app.get("/mis_compras", /*soloUsuarios*/(req, res) => {
+app.get("/mis_compras", isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "mis_compras.html"));
 });
 
@@ -141,27 +133,27 @@ app.get("/contacto", (req, res) => {
 });
 
 // Rutas de Administración
-app.get("/ventas", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/ventas", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ventas.html"));
 });
 
-app.get("/compras", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/compras", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "compras.html"));
 });
 
-app.get("/ficha", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/ficha", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "ficha-stock.html"));
 });
 
-app.get("/panel-informes", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/panel-informes", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "informes.html"));
 });
 
-app.get("/panel-administrar", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/panel-administrar", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "administrar.html"));
 });
 
-app.get("/panel-altas", /*soloUsuarios*/ isAdmin, (req, res) => {
+app.get("/panel-altas", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "alta-productos.html"));
 });
 

@@ -1,11 +1,33 @@
+import { Producto } from '../../models/producto.js';
+
 export class AdminProductRow extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.isLoading = true;
+        this.tipo = 'list';
+        this._item = null;
+    }
+    static get observedAttributes() {
+        return ['tipo', 'loading'];
+    }
+    attributeChangedCallback(attr, oldValue, newValue) {
+        if (attr === 'tipo') {
+            this.tipo = newValue;
+            this.render();
+        }
+        if (attr === 'loading') {
+            this.isLoading = newValue === 'true';
+            this.render();
+        }
+    }
+    set data(value) {
+        this._item = value instanceof Producto ? value : new Producto(value);
+        this.render();
     }
 
-    static get observedAttributes() {
-        return ['id', 'image', 'name', 'type', 'brand', 'stock', 'price'];
+    get data() {
+        return this._item;
     }
 
     getStyles() {
@@ -111,25 +133,113 @@ export class AdminProductRow extends HTMLElement {
         </style>
         `;
     }
+    render() {
+        this.shadowRoot.innerHTML = '';
+        if (!this._item) {
+            this.renderSkeleton();
+        } else {
+            this.renderContent();
+        }
 
-    getTemplate() {
-        const id = this.getAttribute('id');
-        const image = this.getAttribute('image') || '/img/img/placeholder.png';
-        const name = this.getAttribute('name') || 'Producto sin nombre';
+    }
+
+    renderSkeleton() {
+        this.shadowRoot.innerHTML = `
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');                        
+            * {
+                box-sizing: border-box;
+            }
+            .card {
+                border-radius: 10px;
+                padding: 0.5em 1.2em;                
+                overflow: hidden;
+                box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
+                background-color: white;
+                position: relative;
+                display: flex;
+                flex-direction: column;    
+                
+                gap: 10px;
+            }
+            .card.list {
+                display: grid;
+                grid-template-columns: 1fr 2fr;               
+                width: 100%; 
+                height: 100%;
+                max-width: 800px;
+                gap: 20px;
+                padding: 15px 5px;
+            }
+            .skeleton {
+                background: #eee;
+                background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+                border-radius: 5px;
+                background-size: 200% 100%;
+                animation: 1.5s shine linear infinite;
+            }
+            @keyframes shine {
+                to {
+                    background-position-x: -200%;
+                }
+            }
+            .skeleton-img {
+                height: 170px;
+                width: 100%;
+            }
+            .card.list .skeleton-img {
+                height: 120px;
+            }
+            .skeleton-title {
+                height: 20px;
+                width: 80%;
+                margin: 10px 0;
+            }
+            .skeleton-text {
+                height: 15px;
+                width: 60%;
+            }
+            .skeleton-button {
+                height: 40px;
+                width: 100%;
+                margin-top: 10px;
+            }
+            @media (width<900px) {
+                .card {
+                    padding: 8px;
+                    width: 100%;
+                }
+                .skeleton-img {
+                    height: 100px;
+                }
+            }
+        </style>
+        <div class="card ${this.tipo === 'list' ? 'list' : ''}">
+            <div class="skeleton skeleton-img"></div>
+            <div class="skeleton-info">
+                <div class="skeleton skeleton-title"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-button"></div>
+            </div>
+        </div>
+        `;
+    }
+
+    renderContent() {
+        const { id, nombre, imagen, stock, precioHtml, estaAgotado } = this._item;
+
         const type = this.getAttribute('type') || 'General';
-        const stock = this.getAttribute('stock') || '0';
-        const price = this.getAttribute('price') || '0';
 
         const template = document.createElement('template');
         template.innerHTML = `
             ${this.getStyles()}
             <div class="row">
                 <div class="image-container">
-                    <img src="${image}" alt="${name}" onerror="this.src='/img/placeholder.png'">
+                    <img src="${imagen}" alt="${nombre}" onerror="this.src='/img/placeholder.png'">
                 </div>
                 <div class="info">
-                    <div class="name">${name}</div>
-                    <div class="details">${type} | Stock total: ${stock} | $${price}</div>
+                    <div class="name">${nombre}</div>
+                    <div class="details">${type} | Stock total: ${stock} | $${precioHtml}</div>
                     <!--<a href="/ficha?id=${id}" class="stock-link">Ver detalle de stock</a>-->
                 </div>
                 <div class="actions">
@@ -142,17 +252,14 @@ export class AdminProductRow extends HTMLElement {
                 </div>
             </div>
         `;
-        return template.content.cloneNode(true);
+        this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    render() {
-        this.shadowRoot.innerHTML = '';
-        this.shadowRoot.appendChild(this.getTemplate());
-
+    addEventListeners() {
         this.shadowRoot.querySelector('.btn-delete').addEventListener('click', () => {
             if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
                 this.dispatchEvent(new CustomEvent('delete-product', {
-                    detail: { id: this.getAttribute('id') },
+                    detail: { id: this._item.id },
                     bubbles: true,
                     composed: true
                 }));
@@ -161,7 +268,7 @@ export class AdminProductRow extends HTMLElement {
 
         this.shadowRoot.querySelector('.btn-edit').addEventListener('click', () => {
             this.dispatchEvent(new CustomEvent('edit-product', {
-                detail: { id: this.getAttribute('id') },
+                detail: { id: this._item.id },
                 bubbles: true,
                 composed: true
             }));
@@ -170,10 +277,7 @@ export class AdminProductRow extends HTMLElement {
 
     connectedCallback() {
         this.render();
-    }
-
-    attributeChangedCallback() {
-        this.render();
+        this.addEventListeners();
     }
 }
 

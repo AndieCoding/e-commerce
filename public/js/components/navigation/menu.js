@@ -8,11 +8,7 @@ export class Menu extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
         this.cartController = new CartController();
-        window.addEventListener('userUpdated', async (e) => {
-            this.user = await e.detail;
-            this.render();
-        });
-
+        this.user = JSON.parse(localStorage.getItem('user'));
     }
 
     render() {

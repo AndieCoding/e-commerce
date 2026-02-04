@@ -18,7 +18,7 @@ export class dropdownUsuario extends HTMLElement {
             .contenedor-dropdown {
                 position: relative;
                 width:200px;
-                height: ${this.tipo ? '95px' : '50px'};
+                height: ${this.admin ? '80px' : '40px'};
             }
             .dropdown-usuario{
                 font-family: 'Roboto', Arial;                

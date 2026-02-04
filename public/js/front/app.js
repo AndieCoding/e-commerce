@@ -9,6 +9,7 @@ import { Menu } from '../components/navigation/menu.js';
 import { MobileNavBar } from '../components/navigation/mobile-nav-bar.js';
 import { DireEnvio } from '../components/products/envio.js';
 import { MetPago } from '../components/products/metpago.js';
+import { Producto } from '../models/producto.js';
 
 window.indexProducts = async function indexProducts() {
     const cardsContainer = document.querySelector('#destacados');
@@ -17,7 +18,9 @@ window.indexProducts = async function indexProducts() {
     const response = await fetch('/api/indexProducts');
     const data = await response.json();
     cardsContainer.innerHTML = '';
-    data.forEach(product => { crearCards(cardsContainer, product); });
+    const productos = data.map(product => new Producto(product));
+    productos.forEach(product => { crearCards(cardsContainer, product); });
+
 }
 
 window.consultarProductos = async function consultarProductos(categoria, query) {
@@ -107,9 +110,6 @@ await checkAuth();
 if (!window.appListenersAttached) {
     document.addEventListener('turbo:load', async () => {
         const path = window.location.pathname;
-        if (path.startsWith('/panel') || path.startsWith('/mis_datos')) {
-            await checkAuth();
-        }
         if (path.startsWith('/admin') || path.startsWith('/panel-')) {
             await cargarComponentesAdmin();
         }
@@ -153,7 +153,7 @@ if (!window.appListenersAttached) {
         //panel-informes
         const informesContainer = document.getElementById('informes-container');
         if (informesContainer) {
-            // cargarInformes();
+            //cargarInformes();
         }
 
         //panel-administrar 
@@ -185,13 +185,13 @@ if (!window.appListenersAttached) {
         }
     });
 
-    document.addEventListener("turbo:before-visit", (event) => {
-        const urlDestino = event.detail.url;
+    document.addEventListener("turbo:before-visit", async (event) => {
+        const urlDestino = new URL(event.detail.url);
         const rutasProtegidas = ['/user_menu', '/mis_datos', '/mis_compras', '/panel', '/panel-altas', '/panel-administrar', '/panel-informes'];
-        const esRutaProtegida = rutasProtegidas.some(ruta => urlDestino.startsWith(ruta));
+        const esRutaProtegida = rutasProtegidas.some(ruta => urlDestino.pathname.startsWith(ruta));
 
         if (esRutaProtegida) {
-            const logueado = checkAuth(true);
+            const logueado = await checkAuth(true);
             console.log(`Navegando a: ${urlDestino} | Protegida: ${esRutaProtegida} | Login: ${logueado}`);
             if (!logueado) {
                 event.preventDefault();
@@ -262,16 +262,7 @@ function mostrarSkeletons(container, cantidad) {
 
 function crearCards(container, producto, admin = false) {
     const card = document.createElement(admin ? 'admin-product-row' : 'product-card');
-    const imagenOptimizada = producto.P_IMG.includes('cloudinary')
-        ? producto.P_IMG.replace('/upload/', '/upload/w_400,c_fill,f_auto,q_auto/')
-        : producto.P_IMG;
-    card.setAttribute('id', producto.ID_PROD);
-    card.setAttribute('image', imagenOptimizada);
-    card.setAttribute('name', producto.P_NOMBRE);
-    card.setAttribute('price', producto.P_PRECIO);
-    card.setAttribute('oferta', producto.P_PR_OFERTA || 0);
-    card.setAttribute('marca', producto.P_MARCA);
-    card.setAttribute('stock', producto.P_CANTIDAD);
+    card.data = producto;
     if (document.querySelector('.resultados')) {
         if (document.querySelector('.resultados').classList.contains('grid')) {
             card.setAttribute('tipo', 'grid');
@@ -338,7 +329,7 @@ function cargarProductos() {
 
 function cargarPanelUsuario(quickLinksContainer) {
     const user = JSON.parse(localStorage.getItem('user'));
-    if (user.TIPO === 'ad') {
+    if (user.tipo) {
 
         if (quickLinksContainer) {
             const adminLink = document.createElement('a');
