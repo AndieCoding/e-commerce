@@ -161,11 +161,12 @@ export class Menu extends HTMLElement {
             }
             .badge {
                 position: absolute;
+                padding: 10px;
                 top: -5px;
                 right: -10px;
                 background-color: white;
                 color: var(--custom-green);
-                font-size: 16px;
+                font-size: 14px;
                 font-weight: bold;
                 width: 16px;
                 height: 16px;

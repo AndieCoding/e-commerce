@@ -25,8 +25,6 @@ export class MetPago extends HTMLElement {
         return `
             <h3>Medio de pago</h3>
             <div class="total-summary">
-                <span class="total-label">Total a pagar:</span>
-                <span class="total-amount">$${this.total.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span>
             </div>
 
             <div class="payment-grid">
@@ -47,7 +45,7 @@ export class MetPago extends HTMLElement {
                             <li><strong>Alias:</strong> fan.del.mate</li>
                             <li><strong>CBU:</strong> 0070123456789012345678</li>
                         </ul>
-                        <p>Una vez realizada la transferencia, envianos el comprobante por WhatsApp.</p>
+                        <p>Una vez realizada la transferencia, envianos el comprobante por WhatsApp al +3462 336880 o a nuestro correo elfandelmate@gmail.com.</p>
                     </div>
                 </div>
             </div>
@@ -135,12 +133,14 @@ export class MetPago extends HTMLElement {
     }
 
     async procesarMercadoPago() {
+        //Revisar items: enviar solo ids y cantidades
         const items = this.ticket.map(item => ({
             title: `${item.P_TIPO} ${item.P_NOMBRE}`,
             unit_price: item.P_PRECIO,
-            quantity: item.P_CANTIDAD
+            quantity: item.order_quantity
         }));
 
+        //Revisar payer (en el servidor ya están los datos del usuario)
         const response = await fetch('/api/payments/mp/create_preference', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -178,28 +178,17 @@ export class MetPago extends HTMLElement {
     }
 
     async procesarTransferencia(btn, btnText, originalText) {
-
-        const productosParaBackend = this.ticket.map(item => ({
-            P_TIPO: item.productType,
-            P_ID: item.id,
-            P_CANTIDAD: item.cantidad,
-            P_PRECIO: item.precio,
-            P_NOMBRE: item.nombre,
-            P_MARCA: item.marca
-        }));
-
-        const orderData = {
-            userEmail: this.user.email,
-            productos: productosParaBackend,
-            total: this.total,
-            fecha: new Date().toLocaleDateString('en-CA'), // YYYY-MM-DD format mostly safely parsed
-            empresa: 'Fan del Mate Web'
+        const pedido = {
+            productos: this.ticket.map(p => ({
+                id: p.id,
+                cantidad: p.order_quantity
+            }))
         };
 
-        const response = await fetch('/api/payments/transfer/confirm', {
+        const response = await fetch('/api/registrarVenta', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
+            body: JSON.stringify(pedido)
         });
 
         const result = await response.json();

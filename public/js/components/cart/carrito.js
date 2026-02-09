@@ -9,7 +9,6 @@ export class Carrito extends HTMLElement {
         this.products = [];
 
         this.handleCarrito = () => {
-            console.log('toggleCarrito detectado');
             const carrito = this.shadowRoot.querySelector('.carrito');
             if (carrito) {
                 if (carrito.classList.contains('open')) {

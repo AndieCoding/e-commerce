@@ -77,6 +77,7 @@ export class MobileNavBar extends HTMLElement {
             }
 
             .badge {
+                padding: 10px;
                 position: absolute;
                 top: -8px;
                 right: -12px;                
@@ -147,7 +148,7 @@ export class MobileNavBar extends HTMLElement {
                     <span>Carrito</span>
                 </div>
                 <a href="${userLink}" class="nav-item ${currentPath === userLink ? 'active' : ''} ${this.user ? 'profile-img' : ''}">
-                    <img src="${this.user.foto ? this.user.foto : '/img/icons/user.svg'}" alt="${userLabel}" loading="lazy">
+                    <img src="${this.user.foto !== '' ? this.user.foto : '/img/icons/user.svg'}" alt="${userLabel}" loading="lazy">
                     <span>${userLabel}</span>
                 </a>
             </nav>

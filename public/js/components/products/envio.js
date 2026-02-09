@@ -60,7 +60,7 @@ export class DireEnvio extends HTMLElement {
                         <input type="text" id="cp" placeholder="B2600">
                     </div>
                     <div class="form-group">
-                        <label>Localidad / Ciudad</label>
+                        <label>Localidad</label>
                         <input type="text" id="localidad" placeholder="Venado Tuerto">
                     </div>
                     <div class="form-group">
@@ -73,7 +73,7 @@ export class DireEnvio extends HTMLElement {
                     </div>
                     </div>
                     <div class="shipping-cost-summary">
-                        <p>Costo de Envío:</p>
+                        <p class="costo-label">Costo de Envío:</p>
                         <p id="cost-display" class="cost-value">$0.00</p>
                     </div>
                 </div>

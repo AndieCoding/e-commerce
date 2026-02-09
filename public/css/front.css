@@ -900,8 +900,8 @@ header.index {
 
     @media (max-width: 700px) {
         flex-direction: column;
-        justify-content: start;
-        padding-top: 50px;
+        justify-content: center;
+        padding-top: 10px;
         gap: 10px;
         min-height: 700px
     }

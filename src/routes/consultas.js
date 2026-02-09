@@ -5,6 +5,7 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import path from 'path';
 import { Factura } from "../../public/js/models/factura.js";
+import { Producto } from "../../public/js/models/producto.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
@@ -133,18 +134,97 @@ router.post("/guardarRemito", upload.single('pdf'), async (req, res, next) => {
     }
 });
 
-//venta a través de la web
-router.post('/registrarVenta', upload.none(), async (req, res) => {
+
+//venta web transferencia - ultima actualizacion
+router.post('/registrarVenta', async (req, res) => {
+    const logFile = 'C:\\Users\\Federico\\.gemini\\antigravity\\brain\\117a168f-ecc0-420e-9c33-c7de24617635\\debug_log.txt';
     try {
-        const factura = new Factura(req.body);
-        console.log('This is registrar venta: ' + factura)
+        await fs.appendFile(logFile, 'Start registrarVenta\n');
+
+        if (!req.user && !req.body.user) {
+            await fs.appendFile(logFile, 'No user found\n');
+        }
+
+        const user = req.user || req.body.user;
+        await fs.appendFile(logFile, `User: ${JSON.stringify(user)}\n`);
+
+        const items = req.body.productos;
+        await fs.appendFile(logFile, `Items: ${JSON.stringify(items)}\n`);
+
+        let total = 0;
+        const productosVerificados = [];
+
+        for (const item of items) {
+            await fs.appendFile(logFile, `Processing item: ${item.id}\n`);
+            const productRow = await consultaDb.getProductById(item.id);
+            if (!productRow) {
+                await fs.appendFile(logFile, `Product not found: ${item.id}\n`);
+                continue;
+            }
+            await fs.appendFile(logFile, `Product found: ${productRow.ID_PROD}\n`);
+
+            const producto = new Producto(productRow);
+            const precio = producto.precioFinal;
+            const subtotal = precio * item.cantidad;
+            total += subtotal;
+
+            productosVerificados.push({
+                P_ID: producto.id,
+                P_CANTIDAD: item.cantidad,
+                P_PRECIO: precio,
+                P_TIPO: productRow.P_TIPO,
+                P_NOMBRE: producto.nombre
+            });
+        }
+        await fs.appendFile(logFile, `Total: ${total}\n`);
+
+        const { n_factura } = await consultaDb.getNFactura();
+        await fs.appendFile(logFile, `N_Factura: ${n_factura}\n`);
+        const nuevaFacturaN = n_factura + 1;
+
+        const facturaData = {
+            fecha: new Date().toISOString(),
+            empresa: 'Fan del Mate',
+            P_TIPO: 'original',
+            nFactura: nuevaFacturaN,
+            productos: JSON.stringify(productosVerificados),
+            total: total
+        };
+
+        const factura = new Factura(facturaData);
+        await fs.appendFile(logFile, `Factura created. Calling DB...\n`);
+
         const result = await consultaDb.registrarVenta(factura);
-        res.status(200).json(result);
+        await fs.appendFile(logFile, `DB result: ${JSON.stringify(result)}\n`);
+
+        const ticket = {
+            orden: nuevaFacturaN,
+            total: total,
+            productos: productosVerificados
+        };
+
+        await resumenMail(ticket, user);
+        await fs.appendFile(logFile, `Mail sent.\n`);
+
+        res.status(200).json({
+            success: true,
+            message: 'Venta registrada',
+            orderId: nuevaFacturaN,
+            ticket: ticket
+        });
+
     } catch (err) {
-        res.status(500).json({ message: 'Error', success: false });
+        res.status(500).json({
+            message: 'Error',
+            success: false,
+            error: err.message,
+            stack: err.stack,
+            details: JSON.stringify(err, Object.getOwnPropertyNames(err))
+        });
         console.log(err);
     }
 });
+
 
 //cargar compra
 router.post("/images", upload.array('product_image', 5), async (req, res, next) => {
@@ -684,6 +764,92 @@ router.post("/contact", async (req, res) => {
         res.status(500).json({ success: false, message: 'Error al enviar el email: ' + error.message });
     }
 });
+
+//resumen de compra (llamada en /registrarVenta)
+async function resumenMail(ticket, user) {
+    const { nombre, email } = user;
+    if (!ticket) {
+        console.error('Ticket data missing for email');
+        return;
+    }
+    try {
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+
+        // Email content
+        const subject = `Tienda Online - Nueva compra #${ticket.orden}`;
+        const text = `
+            Hola ${nombre},
+            Gracias por tu compra en Fan del Mate.
+            
+            Detalle:
+            ${ticket.productos.map(product => `-${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}`).join('\n')}
+            Total: $${ticket.total}
+            
+            Si elegiste transferencia, recuerda enviar el comprobante.
+        `;
+        const html = `            
+            <h3>Hola ${nombre}, gracias por tu compra</h3>
+            <p>Hemos recibido tu orden <strong>#${ticket.orden}</strong>.</p>
+            <p>Detalle:</p>
+            ${ticket.productos.map(product => `<p>- ${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}</p>`).join('')}
+            <p><strong>Total a pagar:</strong> $${ticket.total}</p>
+            <hr>
+            <a href="https://tienda-mate.vercel.app/">Ver resumen de compra</a>
+            <p>Si elegiste abonar con transferencia, por favor envía el comprobante respondiendo a este correo o por WhatsApp al +54 3462 336880.</p>
+        `;
+
+        // Send to Client
+        const mailOptionsClient = {
+            from: `"Fan del Mate" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: subject,
+            text: text,
+            html: html
+        };
+
+        // Send to Admin (Seller)
+        const mailOptionsAdmin = {
+            from: `"Tienda Web" <${process.env.EMAIL_USER}>`,
+            to: process.env.EMAIL_USER,
+            subject: `Nueva Venta Web - Orden #${ticket.orden}`,
+            text: `
+                Nueva venta registrada.
+                Cliente: ${nombre} (${email})
+                Orden: ${ticket.orden}
+                Detalle:
+                ${ticket.productos.map(product => `-${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}`).join('\n')}
+                Total: $${ticket.total}
+            `,
+            html: `
+                <h3>Nueva Venta Web</h3>
+                <p><strong>Cliente:</strong> ${nombre}</p>
+                <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Orden:</strong> #${ticket.orden}</p>
+                <p>Detalle:</p>
+                ${ticket.productos.map(product => `<p>- ${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}</p>`).join('')}
+                <p><strong>Total a pagar:</strong> $${ticket.total}</p>
+
+                <a href="https://tienda-mate.vercel.app/">Ver resumen de compra</a>
+            `
+        };
+
+        await Promise.all([
+            transporter.sendMail(mailOptionsClient),
+            transporter.sendMail(mailOptionsAdmin)
+        ]);
+
+        console.log('\n Emails enviados a comprador y vendedor.\n');
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
 
 //Actualizar usuario sin foto
 router.put("/update/:userNumber", async (req, res) => {

@@ -1,3 +1,5 @@
+import { Producto } from "../../models/producto.js";
+
 export class CartCard extends HTMLElement {
     constructor() {
         super();
@@ -5,12 +7,20 @@ export class CartCard extends HTMLElement {
         this.productId = 0;
         this.subtotal = 0;
         this.productPrice = 0;
+        this._item = null;
     }
 
     attributeChangedCallback(att, oldValue, newValue) {
         if (att === 'quantity') {
             this.productQuantity = newValue;
         }
+    }
+    set data(value) {
+        this._item = value instanceof Producto ? value : new Producto(value);
+        this.render();
+    }
+    get data() {
+        return this._item;
     }
 
     getStyles() {
@@ -19,7 +29,10 @@ export class CartCard extends HTMLElement {
         :host-context(.carrito-items-confirmar){
             .carrito-item-detalles {            
                 overflow: hidden;
-                width: 200px;            
+                width: 200px;  
+                @media (max-width: 768px) {
+                    width: 120px;
+                }          
 
                 .carrito-item-nombre {
                     margin: 0;
@@ -92,11 +105,22 @@ export class CartCard extends HTMLElement {
                 cursor: pointer;
                 border-radius: 3px;
             }
+            .cantidad-sumar.disabled {
+                font-size: 10px;
+                background-color: transparent;
+                border-radius: 3px;
+                cursor: not-allowed;
+                pointer-events: none;
+                color: #345310;
+                width: fit-content;
+            }
 
             .carrito-item-cantidad {
                 width: 20px;
                 text-align: center;
+                border: none;
             }
+
         }
        
         input[type="number"] {
@@ -131,37 +155,35 @@ export class CartCard extends HTMLElement {
             width: 20px;
             height: 25px;
             }
-        }
-             
+        }          
         </style>
         `
     }
-
-    connectedCallback() {
-        this.productId = this.getAttribute('id') || '';
-        const productImage = this.getAttribute('image') || '';
-        const productName = this.getAttribute('name') || 'Product Name';
+    getTemplate() {
+        const { id, nombre, imagen, precio, stock, estaAgotado, oferta } = this._item;
+        this.productId = id;
         this.productPrice = Number(this.getAttribute('price') || 'Product Price');
         this.productQuantity = Number(this.getAttribute('quantity') || '1');
-        this.stock = this.getAttribute('stock') || 0;
-
-        this.shadowRoot.innerHTML = `        
+        this.stock = stock;
+        const template = document.createElement('template');
+        template.innerHTML = `        
+        ${this.getStyles()}
         <div class="carrito-item">
             <div class="img-container">
-                <img src="${productImage}" alt="${productName}" class="carrito-item-imagen" />
+                <img src="${imagen}" alt="${nombre}" class="carrito-item-imagen" />
             </div>
             <div>
-            <div class="carrito-item-detalles">
-                <h3 class="carrito-item-nombre">${productName}</h3>
-            </div>
-            <div class="carrito-item-controles">
-                <button class="cantidad-restar">-</button>
-                <input type="number" class="carrito-item-cantidad" value="${this.productQuantity}" min="1" />
-                <button class="cantidad-sumar">+</button>
-            </div>
+                <div class="carrito-item-detalles">
+                    <h3 class="carrito-item-nombre">${nombre}</h3>
+                </div>
+                <div class="carrito-item-controles">
+                    <button id="restar-btn" class="cantidad-restar">-</button>
+                    <input id="input-cantidad" type="number" class="carrito-item-cantidad" value="${this.productQuantity}" min="1" max="${this.stock}" disabled />
+                    <button id="sumar-btn" class="cantidad-sumar">+</button>
+                </div>
             </div>
             <div class="carrito-item-subtotal">
-                <h2 class="carrito-item-precio">$${this.productPrice * this.productQuantity}</h2>
+                <h2 class="carrito-item-precio">$ ${oferta ? oferta * this.productQuantity : precio * this.productQuantity}</h2>
             </div>
             <div class="carrito-item-eliminar">
                 <button class="eliminar-item">
@@ -169,22 +191,25 @@ export class CartCard extends HTMLElement {
                 </button>
             </div>
         </div>
-
-        ${this.getStyles()}
         `;
-
-
+        return template.content.cloneNode(true);
+    }
+    render() {
+        this.shadowRoot.innerHTML = '';
+        this.shadowRoot.appendChild(this.getTemplate());
         this.addEventListeners();
+    }
+    connectedCallback() {
+        this.render();
     }
 
     actualizarCantidad(id, cantidad) {
-        this.stock = cantidad;
         document.dispatchEvent(new CustomEvent('actualizarCantidad', {
             detail: {
                 productId: id,
                 newQuantity: cantidad
             }
-        }))
+        }));
     }
 
     eliminarItem(id) {
@@ -192,42 +217,34 @@ export class CartCard extends HTMLElement {
     }
 
     addEventListeners() {
-        const restarButton = this.shadowRoot.querySelector('.cantidad-restar');
-        const sumarButton = this.shadowRoot.querySelector('.cantidad-sumar');
-        const cantidadInput = this.shadowRoot.querySelector('.carrito-item-cantidad');
+        const restarButton = this.shadowRoot.querySelector('#restar-btn');
+        const sumarButton = this.shadowRoot.querySelector('#sumar-btn');
+        const cantidadInput = this.shadowRoot.querySelector('#input-cantidad');
 
-        sumarButton.addEventListener('click', () => {
-
-            if (cantidadInput.value == this.stock) {
-                cantidadInput.value = Number(this.stock);
-            } else {
-                cantidadInput.value = Number(this.productQuantity + 1);
+        sumarButton.addEventListener('click', async () => {
+            cantidadInput.value++;
+            if (cantidadInput.value >= this.stock) {
+                cantidadInput.value = this.stock;
+                sumarButton.innerHTML = 'Stock Límite';
+                sumarButton.classList.add('disabled');
+                restarButton.setAttribute('disabled', true);
+                this.shadowRoot.querySelector('.carrito-item-controles').style.width = '120px';
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                sumarButton.innerHTML = '+';
+                sumarButton.classList.remove('disabled');
+                restarButton.removeAttribute('disabled');
+                this.shadowRoot.querySelector('.carrito-item-controles').style.width = '67px';
             }
-
-            this.actualizarCantidad(this.productId, cantidadInput.value), this.stock;
+            this.actualizarCantidad(this.productId, cantidadInput.value);
         });
 
         restarButton.addEventListener('click', () => {
-            const newQuantity = this.productQuantity - 1;
-            if (newQuantity > 0) {
-                cantidadInput.value = newQuantity;
-                this.actualizarCantidad(this.productId, cantidadInput.value);
+            cantidadInput.value--;
+            if (cantidadInput.value < 1) {
+                cantidadInput.value = 1;
             }
+            this.actualizarCantidad(this.productId, cantidadInput.value);
         });
-
-        cantidadInput.addEventListener('change', (event) => {
-            if (isNaN(event.target.value) || event.target.value < 1) {
-                event.target.value = 1;
-            }
-            this.actualizarCantidad(this.productId, event.target.value);
-        });
-        cantidadInput.addEventListener('keyup', (event) => {
-            if (isNaN(event.target.value) || event.target.value < 1) {
-                event.target.value = 1;
-            }
-            this.actualizarCantidad(this.productId, event.target.value);
-        });
-
         const eliminarButton = this.shadowRoot.querySelector('.eliminar-item');
         eliminarButton.addEventListener('click', () => {
             this.eliminarItem(this.productId);

@@ -8,6 +8,7 @@ export class Producto {
         this.imagen = dbRow.P_IMG || dbRow.imagen || '/img/placeholder.jpg';
         this.marca = dbRow.P_MARCA || dbRow.marca || '';
         this.descripcion = dbRow.P_DESCRIPCION || dbRow.descripcion || '';
+        this.order_quantity = parseInt(dbRow.order_quantity || 0);
     }
     get stockInfo() {
         if (this.stock > 9) return { state: 'Disponible', class: 'green' };
@@ -20,14 +21,14 @@ export class Producto {
     get precioHtml() {
         if (this.stock <= 0) return '$ -';
         if (this.oferta > 0) {
-            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price"> | Precio de oferta: $ ${this.oferta}</span>`;
+            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price">$ ${this.oferta}</span>`;
         }
         return `$ ${this.precio}`;
     }
     get precioHtmlAdmin() {
         if (this.stock <= 0) return '$ -';
         if (this.oferta > 0) {
-            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price">$ ${this.oferta}</span>`;
+            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price"> | Precio de oferta: $ ${this.oferta}</span>`;
         }
         return `$ ${this.precio}`;
     }
@@ -53,5 +54,8 @@ export class Producto {
         return this.imagen.includes('cloudinary')
             ? this.imagen.replace('/upload/', '/upload/w_400,c_fill,f_auto,q_auto/')
             : this.imagen;
+    }
+    get precioFinal() {
+        return (this.oferta > 0 && this.oferta < this.precio) ? this.oferta : this.precio;
     }
 }

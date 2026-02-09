@@ -6,7 +6,6 @@ document.addEventListener('turbo:load', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Reset status
         statusDiv.innerHTML = '';
         statusDiv.style.color = 'inherit';
         submitBtn.disabled = true;

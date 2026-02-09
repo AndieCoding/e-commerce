@@ -24,6 +24,7 @@ export class Card extends HTMLElement {
 
     set data(value) {
         this._item = value instanceof Producto ? value : new Producto(value);
+        this._item.order_quantity = 1;
         this.render();
     }
 
@@ -64,7 +65,7 @@ export class Card extends HTMLElement {
             }
             .card.list {
                 display: grid;
-                grid-template-columns: 1fr 2fr;               
+                grid-template-columns: 1fr 2fr;                               
                 width: 100%; 
                 height: 100%;
                 max-width: 800px;
@@ -126,7 +127,7 @@ export class Card extends HTMLElement {
     }
 
     renderContent() {
-        const { id, nombre, imagen, stockInfo, precioHtml, estaAgotado } = this._item;
+        const { id, nombre, imagen, stockInfo, precioHtml, estaAgotado, stock } = this._item || {};
         let stockClass = stockInfo.class;
         let stockState = stockInfo.state;
 
@@ -163,6 +164,53 @@ export class Card extends HTMLElement {
                     flex-direction: row;
                     justify-content: space-between;
                     gap: 1em;
+                }
+
+                .buttons-section {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    gap: 1em;
+                }
+                    
+                .buttons-section input {
+                    border: 0;                    
+                }
+
+                .quantity-selector {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 0.5em;
+                    width: clamp(100px, 100%, 200px);
+                    justify-content: center;
+                    align-items: center;
+
+                    
+                    input[type="number"] {
+                        -moz-appearance: textfield;
+                        appearance: textfield;
+                    }
+                    /*chrome*/
+                    input[type="number"]::-webkit-inner-spin-button,
+                    input[type="number"]::-webkit-outer-spin-button {
+                        -webkit-appearance: none;
+                    }
+                    input {
+                        width: 30px;
+                        text-align: center;
+                        font-family: Roboto;                                                
+                    }
+                    button {
+                        background-color: transparent;
+                        border: none;
+                        cursor: pointer;
+                        font-family: Roboto;
+                        font-size: 16px;
+                        color: green;
+                        &:hover {
+                            color: darkgreen;
+                        }    
+                    }
                 }
 
                 .buttons a {
@@ -210,27 +258,32 @@ export class Card extends HTMLElement {
                 .confirmacion.show {
                     opacity: 1;
                 }
-                input {
-                    display: none;
-                }
             }
          
             .card.list {
                 display: grid;
-                grid-template-columns: 1fr 2fr;               
+                grid-template-columns: 1fr 2fr;    
+                grid-template-rows: 1fr 1fr 1fr;           
                 width: 100%; 
                 height: 100%;
                 max-width: 800px;
             }
 
+            #imagen-section {
+                grid-row: span 2;
+            }
+
             .card.list .img {
                 height: 120px;
                 max-width: 180px;
+                grid-row: span 2;
+            }
+            .card.list .buttons-section {
+                flex-direction: row;      
+                justify-content: end;
+                gap: 2rem;
             }
             .card.list .buttons .agregar{
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
                 @media (width<900px) {
                  width: 120px;
                 }
@@ -342,16 +395,16 @@ export class Card extends HTMLElement {
                 justify-content: center;
                 align-items: end;
                 position: absolute;
-                top: 50%;
+                top: 45%;
                 right: 5px;
                 @media (width<900px) {
-                    top: 55%;
+                    top: 50%;
                 }
             }
             .card.list .product-price {                
                 align-items: start;
                 left: 125px;
-                top: 70%;     
+                top: 60%;     
                 @media (width<900px) {
                 left: clamp(90px, 20%, 220px);                            
                 }           
@@ -465,7 +518,7 @@ export class Card extends HTMLElement {
             </style>
 
             <div class="card ${this.tipo === 'list' ? 'list' : ''}">
-                <a href="/detalle?id=${id}">
+                <a id="imagen-section" href="/detalle?id=${id}">
                     <div class="img">
                         <img src="${imagen}" alt="${nombre}" loading="lazy">
                     </div>
@@ -490,30 +543,62 @@ export class Card extends HTMLElement {
                     </div>
                 </section>
                 <section class="buttons-section">
+                <div class="quantity-selector">
+                    <button id='control-resta' class="controles-cantidad">-</button>
+                    <input disabled type="number" id="quantity" class="quantity" value="${this._item.order_quantity}" min="1" max="${stock}">
+                    <button id='control-suma' class="controles-cantidad">+</button>
+                </div>          
+                
                     <div class="buttons">
                         <a id="btn-agregar" class="agregar ${estaAgotado ? 'disabled' : ''}">
                             <span class="btn-text">Agregar al carrito</span><img class="cart-icon" src="../../../img/icons/cart.svg" alt="cart" loading="lazy">
                         </a>                        
                     </div>
-                </section>                
+                </section>                      
             </div>
         `;
 
         this.addEventListeners();
     }
     addEventListeners() {
-        const btn = this.shadowRoot.querySelector('.agregar').addEventListener('click', (event) => {
+        const inputCantidad = this.shadowRoot.querySelector('#quantity')
+        this.shadowRoot.querySelector('.agregar').addEventListener('click', (event) => {
             event.preventDefault();
             this.shadowRoot.querySelector('.confirmacion').classList.add('show');
             setTimeout(() => this.shadowRoot.querySelector('.confirmacion').classList.remove('show'), 4000);
+            this._item.order_quantity = Number(inputCantidad.value);
             this.dispatchEvent(new CustomEvent('agregarProducto', {
-                detail: this.item,
+                detail: this._item,
                 bubbles: true,
                 composed: true
             }));
         });
-    }
 
+        this.shadowRoot.querySelector('#control-resta').addEventListener('click', (event) => {
+            event.preventDefault();
+            inputCantidad.value--;
+            if (inputCantidad.value < 1) {
+                inputCantidad.value = 1;
+            }
+        });
+        this.shadowRoot.querySelector('#control-suma').addEventListener('click', (event) => {
+            event.preventDefault();
+            inputCantidad.value++;
+            if (inputCantidad.value > this._item.stock) {
+                inputCantidad.value = this._item.stock;
+                this.shadowRoot.querySelector('#control-suma').setAttribute('disabled', true);
+                this.shadowRoot.querySelector('#control-suma').innerHTML = 'Límite en stock';
+                this.shadowRoot.querySelector('#control-suma').style.fontSize = '12px';
+                this.shadowRoot.querySelector('#control-suma').style.color = 'red';
+            }
+            setTimeout(() => {
+                this.shadowRoot.querySelector('#control-suma').removeAttribute('disabled');
+                this.shadowRoot.querySelector('#control-suma').innerHTML = '+';
+                this.shadowRoot.querySelector('#control-suma').style.color = 'green';
+                this.shadowRoot.querySelector('#control-suma').style.fontSize = '16px';
+            }, 4000);
+        });
+    }
 }
 
 customElements.define('product-card', Card);

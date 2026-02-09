@@ -226,7 +226,7 @@ export class AdminProductRow extends HTMLElement {
     }
 
     renderContent() {
-        const { id, nombre, imagen, stock, precioHtml, estaAgotado } = this._item;
+        const { id, nombre, imagen, stock, precioHtmlAdmin, estaAgotado } = this._item;
 
         const type = this.getAttribute('type') || 'General';
 
@@ -239,7 +239,7 @@ export class AdminProductRow extends HTMLElement {
                 </div>
                 <div class="info">
                     <div class="name">${nombre}</div>
-                    <div class="details">${type} | Stock total: ${stock} | $${precioHtml}</div>
+                    <div class="details">${type} | Stock total: ${stock} | $${precioHtmlAdmin}</div>
                     <!--<a href="/ficha?id=${id}" class="stock-link">Ver detalle de stock</a>-->
                 </div>
                 <div class="actions">

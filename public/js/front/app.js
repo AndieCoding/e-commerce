@@ -281,9 +281,7 @@ function crearCards(container, producto, admin = false) {
             const id = e.detail.id;
             window.location.href = `/panel-altas?edit=${id}`;
         });
-
     }
-
     card.classList.add('fade-in-card');
     container.appendChild(card);
 }

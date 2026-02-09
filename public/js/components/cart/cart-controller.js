@@ -34,7 +34,7 @@ export class CartController {
     }
 
     eliminarProducto(id) {
-        const existingProduct = this.orden.find(p => p.P_ID === id);
+        const existingProduct = this.orden.find(p => p.id === id);
         if (existingProduct) {
             this.orden.splice(this.orden.indexOf(existingProduct), 1);
             this.guardarEnLocalStorage();
@@ -45,27 +45,24 @@ export class CartController {
         }
     }
 
-    agregarProducto(cartItem) {
-        const existingProduct = this.orden.find(p => p.P_ID === cartItem.P_ID);
-        console.log('ID de item seleccionado: ' + cartItem.P_ID);
-
+    agregarProducto(product) {
+        const existingProduct = this.orden.find(p => p.id === product.id);
         if (existingProduct) {
-            console.log('ID de productos encontrado: ' + existingProduct.P_ID);
-            existingProduct.P_CANTIDAD = (Number(existingProduct.P_CANTIDAD) + Number(cartItem.P_CANTIDAD) <= cartItem.P_STOCK) ? Number(existingProduct.P_CANTIDAD) + Number(cartItem.P_CANTIDAD) : Number(cartItem.P_STOCK);
+            existingProduct.order_quantity = (Number(existingProduct.order_quantity) + Number(product.order_quantity) <= product.stock) ? Number(existingProduct.order_quantity) + Number(product.order_quantity) : Number(product.stock);
         } else {
-            cartItem.P_CANTIDAD = Number(cartItem.P_CANTIDAD);
-            this.orden.push(cartItem);
+            product.order_quantity = Number(product.order_quantity);
+            this.orden.push(product);
         }
         this.guardarEnLocalStorage();
         this.actualizarCarrito();
     }
 
     actualizarCantidad(id, valor) {
-        const existingProduct = this.orden.find(p => p.P_ID === id);
+        const existingProduct = this.orden.find(p => p.id === id);
         if (!existingProduct) {
             return;
         }
-        existingProduct.P_CANTIDAD = Number(valor);
+        existingProduct.order_quantity = Number(valor);
 
         this.guardarEnLocalStorage();
         this.actualizarCarrito();
@@ -75,13 +72,9 @@ export class CartController {
 
     generarCard(product) {
         const cartCard = document.createElement('carrito-card');
-        cartCard.setAttribute('id', product.P_ID);
-        cartCard.setAttribute('image', product.P_IMG);
-        cartCard.setAttribute('name', product.P_NOMBRE);
-        cartCard.setAttribute('price', product.P_PRECIO);
-        cartCard.setAttribute('quantity', product.P_CANTIDAD);
-        cartCard.setAttribute('stock', product.P_STOCK);
-
+        cartCard.setAttribute('quantity', product.order_quantity !== 0 ? product.order_quantity : 1);
+        cartCard.setAttribute('price', product.precio);
+        cartCard.data = product;
         return cartCard;
     }
 
@@ -99,7 +92,7 @@ export class CartController {
     }
 
     vaciarCarrito(array) {
-        this.orden.forEach(p => p.P_CANTIDAD = 0);
+        this.orden.forEach(p => p.order_quantity = 0);
         this.orden = array;
         console.log('Carrito vacío');
         this.guardarEnLocalStorage();
@@ -122,10 +115,12 @@ export class CartController {
     }
 
     getTotal() {
-        return this.orden.reduce((total, product) => total + product.P_CANTIDAD * product.P_PRECIO, 0);
+        return this.orden.reduce((total, product) => {
+            return total + product.order_quantity * (product.oferta ? product.oferta : product.precio);
+        }, 0);
     }
 
     getTotalProducts() {
-        return this.orden.reduce((total, product) => total + product.P_CANTIDAD, 0);
+        return this.orden.reduce((total, product) => total + product.order_quantity, 0);
     }
 }

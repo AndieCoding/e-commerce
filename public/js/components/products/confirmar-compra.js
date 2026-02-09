@@ -46,7 +46,7 @@ export class ConfirmarCompra extends HTMLElement {
   }
   mostrarTotal(precioTotal) {
     const totalElement = this.shadowRoot.querySelector('#total-precio');
-    totalElement.textContent = `$  ${precioTotal ? precioTotal : this.controller.getTotal()}`;
+    totalElement.innerHTML = `$  ${precioTotal ? precioTotal : this.controller.getTotal()}`;
   }
 
   vaciarCarrito() {
@@ -100,26 +100,35 @@ export class ConfirmarCompra extends HTMLElement {
         filter: brightness(1.1)
       }
     }
+    .total-de-productos{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      p{margin: 10px 0 0 0;}
+    }
     #total-precio{
       font-size: 18px;
       font-weight: bold; 
     }
     .cantidad-productos{
-      font-size: 36px; 
+      font-size: 30px; 
       font-weight: 500; 
       text-align: center;
       margin: 0;
       color: #78b764;
+      @media (max-width: 768px) {
+        font-size: 20px;
+      }
     }
     .botones-inferiores {
       margin-top: 25px;
       display: flex;      
       gap: 15px;      
-      justify-content: space-around;
-      flex-direction: row-reverse;
+      justify-content: space-around;      
       gap: 3em;
       @media (max-width: 768px) {
-        
+        flex-direction: row-reverse;
       }
     }
     .back-arrow {
@@ -140,9 +149,11 @@ export class ConfirmarCompra extends HTMLElement {
     <div class="detalle-pedido">
       <div>
         <img src="../img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
-        <p>Total de productos: </p>
+        <div class="total-de-productos"><p>Total de productos: </p>
         <p id="cantidad-productos" class="cantidad-productos"></p>
+        </div>
         <p>Total: <span id="total-precio"></span></p>
+        
       </div>
       <div class="botones-inferiores">        
         <a href="/envio"><button class="carrito-comprar">Confirmar</button></a>      

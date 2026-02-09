@@ -155,10 +155,10 @@ document.addEventListener('turbo:load', async () => {
                 <label for="cantidad">Cantidad:</label>
                 <div class="cantidad-selector">                    
                     <button id="btn-minus" class="cantidad-restar">-</button>
-                    <input class="cantidad-producto" type="number" id="cantidad" name="cantidad" value="1" min="1" max="${product.P_CANTIDAD}" readonly>
+                    <input class="cantidad-producto" type="number" id="cantidad" name="cantidad" value="1" min="1" max="${product.stock}" readonly>
                     <button id="btn-plus" class="cantidad-sumar">+</button>
                 </div>
-                <span class="disponible-producto">(Disponible: <span id="disponible">${product.P_CANTIDAD}</span> unidades)</span>
+                <span class="disponible-producto">(Disponible: <span id="disponible">${product.order_quantity}</span> unidades)</span>
             </div>
             <div class="buttons-detalle">
                 <button id="btn-agregar" class="agregar-detalle">AGREGAR AL CARRITO</button>
@@ -181,7 +181,7 @@ document.addEventListener('turbo:load', async () => {
 
         btnPlus.addEventListener('click', () => {
             let val = parseInt(qtyInput.value);
-            if (val < product.P_CANTIDAD) qtyInput.value = val + 1;
+            if (val < product.order_quantity) qtyInput.value = val + 1;
         });
 
         const addToCart = () => {
@@ -192,8 +192,8 @@ document.addEventListener('turbo:load', async () => {
                 P_PRECIO: product.P_PR_OFERTA > 0 ? product.P_PR_OFERTA : product.P_PRECIO,
                 P_DESCRIPCION: product.P_DESCRIPCION,
                 P_TIPO: product.P_TIPO,
-                P_CANTIDAD: parseInt(qtyInput.value),
-                P_STOCK: product.P_CANTIDAD
+                order_quantity: parseInt(qtyInput.value),
+                P_STOCK: product.order_quantity
             };
 
             document.dispatchEvent(new CustomEvent('agregarProducto', {
