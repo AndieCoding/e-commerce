@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Preference } from 'mercadopago';
 import consultaDb from '../config/consultas.js';
 import { Producto } from "../../public/js/models/producto.js";
 import dotenv from 'dotenv';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -108,5 +109,67 @@ export const confirmTransferOrder = async (req, res) => {
     } catch (error) {
         console.error('Error creating transfer order:', error);
         res.status(500).json({ message: 'Error al registrar orden', error: error.message });
+    }
+};
+
+export const checkoutResult = async (req, res) => {
+    try {
+        if (req.type === 'payment') {
+            const payment = new Payment(client);
+            const data = await payment.get({ id: req.id });
+            if (data.status === 'approved') {
+                const n_factura_referencia = data.external_reference;
+                const total_pagado = data.transaction_amount;
+                // Actualizar status
+                console.log(`Pago aprobado para la factura: ${n_factura_referencia}`);
+            }
+        }
+
+        // IMPORTANTE: Siempre responder 200 o 201 a Mercado Pago para que deje de avisar
+        res.sendStatus(200);
+
+    } catch (error) {
+        console.error('Error en el Webhook:', error);
+        res.sendStatus(500);
+    }
+};
+
+export const validateMPSignature = (req, res, next) => {
+    try {
+        const xSignature = req.headers['x-signature'];
+        const xRequestId = req.headers['x-request-id'];
+
+        const dataId = req.query['data.id'] || (req.body.data && req.body.data.id);
+
+        if (!xSignature || !xRequestId || !dataId) {
+            console.warn('Webhook recibido sin headers de seguridad o ID');
+            return res.status(400).send('Missing security headers');
+        }
+
+        const parts = xSignature.split(',');
+        let ts, hash;
+        parts.forEach(part => {
+            const [key, value] = part.split('=');
+            if (key.trim() === 'ts') ts = value;
+            if (key.trim() === 'v1') hash = value;
+        });
+
+        const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+
+        const hmac = crypto.createHmac('sha256', process.env.MP_WEBHOOK_SECRET);
+        hmac.update(manifest);
+        const generatedHash = hmac.digest('hex');
+
+        if (generatedHash !== hash) {
+            console.error('Firma inválida');
+            return res.status(401).send('Invalid signature');
+        }
+
+        console.log('Firma validada');
+        next();
+
+    } catch (error) {
+        console.error('Error en middleware de validación:', error);
+        res.status(500).send('Internal validation error');
     }
 };
