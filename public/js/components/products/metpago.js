@@ -150,10 +150,11 @@ export class MetPago extends HTMLElement {
                 external_reference: `ORDER-${Date.now()}`
             })
         });
-
         const data = await response.json();
+
         const publicKey = "APP_USR-1c8ae308-1512-4004-a92f-9ef1454d008a";
         const preferenceId = data.id;
+
         const mp = new MercadoPago(publicKey);
         const bricksBuilder = mp.bricks();
         const renderWalletBrick = async (bricksBuilder) => {

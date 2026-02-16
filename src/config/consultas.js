@@ -119,7 +119,7 @@ async function getComprasUsuario(userId) {
 	}
 }
 
-async function getFichaFacturacion(mes) {
+/*async function getFichaFacturacion(mes) {
 	let conn = await getConn();
 	try {
 		const sql =
@@ -127,12 +127,12 @@ async function getFichaFacturacion(mes) {
 			f.fecha,
 			f.n_factura, 
 			f.total,
-            c.fact_us AS link,
-            r.pdf AS link_remito
+			c.fact_us AS link,
+			r.pdf AS link_remito
 		FROM facturas f
 		LEFT JOIN compras_usuario c ON f.n_factura = c.n_factura
-        JOIN remitos r ON f.N_FACTURA = r.N_FACTURA
-        WHERE tipo = 'duplicado'  AND month(fecha) = 12 
+		JOIN remitos r ON f.N_FACTURA = r.N_FACTURA
+		WHERE tipo = 'duplicado'  AND month(fecha) = 12 
 		ORDER BY fecha DESC`;
 		const [facturacion] = await conn.query(sql);
 		return [facturacion];
@@ -143,7 +143,7 @@ async function getFichaFacturacion(mes) {
 	finally {
 		conn.release();
 	}
-}
+}*/
 
 async function getGananciasBrutas(mes) {
 	const conn = await getConn();
@@ -489,7 +489,7 @@ async function getVentasTotales(producto) {
 	}
 }
 
-async function guardarFactura(imagePath, userId, nfactura, factura) {
+/*async function guardarFactura(imagePath, userId, nfactura, factura) {
 	let conn = await getConn();
 	try {
 		await conn.query(
@@ -521,7 +521,7 @@ async function guardarFactura(imagePath, userId, nfactura, factura) {
 	finally {
 		conn.release();
 	}
-}
+}*/
 
 async function guardarFacturaUsuarioSinCuenta(imagePath, formData) {
 	let conn = await getConn();
@@ -1147,9 +1147,9 @@ export default {
 	updateUserData,
 	insertarImgPath,
 	getProductsByQuery,
-	guardarFactura,
+	//guardarFactura,
 	getComprasUsuario,
-	getFichaFacturacion,
+	//getFichaFacturacion,
 	//getGananciasBrutas,
 	getNFactura,
 	getUser,

@@ -6,7 +6,6 @@
      font-family: 'Roboto Condensed', sans-serif;
      box-sizing: border-box;
      height: 100vh;
-     overflow-y: scroll;
 
      @media (width < 900px) {
          margin: 0 auto;

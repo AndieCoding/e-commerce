@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const client = new MercadoPagoConfig({
-    accessToken: process.env.MP_ACCESS_TOKEN || 'TEST-00000000-0000-0000-0000-000000000000'
+    accessToken: process.env.MP_ACCESS_TOKEN
 });
 
 export const createPreference = async (req, res) => {
@@ -30,7 +30,6 @@ export const createPreference = async (req, res) => {
             const producto = new Producto(productRow);
 
             validatedItems.push({
-                id: producto.id,
                 title: `${producto.nombre}`,
                 unit_price: Number(producto.precioFinal),
                 quantity: Number(item.quantity),
@@ -44,10 +43,8 @@ export const createPreference = async (req, res) => {
 
         const preference = new Preference(client);
 
-        const protocol = req.protocol || 'http';
-        const host = req.get('host') || 'localhost:3000';
         const backUrls = {
-            success: `https://tienda-mate.vercel.app/`,
+            success: `https://tienda-mate.vercel.app/mis_compras`,
             failure: `https://tienda-mate.vercel.app/confirmar-compra`,
             pending: `https://tienda-mate.vercel.app/confirmar-compra`
         };
