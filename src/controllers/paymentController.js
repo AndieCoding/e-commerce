@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import consultaDb from '../config/consultas.js';
+import { Producto } from "../../public/js/models/producto.js";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -10,7 +11,36 @@ const client = new MercadoPagoConfig({
 
 export const createPreference = async (req, res) => {
     try {
-        const { items, payer, external_reference } = req.body;
+        const { items: clientItems, external_reference } = req.body;
+        const user = req.user;
+
+        if (!user) {
+            return res.status(401).json({ message: 'Usuario no autenticado o datos de usuario faltantes.' });
+        }
+
+        const validatedItems = [];
+
+        for (const item of clientItems) {
+            const productRow = await consultaDb.getProductById(item.id);
+            if (!productRow) {
+                console.error(`Producto no encontrado ID: ${item.id}`);
+                continue;
+            }
+
+            const producto = new Producto(productRow);
+
+            validatedItems.push({
+                id: producto.id,
+                title: `${producto.nombre}`,
+                unit_price: Number(producto.precioFinal),
+                quantity: Number(item.quantity),
+                currency_id: 'ARS'
+            });
+        }
+
+        if (validatedItems.length === 0) {
+            return res.status(400).json({ message: 'No se encontraron productos válidos para procesar.' });
+        }
 
         const preference = new Preference(client);
 
@@ -22,18 +52,11 @@ export const createPreference = async (req, res) => {
             pending: `https://tienda-mate.vercel.app/confirmar-compra`
         };
 
-        console.log('Constructed Back URLs:', backUrls);
-
         const body = {
-            items: items.map(item => ({
-                title: item.title,
-                unit_price: Number(item.unit_price),
-                quantity: Number(item.quantity),
-                currency_id: 'ARS'
-            })),
+            items: validatedItems,
             payer: {
-                email: payer.email,
-                name: payer.name
+                email: user.email,
+                name: user.nombre || user.name
             },
             back_urls: backUrls,
             auto_return: 'approved',
@@ -53,8 +76,7 @@ export const createPreference = async (req, res) => {
 
     } catch (error) {
         console.error('Error creating Mercado Pago preference:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2)); // Detailed error log
-        res.status(500).json({ message: 'Error al crear preferencia de pago', error: error.message, details: error });
+        res.status(500).json({ message: 'Error al crear preferencia de pago', error: error.message });
     }
 };
 
@@ -62,32 +84,18 @@ export const confirmTransferOrder = async (req, res) => {
     try {
         const orderData = req.body;
 
-        // Ensure "fecha" is set if not provided
         if (!orderData.fecha) {
             orderData.fecha = new Date().toISOString().slice(0, 19).replace('T', ' ');
         }
 
-        // Ensure "empresa" matches expected format (e.g. 'Fan del Mate' or user email)
         if (!orderData.empresa) {
             orderData.empresa = orderData.userEmail || 'Cliente Web';
         }
 
-        // We need to generate a "nFactura". 
-        // Ideally, we should fetch the last one + 1 like in `getNFactura` or let the DB handle auto-increment if possible.
-        // However, `registrarVenta` expects `nFactura`.
-        // Let's use `getNFactura` from consultaDb first.
-
-        // Note: getNFactura returns { n_factura: number, n_remito: number } and inserts a remito.
-        // This logic might be tightly coupled to "duplicado" (sales) type.
-        // Assuming we are registering a sale ("Factura B" or similar).
-
-        // Retrieve next invoice number
         const lastInvoice = await consultaDb.getNFactura();
         const nextInvoiceNumber = (lastInvoice.n_factura || 0) + 1;
 
         orderData.nFactura = nextInvoiceNumber;
-
-        // Call registrarVenta
         const result = await consultaDb.registrarVenta(orderData);
 
         if (result.success) {

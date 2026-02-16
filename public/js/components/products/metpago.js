@@ -112,13 +112,13 @@ export class MetPago extends HTMLElement {
         const spinner = btn.querySelector('.spinner');
         spinner.classList.remove('hidden');
         btnText.textContent = 'Procesando...';
-
+        let result;
 
         try {
             if (this.selectedMethod === 'mercadopago') {
-                await this.procesarMercadoPago();
+                result = await this.procesarMercadoPago();
             } else {
-                await this.procesarTransferencia(btn, btnText, originalText);
+                result = await this.procesarTransferencia(btn, btnText, originalText);
             }
         } catch (error) {
             console.error('Error en el proceso de pago:', error);
@@ -130,26 +130,23 @@ export class MetPago extends HTMLElement {
                 btn.disabled = false;
             }, 2000);
         }
+        if (result) {
+            btnText.textContent = originalText;
+            spinner.classList.add('hidden');
+            btn.disabled = false;
+        }
     }
 
     async procesarMercadoPago() {
-        //Revisar items: enviar solo ids y cantidades
         const items = this.ticket.map(item => ({
-            title: `${item.P_TIPO} ${item.P_NOMBRE}`,
-            unit_price: item.P_PRECIO,
+            id: item.id,
             quantity: item.order_quantity
         }));
-
-        //Revisar payer (en el servidor ya están los datos del usuario)
         const response = await fetch('/api/payments/mp/create_preference', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 items: items,
-                payer: {
-                    email: this.user.email,
-                    name: `${this.user.NOMBRE}`
-                },
                 external_reference: `ORDER-${Date.now()}`
             })
         });
@@ -171,10 +168,11 @@ export class MetPago extends HTMLElement {
 
         if (data.init_point) {
             window.location.href = data.init_point;
+            return true;
         } else {
             throw new Error('No se recibió el link de pago');
+            return false;
         }
-        spinner.classList.add('hidden');
     }
 
     async procesarTransferencia(btn, btnText, originalText) {
@@ -182,7 +180,8 @@ export class MetPago extends HTMLElement {
             productos: this.ticket.map(p => ({
                 id: p.id,
                 cantidad: p.order_quantity
-            }))
+            })),
+            met_pago: 1
         };
 
         const response = await fetch('/api/registrarVenta', {
@@ -202,6 +201,7 @@ export class MetPago extends HTMLElement {
                 alert(`¡Gracias por tu compra! Tu pedido #${result.orderId} ha sido registrado. Envianos el comprobante por WhatsApp.`);
                 window.location.href = '/';
             }, 500);
+            return true;
         } else {
             throw new Error(result.message || 'Error al guardar la orden.');
         }

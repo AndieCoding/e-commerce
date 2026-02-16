@@ -1,5 +1,4 @@
 import { getConn } from "./db.js";
-import { Factura } from "../../public/js/models/factura.js";
 import { Producto } from "../../public/js/models/producto.js";
 import { UserB } from "../../public/js/models/user-b.js";
 
@@ -105,9 +104,9 @@ async function getComprasUsuario(userId) {
 	try {
 		const [rows] = await conn.query(
 			`SELECT * 
-			FROM compras_usuario			
-			WHERE id_us = ?
-			ORDER BY hora DESC`,
+			FROM facturas_ventas			
+			WHERE id_cl = ?
+			ORDER BY fecha DESC`,
 			[userId]
 		);
 		return [rows];
@@ -174,18 +173,18 @@ async function getNFactura() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
-			`SELECT DISTINCT N_FACTURA 
-			FROM facturas WHERE tipo = 'duplicado' 
-			ORDER BY N_FACTURA DESC LIMIT 1`
+			`SELECT n_fac 
+			FROM facturas_ventas 
+			ORDER BY n_fac DESC LIMIT 1`
 		);
-		let n_factura = rows.length > 0 ? rows[0].N_FACTURA : 0;
-		const [insertRemito] = await conn.query(
+		let n_fac = rows.length > 0 ? rows[0].n_fac : 0;
+		/*const [insertRemito] = await conn.query(
 			`INSERT INTO remitos(N_FACTURA) VALUES (?);`, [n_factura + 1]
-		);
-		const [numeroRemitoRow] = await conn.query(`SELECT LAST_INSERT_ID() AS n_remito`);
+		);*/
+		//const [numeroRemitoRow] = await conn.query(`SELECT LAST_INSERT_ID() AS n_remito`);
 		return {
-			'n_factura': rows.length > 0 ? rows[0].N_FACTURA : null,
-			'n_remito': numeroRemitoRow.length > 0 ? numeroRemitoRow[0].n_remito : null
+			'n_fac': rows.length > 0 ? rows[0].n_fac + 1 : null,
+			//'n_remito': numeroRemitoRow.length > 0 ? numeroRemitoRow[0].n_remito : null
 		};
 	} catch (err) {
 		console.log("Error getting records");
@@ -414,6 +413,27 @@ async function getStockActual(producto) {
 
 		console.log('Consulta de stock realizada. Rows -> ', rows)
 		return [rows];
+	}
+	catch (err) {
+		console.log("Error updating bill");
+		console.log(err);
+	}
+	finally {
+		conn.release();
+	}
+}
+
+async function getTicketById(id_fac, userId) {
+	let conn = await getConn();
+	try {
+		const [pedido] = await conn.query(`
+            SELECT f.*, d.id_prod, d.nbre_hist, d.cant_ticket,d.pcio_un_pgdo, d.subtotal, p.P_IMG
+            FROM facturas_ventas f
+            JOIN detalle_factura d ON f.id_fac = d.id_fac
+            JOIN productos p ON d.id_prod = p.ID_PROD
+            WHERE f.id_fac = ? AND f.id_cl = ?
+        `, [id_fac, userId]);
+		return [pedido];
 	}
 	catch (err) {
 		console.log("Error updating bill");
@@ -916,91 +936,41 @@ async function RegistrarCompra(factura) {
 }
 
 async function registrarVenta(factura) {
-	console.log(factura.productos)
-	const termos = factura.productos.filter((producto) => { return producto.P_TIPO.includes('termo') });
-	const mates = factura.productos.filter((producto) => { return producto.P_TIPO.includes('mate') });
-	const yerbas = factura.productos.filter((producto) => { return producto.P_TIPO.includes('yerba') });
 	const conn = await getConn();
 	try {
 		await conn.beginTransaction();
-
-		for (const producto of factura.productos) {
+		const [facturaInsertada] = await conn.query(
+			`INSERT INTO facturas_ventas(
+			n_fac, id_cl, total_compra, met_pago, status) 
+			VALUES (?, ?, ?, ?, ?);`,
+			[factura.n_fac, factura.id_cl, factura.total, factura.met_pago, factura.status]
+		);
+		const id_fac = facturaInsertada.insertId;
+		const n_fac = factura.n_fac;
+		for (const producto of factura.detalle) {
 			await conn.query(
-				`INSERT INTO facturas_ventas (
-				n_factura, v_cantidad, v_precio, id_prod) VALUES (?,?, ?,?)`, [
-				factura.nFactura,
-				producto.P_CANTIDAD,
-				producto.P_PRECIO,
-				producto.P_ID
+				`INSERT INTO detalle_factura (
+				id_fac, n_fac, id_prod, nbre_hist, cant_ticket, pcio_un_pgdo, subtotal) 
+				VALUES (?,?,?,?,?,?,?)`, [
+				id_fac,
+				n_fac,
+				producto.id,
+				producto.nombre,
+				producto.cantidad,
+				producto.precio,
+				producto.subtotal
 			]);
+
+			// Actualizar stock
+			await conn.query(
+				`UPDATE productos SET p_cantidad = p_cantidad - ? WHERE id_prod = ?`,
+				[producto.cantidad, producto.id]
+			);
 		};
-
-		if (termos.length > 0) {
-			let cantidad_de_termos = 0;
-			for (const producto of termos) {
-				await insertarEnFicha(conn, factura, producto);
-				console.log('Registrando venta en ficha de stock termos');
-				cantidad_de_termos = cantidad_de_termos + producto.P_CANTIDAD;
-			};
-			const [stock] = await selectStock('termo', conn);
-			for (const producto of stock) {
-				try {
-					await conn.query(
-						`INSERT INTO saldos_termos(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-						[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-					);
-				} catch (err) {
-					console.log(err);
-				}
-			};
-
-		}
-		if (mates.length > 0) {
-			for (const producto of mates) {
-				await insertarEnFicha(conn, factura, producto);
-			};
-			const [stock] = await selectStock('mate', conn);
-			for (const producto of stock) {
-				console.log('producto de stock ', producto);
-				try {
-					await conn.query(
-						`INSERT INTO saldos_mates(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-						[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-					);
-				} catch (err) {
-					console.log(err);
-				}
-			};
-			//}
-		};
-		if (yerbas.length > 0) {
-			for (const producto of yerbas) {
-				await insertarEnFicha(conn, factura, producto);
-
-			};
-			const [stock] = await selectStock('yerba', conn);
-			for (const producto of stock) {
-				try {
-					await conn.query(
-						`INSERT INTO saldos_yerbas(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-						[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-					);
-				} catch (err) {
-					console.log(err);
-				}
-			};
-		}
-		console.log(`Venta registrada. \n`);
-		console.log('Numero de factura: ', factura.nFactura);
+		console.log(`BBDD actualizada. \n`);
 		await conn.commit();
 
-		return ({ message: 'Venta registrada', success: true });
+		return ({ message: 'Venta registrada', n_fac: n_fac, success: true });
 
 	} catch (err) {
 		await conn.rollback();
@@ -1180,7 +1150,7 @@ export default {
 	guardarFactura,
 	getComprasUsuario,
 	getFichaFacturacion,
-	getGananciasBrutas,
+	//getGananciasBrutas,
 	getNFactura,
 	getUser,
 	getVentasDiarias,
@@ -1192,5 +1162,6 @@ export default {
 	guardarRemito,
 	deleteProduct,
 	getProductById,
+	getTicketById,
 	updateProduct
 };

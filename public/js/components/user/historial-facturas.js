@@ -1,8 +1,11 @@
+import { SimpleOrderTicket } from "../tickets/simple-order-ticket.js";
+
 export class HistorialFacturas extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
   }
+
   getStyles() {
     return `
     <style>
@@ -15,96 +18,74 @@ export class HistorialFacturas extends HTMLElement {
           display: flex;
           flex-direction: column;
           width: 100%;
-          align-items: start;
+          align-items: center;
           padding: 20px;
           padding-top: 0;         
-        }
-        .historial-facturas h4 {
-          width: 100%;
-          margin: 20px;
-          text-align: center;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          font-weight: 200;
-        }
-        .lista-facturas {
-          list-style: none;
-          margin: 0;
-          padding: 0;
-          width: 100%;
-          //overflow-y: scroll;
-          //scrollbar-color: #4a854dff #41464170;
-          //scrollbar-width: thin;
-        }
-        .factura {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          justify-content: center;
-          padding: 10px 0;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          font-weight: 200;
-          border-radius: 5px;
-
-          &:hover {            
-            background-color: #0d89011c;            
-            cursor: default;
+          @media (max-width: 768px) {
+            padding: 0;
           }
         }
-        .factura a {
-          text-decoration: none;
-          color: #575656;
-
-          :visited {
-            color: gray;
-          }          
+        h3 {
+            color: #666;
+            font-weight: 300;
         }
     </style>
     `;
   }
-  template() {
-    const template = document.createElement('template');
-    template.innerHTML = `     
-    ${this.getStyles()}
-    
-    <div class="historial-facturas">
-      <ul class="lista-facturas">
-        <li class="factura">No hay compras para mostrar</a></li>
-      </ul>
-    </div>
-    `;
-    return template.content.cloneNode(true);
-  }
+
   connectedCallback() {
     this.render();
-    //this.consultaHistorialFacturas();
+    this.consultaHistorialFacturas();
   }
+
   async render() {
-    this.shadowRoot.innerHTML = '';
-    this.shadowRoot.appendChild(this.template());
+    this.shadowRoot.innerHTML = `
+        ${this.getStyles()}
+        <div class="historial-facturas" id="lista">
+            <div class="spinner">Cargando...</div>
+        </div>
+    `;
   }
 
   async consultaHistorialFacturas() {
     try {
-      this.userId = JSON.parse(localStorage.getItem('user')).ID;
-      // revisar fetch - no pasar query params
-      const response = await fetch(`/api/compras_usuario/${this.userId}`);
-      const data = await response.json();
-      console.log(data);
-      this.shadowRoot.querySelector('.lista-facturas').innerHTML = data.map(factura =>
-        `<li class="factura"><a class="factura-link" href="#" data-image="${factura.FACT_US}">${factura.HORA.slice(0, 10)} - N. Fact. ${factura.N_FACTURA}</a></li>`).join('');
-      console.log(data);
+      const user = window.user || JSON.parse(localStorage.getItem('user'));
 
-      this.shadowRoot.querySelectorAll('.factura-link').forEach(link => {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          const imageUrl = event.target.getAttribute('data-image');
-          if (imageUrl) {
-            window.open(imageUrl, '_blank');
-          }
-        });
+      if (!user) {
+        this.shadowRoot.querySelector('#lista').innerHTML = '<h3>Inicia sesión para ver tus compras</h3>';
+        return;
+      }
+
+      const response = await fetch('/api/compras_usuario');
+
+      if (!response.ok) throw new Error('Error al obtener compras');
+
+      const data = await response.json();
+      const container = this.shadowRoot.querySelector('#lista');
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = '<h3>No tienes compras registradas aún.</h3>';
+        return;
+      }
+
+      data.forEach(factura => {
+        const link = document.createElement('a');
+        link.href = `/mis_compras/ticket?id=${factura.id_fac}`;
+        link.style.textDecoration = 'none';
+        link.style.color = 'inherit';
+        link.style.width = '100%';
+
+        const ticket = document.createElement('simple-order-ticket');
+        ticket.data = factura;
+
+        link.appendChild(ticket);
+        container.appendChild(link);
       });
+
     } catch (err) {
       console.error(err);
+      this.shadowRoot.querySelector('#lista').innerHTML = '<h3>Error al cargar el historial.</h3>';
     }
   }
 }

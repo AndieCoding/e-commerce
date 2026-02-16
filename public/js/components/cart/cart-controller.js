@@ -91,8 +91,10 @@ export class CartController {
         document.dispatchEvent(new CustomEvent('actualizarTotalProducts', { detail: this.getTotalProducts() }));
     }
 
-    vaciarCarrito(array) {
-        this.orden.forEach(p => p.order_quantity = 0);
+    vaciarCarrito(array = []) {
+        if (this.orden) {
+            this.orden.forEach(p => p.order_quantity = 0);
+        }
         this.orden = array;
         console.log('Carrito vacío');
         this.guardarEnLocalStorage();

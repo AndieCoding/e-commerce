@@ -970,6 +970,10 @@ dire-envio {
         display: flex;
         flex-direction: column;
     }
+
+    @media (width < 700px) {
+        padding: 0;
+    }
 }
 
 .icon.active {
@@ -1095,6 +1099,11 @@ dire-envio {
         justify-content: center;
         max-width: 800px;
         height: 100%;
+
+        @media (width < 500px) {
+            gap: 1.5em;
+            margin: 0 15px;
+        }
     }
 
     .user-card,
@@ -1108,6 +1117,13 @@ dire-envio {
         display: block;
         min-height: 200px;
         width: clamp(300px, 60%, 600px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+
+        @media (width < 700px) {
+            width: 100%;
+            padding: 0;
+        }
     }
 
     .profile-image-section {
@@ -1196,19 +1212,13 @@ dire-envio {
     }
 }
 
-.user-card,
-.history-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    padding: 30px;
-    height: fit-content;
-    width: clamp(300px, 60%, 600px);
-}
-
 .user-header {
     display: flex;
     align-items: center;
+
+    @media (width < 700px) {
+        margin-left: 25px;
+    }
 }
 
 .back-arrow {

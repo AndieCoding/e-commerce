@@ -4,11 +4,11 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import path from 'path';
-import { Factura } from "../../public/js/models/factura.js";
 import { Producto } from "../../public/js/models/producto.js";
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import nodemailer from 'nodemailer';
+import { Ticket } from "../../public/js/models/ticket.js";
 
 cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -137,83 +137,63 @@ router.post("/guardarRemito", upload.single('pdf'), async (req, res, next) => {
 
 //venta web transferencia - ultima actualizacion
 router.post('/registrarVenta', async (req, res) => {
-    const logFile = 'C:\\Users\\Federico\\.gemini\\antigravity\\brain\\117a168f-ecc0-420e-9c33-c7de24617635\\debug_log.txt';
     try {
-        await fs.appendFile(logFile, 'Start registrarVenta\n');
-
-        if (!req.user && !req.body.user) {
-            await fs.appendFile(logFile, 'No user found\n');
+        const user = req.user;
+        if (!user) {
+            console.log('No user found');
+            return res.status(400).json({ message: 'No user found' });
         }
-
-        const user = req.user || req.body.user;
-        await fs.appendFile(logFile, `User: ${JSON.stringify(user)}\n`);
-
+        console.log(`User: ${JSON.stringify(user)}`);
         const items = req.body.productos;
-        await fs.appendFile(logFile, `Items: ${JSON.stringify(items)}\n`);
-
         let total = 0;
         const productosVerificados = [];
 
         for (const item of items) {
-            await fs.appendFile(logFile, `Processing item: ${item.id}\n`);
             const productRow = await consultaDb.getProductById(item.id);
             if (!productRow) {
-                await fs.appendFile(logFile, `Product not found: ${item.id}\n`);
+                console.log(`Product not found: ${item.id}`);
                 continue;
             }
-            await fs.appendFile(logFile, `Product found: ${productRow.ID_PROD}\n`);
-
             const producto = new Producto(productRow);
             const precio = producto.precioFinal;
             const subtotal = precio * item.cantidad;
             total += subtotal;
+            console.log('total: ', total)
 
             productosVerificados.push({
-                P_ID: producto.id,
-                P_CANTIDAD: item.cantidad,
-                P_PRECIO: precio,
-                P_TIPO: productRow.P_TIPO,
-                P_NOMBRE: producto.nombre
+                id: producto.id,
+                nombre: producto.nombre,
+                cantidad: item.cantidad,
+                precio: precio,
+                subtotal: subtotal
             });
         }
-        await fs.appendFile(logFile, `Total: ${total}\n`);
-
-        const { n_factura } = await consultaDb.getNFactura();
-        await fs.appendFile(logFile, `N_Factura: ${n_factura}\n`);
-        const nuevaFacturaN = n_factura + 1;
-
+        const { n_fac } = await consultaDb.getNFactura();
         const facturaData = {
+            n_fac: n_fac,
+            id_cl: user.id,
+            total_compra: total,
             fecha: new Date().toISOString(),
-            empresa: 'Fan del Mate',
-            P_TIPO: 'original',
-            nFactura: nuevaFacturaN,
-            productos: JSON.stringify(productosVerificados),
-            total: total
-        };
-
-        const factura = new Factura(facturaData);
-        await fs.appendFile(logFile, `Factura created. Calling DB...\n`);
-
-        const result = await consultaDb.registrarVenta(factura);
-        await fs.appendFile(logFile, `DB result: ${JSON.stringify(result)}\n`);
-
-        const ticket = {
-            orden: nuevaFacturaN,
-            total: total,
+            met_pago: req.body.met_pago,
             productos: productosVerificados
         };
-
+        const ticket = new Ticket(facturaData);
+        const result = await consultaDb.registrarVenta(ticket);
         await resumenMail(ticket, user);
-        await fs.appendFile(logFile, `Mail sent.\n`);
-
-        res.status(200).json({
-            success: true,
-            message: 'Venta registrada',
-            orderId: nuevaFacturaN,
-            ticket: ticket
-        });
-
+        if (result) {
+            console.log('Venta registrada');
+            res.status(200).json({
+                success: true,
+                message: 'Venta registrada',
+                orderId: n_fac,
+                ticket: ticket
+            });
+        } else {
+            console.log('Error guardando venta');
+            res.status(400).json({ message: 'Error guardando venta' });
+        }
     } catch (err) {
+        console.log('Error guardando venta');
         res.status(500).json({
             message: 'Error',
             success: false,
@@ -766,6 +746,13 @@ router.post("/contact", async (req, res) => {
 });
 
 //resumen de compra (llamada en /registrarVenta)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
 async function resumenMail(ticket, user) {
     const { nombre, email } = user;
     if (!ticket) {
@@ -773,69 +760,45 @@ async function resumenMail(ticket, user) {
         return;
     }
     try {
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
-
-        // Email content
-        const subject = `Tienda Online - Nueva compra #${ticket.orden}`;
-        const text = `
-            Hola ${nombre},
-            Gracias por tu compra en Fan del Mate.
-            
-            Detalle:
-            ${ticket.productos.map(product => `-${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}`).join('\n')}
-            Total: $${ticket.total}
-            
-            Si elegiste transferencia, recuerda enviar el comprobante.
-        `;
-        const html = `            
-            <h3>Hola ${nombre}, gracias por tu compra</h3>
-            <p>Hemos recibido tu orden <strong>#${ticket.orden}</strong>.</p>
+        const subject = `El Fan del Mate - Resumen de compra #${ticket.orden}`;
+        const detalleHtml = ticket.detalle.map(product => `
+            <div style="align-items: center; margin-bottom: 10px;">
+                <img src="${product.imagen}" alt="${product.nombre}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                <span>
+                    <strong>${product.nombre}</strong> x ${product.cantidad} = $${product.subtotal}
+                </span>
+            </div>
+        `).join('');
+        const html = `                        
+            <p>Tu número de ticket es <strong>#${ticket.n_fac}</strong>.</p>
             <p>Detalle:</p>
-            ${ticket.productos.map(product => `<p>- ${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}</p>`).join('')}
+            ${detalleHtml}
             <p><strong>Total a pagar:</strong> $${ticket.total}</p>
             <hr>
-            <a href="https://tienda-mate.vercel.app/">Ver resumen de compra</a>
+            <a href="https://tienda-mate.vercel.app/mis-compras">Ver resumen de compra</a>
             <p>Si elegiste abonar con transferencia, por favor envía el comprobante respondiendo a este correo o por WhatsApp al +54 3462 336880.</p>
         `;
 
-        // Send to Client
         const mailOptionsClient = {
             from: `"Fan del Mate" <${process.env.EMAIL_USER}>`,
             to: email,
             subject: subject,
-            text: text,
-            html: html
+            html: `<h3>Hola ${nombre}, gracias por tu compra</h3>${html}`
         };
 
-        // Send to Admin (Seller)
         const mailOptionsAdmin = {
-            from: `"Tienda Web" <${process.env.EMAIL_USER}>`,
+            from: `"Fan del Mate" <${process.env.EMAIL_USER}>`,
             to: process.env.EMAIL_USER,
-            subject: `Nueva Venta Web - Orden #${ticket.orden}`,
-            text: `
-                Nueva venta registrada.
-                Cliente: ${nombre} (${email})
-                Orden: ${ticket.orden}
-                Detalle:
-                ${ticket.productos.map(product => `-${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}`).join('\n')}
-                Total: $${ticket.total}
-            `,
+            subject: `Nueva Venta - #${ticket.n_fac}`,
             html: `
-                <h3>Nueva Venta Web</h3>
+                <h3>Nueva Venta</h3>
                 <p><strong>Cliente:</strong> ${nombre}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Orden:</strong> #${ticket.orden}</p>
+                <p><strong>Email:</strong> ${email}</p>                
+                <p><strong>Ticket:</strong> #${ticket.n_fac}</p>
                 <p>Detalle:</p>
-                ${ticket.productos.map(product => `<p>- ${product.P_NOMBRE} x ${product.P_CANTIDAD} = $${product.P_PRECIO * product.P_CANTIDAD}</p>`).join('')}
+                ${detalleHtml}
                 <p><strong>Total a pagar:</strong> $${ticket.total}</p>
-
-                <a href="https://tienda-mate.vercel.app/">Ver resumen de compra</a>
+                <a href="https://tienda-mate.vercel.app/panel-informes">Ver resumen de compra</a>
             `
         };
 
@@ -894,9 +857,8 @@ router.put("/update/:userNumber", async (req, res) => {
 });
 
 //llamar factura del cliente ( pdf )
-router.get("/compras_usuario/:userId", async (req, res) => {
-    let userId = req.params.userId;
-    console.log(userId);
+router.get("/compras_usuario", async (req, res) => {
+    let userId = req.user.id;
     try {
         const [rows] = await consultaDb.getComprasUsuario(userId);
         console.log(rows);
@@ -904,6 +866,31 @@ router.get("/compras_usuario/:userId", async (req, res) => {
     } catch (err) {
         console.error("Error fetching records:", err);
         res.status(500).json({ message: "Error retrieving records" });
+    }
+});
+
+//llamar factura del cliente detalle
+router.get('/compras_usuario/:id', async (req, res) => {
+    try {
+        const id_fac = req.params.id;
+        const userId = req.user.id;
+
+        const rows = await consultaDb.getTicketById(id_fac, userId);
+        if (rows.length === 0) return res.status(404).send("Pedido no encontrado");
+        const ticket = new Ticket(rows[0][0]);
+        console.log('rows', rows[0])
+        ticket.detalle = rows[0].map(p => ({
+            nombre: p.nbre_hist,
+            cantidad: p.cant_ticket,
+            precio: p.pcio_un_pgdo,
+            subtotal: p.subtotal,
+            imagen: p.P_IMG
+        }));
+        console.log(' detalle', ticket.detalle)
+
+        res.json(ticket);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

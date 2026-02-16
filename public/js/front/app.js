@@ -10,6 +10,7 @@ import { MobileNavBar } from '../components/navigation/mobile-nav-bar.js';
 import { DireEnvio } from '../components/products/envio.js';
 import { MetPago } from '../components/products/metpago.js';
 import { Producto } from '../models/producto.js';
+import { initTicket } from './ticket.js';
 
 window.indexProducts = async function indexProducts() {
     const cardsContainer = document.querySelector('#destacados');
@@ -112,6 +113,12 @@ if (!window.appListenersAttached) {
         const path = window.location.pathname;
         if (path.startsWith('/admin') || path.startsWith('/panel-')) {
             await cargarComponentesAdmin();
+        }
+
+        //ticket
+        const ticketContainer = document.getElementById('ticket-container');
+        if (ticketContainer) {
+            initTicket();
         }
 
         //productos-index

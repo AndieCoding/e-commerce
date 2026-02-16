@@ -8,7 +8,7 @@ export class Producto {
         this.imagen = dbRow.P_IMG || dbRow.imagen || '/img/placeholder.jpg';
         this.marca = dbRow.P_MARCA || dbRow.marca || '';
         this.descripcion = dbRow.P_DESCRIPCION || dbRow.descripcion || '';
-        this.order_quantity = parseInt(dbRow.order_quantity || 0);
+        this.order_quantity = parseInt(dbRow.order_quantity || 0) || dbRow.cantidad;
     }
     get stockInfo() {
         if (this.stock > 9) return { state: 'Disponible', class: 'green' };

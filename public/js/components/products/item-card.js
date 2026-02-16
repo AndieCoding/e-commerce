@@ -6,6 +6,7 @@ export class ItemCard extends CartCard {
 
     getStyles() {
         return `
+        ${super.getStyles()}
         <style>
         .carrito-item {
             display: flex;

@@ -180,6 +180,7 @@ export class Card extends HTMLElement {
                 .quantity-selector {
                     display: flex;
                     flex-direction: row;
+                    margin: auto;
                     gap: 0.5em;
                     width: clamp(100px, 100%, 200px);
                     justify-content: center;

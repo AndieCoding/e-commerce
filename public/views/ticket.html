@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Detalle de Ticket - Fan del Mate</title>
+    <link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
+    <link rel="stylesheet" href="/css/front.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script type="module" src="/js/front/app.js"></script>
+    <script type="module" src="/js/components/tickets/order-ticket.js"></script>
+
+</head>
+
+<body>
+    <menu-del-mate></menu-del-mate>
+
+    <main class="user-panel">
+        <div class="history-card" id="ticket-section">
+            <div class="user-header">
+                <a href="/views/mis_compras.html" style="text-decoration: none;">
+                    <img id="back-arrow" src="/img/icons/back-arrow.svg" alt="back-arrow" class="back-arrow">
+                </a>
+                <h2>Detalle de Compra</h2>
+            </div>
+            <div id="ticket-container"
+                style="padding: 20px; display: flex; justify-content: center; align-items: center;">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </main>
+    <mobile-nav-bar></mobile-nav-bar>
+    <footer>
+        <footer-del-mate></footer-del-mate>
+    </footer>
+</body>
+
+</html>

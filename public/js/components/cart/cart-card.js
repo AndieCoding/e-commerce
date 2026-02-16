@@ -9,6 +9,9 @@ export class CartCard extends HTMLElement {
         this.productPrice = 0;
         this._item = null;
     }
+    static get observedAttributes() {
+        return ['quantity'];
+    }
 
     attributeChangedCallback(att, oldValue, newValue) {
         if (att === 'quantity') {
