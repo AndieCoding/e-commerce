@@ -300,7 +300,7 @@ async function getUser(id) {
 	}
 }
 
-async function getVentasDiarias() {
+/*async function getVentasDiarias() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
@@ -335,7 +335,7 @@ async function getVentasDiarias() {
 		conn.release();
 	}
 }
-async function getVentasAcumuladas(tipo) {
+/*async function getVentasAcumuladas(tipo) {
 	let conn = await getConn();
 	try {
 		console.log('This is the product in getVentasAcumuladas: ', tipo)
@@ -378,7 +378,7 @@ async function getVentasAcumuladas(tipo) {
 	finally {
 		conn.release();
 	}
-}
+}*/
 
 async function getStockActual(producto) {
 	let conn = await getConn();
@@ -443,49 +443,63 @@ async function getTicketById(id_fac, userId) {
 	}
 }
 
-async function getVentasTotales(producto) {
-	let conn = await getConn();
+async function getVentasTotales(nombre_id_producto) {
 	try {
-		const [ventasRows] = await conn.query(
-			`SELECT  
-				SUM(
-					CASE 
-						WHEN f.TIPO = 'duplicado' THEN fv.V_CANTIDAD            
-					END
-				) AS total_vendido
-			FROM 
-				facturas f    
-			JOIN 
-				facturas_ventas fv ON f.N_FACTURA = fv.N_FACTURA
-			JOIN
-				productos p ON fv.ID_PROD = p.ID_PROD AND p.P_TIPO = '${producto}';   
-			`
-		);
-		console.log('Consulta de ventas totales de ', producto, ' realizada. Rows -> ', ventasRows);
-
-		const [stockRows] = await getStockActual(producto);  // Await the result of getStockActual
-
-		console.log('this is stock rows en database ing-egresos : ' + stockRows.length > 0 ? stockRows[0].stock : 0);
-		// Extract stock and total sold values
-		const totalVendido = ventasRows[0] ? ventasRows[0].total_vendido : 0;
-		const stockActual = stockRows[0] ? stockRows[0].stock : 0;
-
-		// Combine both values and return the result
+		const queryVentas = `
+            SELECT 
+                IFNULL(SUM(df.cant_ticket), 0) AS total_vendido
+            FROM 
+                detalle_factura df
+            JOIN 
+                facturas_ventas fv ON df.id_fac = fv.id_fac
+            JOIN 
+                productos p ON df.id_prod = p.ID_PROD
+            WHERE 
+                p.ID_PROD = ? OR p.P_TIPO = ?; 
+        `;
+		const [ventasRows] = await pool.query(queryVentas, [nombre_id_producto]);
+		const stockRows = await getStockActual(nombre_id_producto);
+		const totalVendido = ventasRows[0]?.total_vendido || 0;
+		const stockActual = stockRows[0]?.stock || 0;
 		const result = {
-			producto: producto,
-			total_vendido: totalVendido,
-			stock_actual: stockActual
+			producto: nombre_id_producto,
+			total_vendido: Number(totalVendido),
+			stock_actual: Number(stockActual)
 		};
 
-		console.log(result);
+		console.log(`Reporte generado para ${nombre_id_producto}`);
+		//return result;
 
-		return result;
 	} catch (err) {
-		console.log("Error updating bill");
-		console.log(err);
-	} finally {
-		conn.release();
+		console.error("Error en getVentasTotales:", err.message);
+		//throw err;
 	}
+
+	/*tener en cuenta
+	try {
+		const query = `
+			SELECT 
+				IFNULL(SUM(df.cant_ticket), 0) AS unidades,
+				IFNULL(SUM(df.subtotal), 0) AS recaudacion
+			FROM detalle_factura df
+			JOIN facturas_ventas fv ON df.id_fac = fv.id_fac
+			JOIN productos p ON df.id_prod = p.ID_PROD
+			WHERE p.P_TIPO = ?;
+		`;
+
+		const [rows] = await pool.query(query, [categoria]);
+
+		return {
+			categoria: categoria,
+			unidades: Number(rows[0].unidades),
+			recaudacion: Number(rows[0].recaudacion)
+		};
+
+	} catch (err) {
+		console.error("Error al obtener ventas por categoría:", err);
+		throw err;
+	}*/
+
 }
 
 /*async function guardarFactura(imagePath, userId, nfactura, factura) {
@@ -573,7 +587,8 @@ async function guardarRemito(imagePath, nRemito) {
 	}
 }
 
-async function insertarEnFicha(conn, factura, producto) {
+//cambiar
+/*async function insertarEnFicha(conn, factura, producto) {
 	console.log('insertando en ficha ', producto);
 	const [rows] = await conn.query(
 		`INSERT INTO ficha_stock_${producto.P_TIPO}s(
@@ -581,7 +596,7 @@ async function insertarEnFicha(conn, factura, producto) {
 		VALUES (?,?,?,?,?, ?)`,
 		[factura.fecha, 'duplicado', factura.nFactura, null, producto.P_CANTIDAD, producto.P_PRECIO]
 	);
-}
+}*/
 
 async function insertarImgPath(imagePath, id) {
 	try {
@@ -750,7 +765,7 @@ async function productosIndex() {
 	}
 }
 
-async function RegistrarCompra(factura) {
+/*async function RegistrarCompra(factura) {
 	const termos = factura.productos.filter((producto) => { return producto.productType.includes('termo') });
 	const mates = factura.productos.filter((producto) => { return producto.productType.includes('mate') });
 	const yerbas = factura.productos.filter((producto) => { return producto.productType.includes('yerba') });
@@ -932,7 +947,7 @@ async function RegistrarCompra(factura) {
 	} finally {
 		conn.release();
 	}
-}
+}*/
 
 async function registrarVenta(factura) {
 	const conn = await getConn();
@@ -1131,7 +1146,7 @@ async function updateProduct(id, product, imagePath) {
 export default {
 
 	DevolverFichaDeStock,
-	RegistrarCompra,
+	//RegistrarCompra,
 	registrarVenta,
 	getStockTotal,
 	GenerarInforme,
@@ -1152,8 +1167,8 @@ export default {
 	//getGananciasBrutas,
 	getNFactura,
 	getUser,
-	getVentasDiarias,
-	getVentasAcumuladas,
+	//getVentasDiarias,
+	//getVentasAcumuladas,
 	getVentasTotales,
 	getStockActual,
 	AltaProductos,
