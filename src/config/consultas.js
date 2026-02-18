@@ -173,13 +173,12 @@ async function getNFactura() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
-			`SELECT n_fac 
-			FROM facturas_ventas 
-			ORDER BY n_fac DESC LIMIT 1`
+			`SELECT IFNULL(MAX(n_fac), 0) AS n_fac 
+     		FROM facturas_ventas`
 		);
 		let n_fac = rows.length > 0 ? rows[0].n_fac : 0;
 		/*const [insertRemito] = await conn.query(
-			`INSERT INTO remitos(N_FACTURA) VALUES (?);`, [n_factura + 1]
+			`INSERT INTO remitos(N_FACTURA) VALUES (?);`, [n_fac + 1]
 		);*/
 		//const [numeroRemitoRow] = await conn.query(`SELECT LAST_INSERT_ID() AS n_remito`);
 		return {
