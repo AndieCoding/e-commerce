@@ -20,7 +20,7 @@ export class MobileNavBar extends HTMLElement {
                 pointer-events: none;
             }
 
-            @media (max-width: 700px) {
+            @media (max-width: 800px) {
                 :host {
                     display: block;
                 }

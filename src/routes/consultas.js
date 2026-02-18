@@ -775,7 +775,7 @@ async function resumenMail(ticket, user) {
             ${detalleHtml}
             <p><strong>Total a pagar:</strong> $${ticket.total}</p>
             <hr>
-            <a href="https://tienda-mate.vercel.app/mis-compras">Ver resumen de compra</a>
+            <a href="https://tienda-mate.vercel.app/mis_compras">Ver resumen de compra</a>
             <p>Si elegiste abonar con transferencia, por favor envía el comprobante respondiendo a este correo o por WhatsApp al +54 3462 336880.</p>
         `;
 
@@ -798,7 +798,7 @@ async function resumenMail(ticket, user) {
                 <p>Detalle:</p>
                 ${detalleHtml}
                 <p><strong>Total a pagar:</strong> $${ticket.total}</p>
-                <a href="https://tienda-mate.vercel.app/panel-informes">Ver resumen de compra</a>
+                <a href="https://tienda-mate.vercel.app/panel-informes">Ir a la tienda</a>
             `
         };
 
