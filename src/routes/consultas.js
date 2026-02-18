@@ -1,5 +1,6 @@
 import express from "express";
 import consultaDb from "../config/consultas.js";
+import userModel from "../config/userModel.js";
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
@@ -239,7 +240,7 @@ router.post("/images", upload.array('product_image', 5), async (req, res, next) 
                     const baseDir = path.join(__dirname,'..', '..','..');
                     const image = path.relative(baseDir, targetPath);        
                     imagePath = path.join('..',image);
-                    await consultaDb.insertarImgPath(imagePath, p.ID_PROD);
+                    await userModel.insertarImgPath(imagePath, p.ID_PROD);
                 }
             })
             if (req.files && req.files.length > 0) {
@@ -258,7 +259,7 @@ router.post("/images", upload.array('product_image', 5), async (req, res, next) 
                     const baseDir = path.join(__dirname,'..', '..','..');
                     const image = path.relative(baseDir, targetPath);        
                     imagePath = path.join('..',image);
-                    await consultaDb.insertarImgPath(imagePath, p.ID_PROD);
+                    await userModel.insertarImgPath(imagePath, p.ID_PROD);
                 });
             }*/
         }
@@ -593,7 +594,7 @@ router.put("/products/:id", upload.single('image'), async (req, res) => {
         const { email, pass } = { ...req.body };
         console.log('Email', email);
         console.log('Pass', pass);
-        const rows = await consultaDb.Login(email, pass);
+        const rows = await userModel.Login(email, pass);
         const currentTime = new Date().toLocaleTimeString();
 
         if (rows) {
@@ -625,7 +626,7 @@ router.post('/registro', async (req, res) => {
         console.log("Contenido real:", req.body);
         const user = { ...req.body };
         console.log('Pedido de registro de nuevo usuario: ', user)
-        const rows = await consultaDb.RegistrarUsuario(user);
+        const rows = await userModel.RegistrarUsuario(user);
         if (rows.affectedRows > 0) {
             console.log('Registro de nuevo usuario exitoso (201)');
             res.status(201).json({
@@ -659,7 +660,7 @@ router.post("/update/profile", upload.single('FOTO'), async (req, res) => {
             const imagePath = req.file.path;
 
             console.log('La URL de la foto en Cloudinary es: ' + imagePath);
-            const [result] = await consultaDb.updateUserData(userId, { 'FOTO': imagePath });
+            const [result] = await userModel.updateUserData(userId, { 'FOTO': imagePath });
 
             if (result && result.affectedRows > 0) {
                 if (req.user) {
@@ -820,7 +821,7 @@ router.put("/update/:userNumber", async (req, res) => {
         const userId = Number(req.params.userNumber);
         const updateData = req.body;
 
-        const [result] = await consultaDb.updateUserData(userId, updateData);
+        const [result] = await userModel.updateUserData(userId, updateData);
 
         if (result && result.affectedRows > 0) {
             if (req.user) {
@@ -860,7 +861,7 @@ router.put("/update/:userNumber", async (req, res) => {
 router.get("/compras_usuario", async (req, res) => {
     let userId = req.user.id;
     try {
-        const [rows] = await consultaDb.getComprasUsuario(userId);
+        const [rows] = await userModel.getComprasUsuario(userId);
         console.log(rows);
         res.json(rows);
     } catch (err) {

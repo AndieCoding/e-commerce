@@ -185,7 +185,7 @@ if (!window.appListenersAttached) {
         if ($previewImage) {
             let foto = event.detail.foto;
             if (foto && foto !== null) {
-                $previewImage.style.backgroundImage = `url(${foto})`;
+                $previewImage.style.backgroundImage = `url('${foto}')`;
             } else {
                 $previewImage.style.backgroundImage = `url('../img/icons/sin-foto.svg')`;
             }

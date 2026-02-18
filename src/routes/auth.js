@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import consultaDb from '../config/consultas.js';
+import userModel from '../config/userModel.js';
 
 
 var router = express.Router();
@@ -36,7 +37,7 @@ const GOOGLE_AUTH_CONFIG = {
 
 passport.use(new GoogleStrategy(GOOGLE_AUTH_CONFIG, async function verify(accessToken, refreshToken, profile, cb) {
     try {
-        const user = await consultaDb.LoginOrRegisterWithGoogle(profile);
+        const user = await userModel.LoginOrRegisterWithGoogle(profile);
         if (!user) {
             console.log('Error en el login o registro');
             return cb(null, false);
@@ -75,7 +76,7 @@ passport.serializeUser(function (user, cb) {
 // En cada petición, busco todos los datos
 passport.deserializeUser(async function (id, cb) {
     try {
-        const user = await consultaDb.getUser(id);
+        const user = await userModel.getUser(id);
         if (!user) {
             return cb(null, false);
         }
