@@ -263,11 +263,14 @@ export class Card extends HTMLElement {
          
             .card.list {
                 display: grid;
-                grid-template-columns: 1fr 2fr;    
+                grid-template-columns: 1fr 1fr 1fr;    
                 grid-template-rows: 1fr 1fr 1fr;           
                 width: 100%; 
                 height: 100%;
                 max-width: 800px;
+            }
+            .card.list .descripcion{
+                grid-column: span 2;
             }
 
             #imagen-section {
@@ -279,10 +282,11 @@ export class Card extends HTMLElement {
                 max-width: 180px;
                 grid-row: span 2;
             }
-            .card.list .buttons-section {
-                flex-direction: row;      
+            .card.list .buttons-section {                
                 justify-content: end;
-                gap: 2rem;
+                align-items: center;
+                grid-column: 3 / 4;
+
             }
             .card.list .buttons .agregar{
                 @media (width<900px) {
@@ -403,11 +407,10 @@ export class Card extends HTMLElement {
                 }
             }
             .card.list .product-price {                
-                align-items: start;
-                left: 125px;
-                top: 60%;     
+                align-items: start;                
+                top: 65%;     
                 @media (width<900px) {
-                left: clamp(90px, 20%, 220px);                            
+                    left: clamp(105px, 20%, 220px);  
                 }           
             }
             .product-price .price {
@@ -482,8 +485,9 @@ export class Card extends HTMLElement {
                     margin-bottom: 2px;
                 }
                 
-                .buttons {                    
+                .card.buttons {                    
                     width: 100%;
+                    justify-content: end;
                 }
                 .card{
                     .buttons a.agregar {
