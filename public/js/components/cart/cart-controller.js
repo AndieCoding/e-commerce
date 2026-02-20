@@ -123,6 +123,6 @@ export class CartController {
     }
 
     getTotalProducts() {
-        return this.orden.reduce((total, product) => total + product.order_quantity, 0);
+        return this.orden.reduce((total, product) => total + product.order_quantity, 0) || 0;
     }
 }
