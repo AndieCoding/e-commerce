@@ -2,7 +2,7 @@ export class Ticket {
     constructor(data) {
         this.n_fac = data.n_fac || data.N_FACTURA || null;
         this.id_cl = data.id_cl || data.ID_CL;
-        this.total = data.total_compra || data.total || data.TOTAL;
+        this.total = data.total_compra || data.total || data.TOTAL || 0;
         this.fecha = data.fecha || data.FECHA;
         this.met_pago = data.met_pago || data.MET_PAGO;
         this.detalle = data.productos || data.detalle || [];

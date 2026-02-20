@@ -140,14 +140,13 @@ export class MetPago extends HTMLElement {
     async procesarMercadoPago() {
         const items = this.ticket.map(item => ({
             id: item.id,
-            quantity: item.order_quantity
+            cantidad: item.order_quantity
         }));
         const response = await fetch('/api/payments/mp/create_preference', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                items: items,
-                external_reference: `ORDER-${Date.now()}`
+                items: items
             })
         });
         const data = await response.json();

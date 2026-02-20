@@ -1,82 +1,53 @@
-import { getConn } from "./db.js";
+import { pool, getConn } from "./db.js";
 import { Producto } from "../../public/js/models/producto.js";
-
-
-
-async function AltaProductos(product) {
-	console.log('Estableciendo conexión con la base de datos...')
-	const conn = await getConn();
-	let producto = JSON.parse(product);
-	console.log('Conexión establecida.')
-	console.log('Insertando nuevo producto en la base de datos.')
+async function actualizarEstadoVenta(n_factura, total_pagado) {
 	try {
-		await conn.beginTransaction();
+		const [result] = await pool.query(
+			`UPDATE facturas_ventas 
+             SET status = 'aprobado' 
+             WHERE n_fac = ? AND total_compra = ?`,
+			[Number(n_factura), Number(total_pagado)]
+		);
+		if (result.affectedRows === 0) {
+			console.error(`No se encontró la factura ${n_factura} o el monto $${total_pagado} no coincide.`);
+			return { success: false, message: "Factura no encontrada o monto inválido" };
+		}
+
+		console.log(`Factura ${n_factura} marcada como aprobada en db.`);
+		return { success: true, affectedRows: result.affectedRows };
+
+	} catch (err) {
+		console.error("Error actualizando estado de venta:", err);
+		throw err;
+	}
+}
+async function AltaProductos(product) {
+	let producto = JSON.parse(product);
+	try {
+		await pool.beginTransaction();
 		console.log('Transacción iniciada.')
 
-		await conn.query(
+		await pool.query(
 			`INSERT INTO productos
 			(p_tipo, p_nombre, p_marca, p_descripcion, p_img, p_precio, p_pr_oferta, p_cantidad) 
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
 			[producto.tipo, producto.nombre, producto.marca, producto.descripcion, producto.image, producto.precio, producto.oferta, producto.stock]
 		);
-		const [rows] = await conn.query(
+		const [rows] = await pool.query(
 			`SELECT * FROM productos WHERE id_prod = LAST_INSERT_ID();`
 		)
 		producto.id_prod = rows[0].ID_PROD;
 		console.log(`Alta registrada en MySQL. \n`);
-		await conn.commit();
+		await pool.commit();
 		return [producto];
 
 	} catch (err) {
-		await conn.rollback();
+		await pool.rollback();
 		console.log("Error saving sell invoice");
 		console.log(err);
-	} finally {
-		conn.release();
 	}
 };
 
-async function cargarCompra(factura, conn) {
-	await conn.query(
-		`INSERT INTO facturas_compras (
-			n_factura, c_cantidad, c_precio, id_prod) VALUES (?,?, ?,?)`, [
-		factura.nFactura,
-		producto.cantidad,
-		producto.precio,
-		producto.id_prod
-	]);
-}
-
-async function DevolverFichaDeStock(product) {
-	let conn = await getConn();
-	try {
-		const [ficha] = await conn.query(
-			`SELECT  
-				f.f_fecha AS fecha,
-				f.tipo,
-				f.n_factura,
-				f.c_cantidad AS cantidad_compra,
-				f.c_precio AS precio_compra,
-				f.v_cantidad AS cantidad_venta,
-				f.v_precio AS precio_venta,
-				s.s_cantidad AS cantidades_stock,
-				s.s_precio AS precio_stock,
-				s.s_total AS total
-				FROM ficha_stock_${product} f 
-				INNER JOIN saldos_${product} s
-				ON f.n_factura = s.n_factura
-				ORDER BY f.f_fecha ASC`
-		);
-		console.log(ficha);
-		console.log(`Registros de ${product} enviados.`);
-		conn.release();
-		return [ficha];
-
-	} catch (err) {
-		console.log("Error getting records");
-		console.log(err);
-	}
-}
 
 async function GenerarInforme(month) {
 	let conn = await getConn();
@@ -98,34 +69,6 @@ async function GenerarInforme(month) {
 		conn.release();
 	}
 }
-
-
-
-/*async function getFichaFacturacion(mes) {
-	let conn = await getConn();
-	try {
-		const sql =
-			`SELECT DISTINCT
-			f.fecha,
-			f.n_factura, 
-			f.total,
-			c.fact_us AS link,
-			r.pdf AS link_remito
-		FROM facturas f
-		LEFT JOIN compras_usuario c ON f.n_factura = c.n_factura
-		JOIN remitos r ON f.N_FACTURA = r.N_FACTURA
-		WHERE tipo = 'duplicado'  AND month(fecha) = 12 
-		ORDER BY fecha DESC`;
-		const [facturacion] = await conn.query(sql);
-		return [facturacion];
-	} catch (err) {
-		console.log("Error getting records");
-		console.log(err);
-	}
-	finally {
-		conn.release();
-	}
-}*/
 
 async function getGananciasBrutas(mes) {
 	const conn = await getConn();
@@ -257,8 +200,6 @@ async function getSuggestions(tipo, value) {
 		conn.release();
 	}
 }
-
-
 
 /*async function getVentasDiarias() {
 	let conn = await getConn();
@@ -461,71 +402,9 @@ async function getVentasTotales(nombre_id_producto) {
 	}*/
 
 }
-
-/*async function guardarFactura(imagePath, userId, nfactura, factura) {
-	let conn = await getConn();
-	try {
-		await conn.query(
-			`INSERT INTO facturas(
-			fecha, tipo, empresa, n_factura, total) 
-			VALUES (?, ?, ?, ?, ?);`,
-			[factura.fecha,
-				'duplicado',
-			factura.empresa,
-			factura.nFactura,
-			factura.total]
-		);
-
-		console.log(imagePath);
-		const sql = `INSERT INTO compras_usuario (ID_US, FACT_US, N_FACTURA) VALUES ('${userId}', '${imagePath}', '${nfactura}')`;
-		const [result] = await conn.query(sql);
-		if (result.affectedRows > 0) {
-			console.log('Factura guardada');
-			return result;
-		} else {
-			console.log('Error guardando factura');
-			return null;
-		}
-
-	} catch (err) {
-		console.log("Error saving invoice");
-		console.log(err);
-	}
-	finally {
-		conn.release();
-	}
-}*/
-
-async function guardarFacturaUsuarioSinCuenta(imagePath, formData) {
-	let conn = await getConn();
-	let data = formData;
-	console.log('This is form in guardarFacturaUsuarioSinCuenta: ', data);
-	try {
-		const sql = `INSERT INTO facturas (FECHA, EMPRESA, TIPO, N_FACTURA, TOTAL, PDF) 
-			VALUES ('${data.fecha}', '${data.empresa}', '${data.tipo}', '${data.nFactura}', '${data.total}', '${imagePath}')`;
-		const [result] = await conn.query(sql);
-
-		if (result.affectedRows > 0) {
-			console.log('Factura guardada');
-			return result;
-		} else {
-			console.log('Error guardando factura');
-			return null;
-		}
-
-	} catch (err) {
-		console.log("Error saving invoice");
-		console.log(err);
-	}
-	finally {
-		conn.release();
-	}
-}
-
+/*
 async function guardarRemito(imagePath, nRemito) {
 	let conn = await getConn();
-
-	console.log('This is database guardarRemito. ');
 	try {
 		const sql = `UPDATE remitos SET PDF = '${imagePath}' WHERE N_REMITO = ${nRemito}`;
 		const [result] = await conn.query(sql);
@@ -545,7 +424,7 @@ async function guardarRemito(imagePath, nRemito) {
 	finally {
 		conn.release();
 	}
-}
+}*/
 
 //cambiar
 /*async function insertarEnFicha(conn, factura, producto) {
@@ -557,7 +436,6 @@ async function guardarRemito(imagePath, nRemito) {
 		[factura.fecha, 'duplicado', factura.nFactura, null, producto.P_CANTIDAD, producto.P_PRECIO]
 	);
 }*/
-
 
 async function insertarImgPath(imagePath, id) {
 	try {
@@ -575,10 +453,6 @@ async function insertarImgPath(imagePath, id) {
 		console.log(err);
 	}
 }
-
-
-
-
 
 async function MontoPeriodo() {
 	const conn = await getConn();
@@ -601,43 +475,16 @@ async function MontoPeriodo() {
 	}
 }
 
-async function ObtenerMarcas(categoria) {
-	let conn = await getConn();
-	try {
-		const [rows] = await conn.query(
-			`SELECT DISTINCT p_marca as marca 
-			FROM productos
-			WHERE p_nombre LIKE '%${categoria}%'`);
-		return [rows];
-	}
-	catch (err) {
-		console.log("Error getting brands");
-		console.log(err);
-	}
-	finally {
-		conn.release();
-	}
-}
-
 async function ObtenerProductosPorCategoria(categoria) {
-
-	console.log('Estableciendo conexión con la base de datos.');
-	let conn = await getConn();
-	console.log('Conexión establecida.');
 	try {
 		console.log('Consultando productos por categoría.');
-		let [rows] = await conn.query(
+		let [rows] = await pool.query(
 			`SELECT * FROM productos WHERE p_tipo LIKE '%${categoria}%'`);
-		console.log('Respuesta de la base de datos afirmativa')
 		return [rows];
-
 	}
 	catch (err) {
 		console.log("Error getting products by category");
 		console.log(err);
-	}
-	finally {
-		conn.release();
 	}
 }
 
@@ -657,190 +504,6 @@ async function productosIndex() {
 		conn.release();
 	}
 }
-
-/*async function RegistrarCompra(factura) {
-	const termos = factura.productos.filter((producto) => { return producto.productType.includes('termo') });
-	const mates = factura.productos.filter((producto) => { return producto.productType.includes('mate') });
-	const yerbas = factura.productos.filter((producto) => { return producto.productType.includes('yerba') });
-	let newProducts = [];
-	const conn = await getConn();
-	try {
-		await conn.beginTransaction();
-		await conn.query(
-			`INSERT INTO facturas(
-			fecha, tipo, empresa, n_factura, total) 
-			VALUES (?, ?, ?, ?, ?);`,
-			[factura.fecha,
-				'original',
-			factura.empresa,
-			factura.nFactura,
-			factura.total]
-		);
-		for (const producto of factura.productos) {
-			if (producto.id_prod == null) { continue; }
-			await conn.query(
-				`INSERT INTO facturas_compras (
-				n_factura, c_cantidad, c_precio, id_prod) VALUES (?,?, ?,?)`, [
-				factura.nFactura,
-				producto.cantidad,
-				producto.precio,
-				producto.id_prod
-			]);
-		};
-
-
-
-		if (termos.length > 0) {
-			for (const producto of termos) {
-
-				if (producto.id_prod) {//actualizar existente
-					await conn.query(
-						`UPDATE productos 
-						SET p_cantidad = p_cantidad + ${producto.cantidad}, p_precio = ?, pr_compra = ?
-						WHERE id_prod = ?`,
-						[producto.pr_vta, producto.precio, producto.id_prod]
-					);
-					prodActualizado = true;
-
-				}
-				await conn.query(
-					`INSERT INTO ficha_stock_${producto.productType}s(
-					f_fecha, tipo, n_factura, c_cantidad, c_precio, v_cantidad, v_precio)
-					VALUES (?,?,?,?,?, ?, ?)`,
-					[factura.fecha, 'original', factura.nFactura, producto.cantidad, producto.precio, null, null]
-				);
-			};
-			const [stock] = await selectStock('termo', conn);
-			if (stock.length < 1) {
-				for (termo of termos) {
-					await conn.query(
-						`INSERT INTO saldos_termos(
-					n_factura, s_cantidad, s_precio, s_total)
-						VALUES (?,?,?,?)`,
-						[factura.nFactura, termos.cantidad, termos.precio, termos.total]
-					);
-				}
-			} else {
-				for (const producto of stock) {
-					try {
-						await conn.query(
-							`INSERT INTO saldos_termos(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-							[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-						);
-					} catch (err) {
-						console.log(err);
-					}
-				};
-			}
-		}
-		if (mates.length > 0) {
-			for (const producto of mates) {
-
-				if (producto.id_prod) {//actualizar existente
-					await conn.query(
-						`UPDATE productos 
-						SET p_cantidad = p_cantidad + ${producto.cantidad}, p_precio = ?, pr_compra = ?
-						WHERE id_prod = ?`,
-						[producto.pr_vta, producto.precio, producto.id_prod]
-					);
-
-				}
-				await conn.query(
-					`INSERT INTO ficha_stock_mates(
-					f_fecha, tipo, n_factura, c_cantidad, c_precio, v_cantidad, v_precio)
-					VALUES (?,?,?,?,?, ?, ?)`,
-					[factura.fecha, 'original', factura.nFactura, producto.cantidad, producto.precio, null, null]
-				);
-			};
-			const [stock] = await selectStock('mate', conn);
-			if (stock.length < 1) {
-				for (mate of mates) {
-					await conn.query(
-						`INSERT INTO saldos_mates(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-						[factura.nFactura, mate.cantidad, mate.precio, mate.total]
-					);
-				}
-			} else {
-				for (const producto of stock) {
-					console.log('producto de stock ', producto);
-					try {
-						await conn.query(
-							`INSERT INTO saldos_mates(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-							[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-						);
-					} catch (err) {
-						console.log(err);
-					}
-				};
-			}
-		};
-		if (yerbas.length > 0) {
-			for (const producto of yerbas) {
-
-				if (producto.id_prod) {//actualizar existente
-					await conn.query(
-						`UPDATE productos 
-						SET p_cantidad = p_cantidad + ${producto.cantidad}, p_precio = ?, pr_compra = ?
-						WHERE id_prod = ?`,
-						[producto.pr_vta, producto.precio, producto.id_prod]
-					);
-					prodActualizado = true;
-
-				}
-				await conn.query(
-					`INSERT INTO ficha_stock_${producto.productType}s(
-					f_fecha, tipo, n_factura, c_cantidad, c_precio, v_cantidad, v_precio)
-					VALUES (?,?,?,?,?, ?, ?)`,
-					[factura.fecha, 'original', factura.nFactura, producto.cantidad, producto.precio, null, null]
-				);
-			};
-			const [stock] = await selectStock('yerba', conn);
-			if (stock.length < 1) {
-				for (yerba of yerbas) {
-					await conn.query(
-						`INSERT INTO saldos_yerbas(
-					n_factura, s_cantidad, s_precio, s_total)
-						VALUES (?,?,?,?)`,
-						[factura.nFactura, yerba.cantidad, yerba.precio, yerba.total]
-					);
-				}
-			} else {
-				for (const producto of stock) {
-					try {
-						await conn.query(
-							`INSERT INTO saldos_yerbas(
-						n_factura, s_cantidad, s_precio, s_total)
-							VALUES (?,?,?,?)`,
-							[factura.nFactura, producto.cantidad, producto.precio, producto.total]
-						);
-					} catch (err) {
-						console.log(err);
-					}
-				};
-			}
-		}
-
-		console.log('array newProducts', newProducts);
-		console.log(`Compra registrada en la database. \n`);
-		console.log('Numero de factura: ', factura.nFactura);
-		await conn.commit();
-
-		return [newProducts];
-
-	} catch (err) {
-		await conn.rollback();
-		console.log("Error saving sell invoice");
-		console.log(err);
-	} finally {
-		conn.release();
-	}
-}*/
 
 async function registrarVenta(factura) {
 	const conn = await getConn();
@@ -887,22 +550,6 @@ async function registrarVenta(factura) {
 		conn.release();
 	}
 }
-
-
-
-async function selectStock(product, conn) {
-	const [stock] = await conn.query(
-		`SELECT p_tipo,p_precio as precio, 
-		p_cantidad as cantidad,
-		SUM(p_cantidad) OVER (PARTITION BY p_tipo) as total
-		FROM productos
-		WHERE p_tipo = '${product}' AND p_cantidad != 0
-		GROUP BY p_tipo, p_precio, p_cantidad`
-	);
-	return [stock];
-}
-
-
 
 async function deleteProduct(id) {
 	const conn = await getConn();
@@ -958,9 +605,7 @@ async function updateProduct(id, product, imagePath) {
 }
 
 export default {
-
-	DevolverFichaDeStock,
-	//RegistrarCompra,
+	actualizarEstadoVenta,
 	registrarVenta,
 	getStockTotal,
 	GenerarInforme,
@@ -969,19 +614,12 @@ export default {
 	getSuggestions,
 	productosIndex,
 	ObtenerProductosPorCategoria,
-	ObtenerMarcas,
 	getProductsByQuery,
-	//guardarFactura,
-	//getFichaFacturacion,
-	//getGananciasBrutas,
 	getNFactura,
-	//getVentasDiarias,
-	//getVentasAcumuladas,
 	getVentasTotales,
 	getStockActual,
 	AltaProductos,
-	guardarFacturaUsuarioSinCuenta,
-	guardarRemito,
+	//guardarRemito,
 	deleteProduct,
 	getProductById,
 	getTicketById,

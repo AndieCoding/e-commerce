@@ -159,7 +159,6 @@ router.post('/registrarVenta', async (req, res) => {
             const precio = producto.precioFinal;
             const subtotal = precio * item.cantidad;
             total += subtotal;
-            console.log('total: ', total)
 
             productosVerificados.push({
                 id: producto.id,

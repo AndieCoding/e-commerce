@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Preference } from 'mercadopago';
 import consultaDb from '../config/consultas.js';
 import { Producto } from "../../public/js/models/producto.js";
+import { Ticket } from "../../public/js/models/ticket.js";
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 
@@ -12,7 +13,7 @@ const client = new MercadoPagoConfig({
 
 export const createPreference = async (req, res) => {
     try {
-        const { items: clientItems, external_reference } = req.body;
+        const { items: clientItems } = req.body;
         const user = req.user;
 
         if (!user) {
@@ -20,7 +21,8 @@ export const createPreference = async (req, res) => {
         }
 
         const validatedItems = [];
-
+        const database_products = [];
+        let total = 0;
         for (const item of clientItems) {
             const productRow = await consultaDb.getProductById(item.id);
             if (!productRow) {
@@ -29,19 +31,27 @@ export const createPreference = async (req, res) => {
             }
 
             const producto = new Producto(productRow);
-
+            const precio = producto.precioFinal;
+            const subtotal = precio * item.cantidad;
+            total += subtotal;
             validatedItems.push({
                 title: `${producto.nombre}`,
-                unit_price: Number(producto.precioFinal),
-                quantity: Number(item.quantity),
+                unit_price: Number(precio),
+                quantity: Number(item.cantidad),
                 currency_id: 'ARS'
+            });
+            database_products.push({
+                id: producto.id,
+                nombre: producto.nombre,
+                cantidad: item.cantidad,
+                precio: precio,
+                subtotal: subtotal
             });
         }
 
         if (validatedItems.length === 0) {
             return res.status(400).json({ message: 'No se encontraron productos válidos para procesar.' });
         }
-
         const preference = new Preference(client);
 
         const backUrls = {
@@ -49,6 +59,23 @@ export const createPreference = async (req, res) => {
             failure: `https://tienda-mate.vercel.app/confirmar-compra`,
             pending: `https://tienda-mate.vercel.app/confirmar-compra`
         };
+
+        const { n_fac } = await consultaDb.getNFactura();
+        const facturaData = {
+            n_fac: n_fac,
+            id_cl: user.id,
+            total_compra: total,
+            fecha: new Date().toISOString(),
+            met_pago: 0,
+            productos: database_products
+        };
+        console.log(facturaData);
+        const ticket = new Ticket(facturaData);
+        console.log(ticket);
+        const result = await consultaDb.registrarVenta(ticket);
+        if (!result.success) {
+            return res.status(400).json({ message: 'No se pudo registrar la venta en la base de datos' });
+        }
 
         const body = {
             items: validatedItems,
@@ -58,7 +85,7 @@ export const createPreference = async (req, res) => {
             },
             back_urls: backUrls,
             auto_return: 'approved',
-            external_reference: external_reference,
+            external_reference: n_fac,
             statement_descriptor: 'FAN DEL MATE'
         };
 
@@ -77,7 +104,7 @@ export const createPreference = async (req, res) => {
         res.status(500).json({ message: 'Error al crear preferencia de pago', error: error.message });
     }
 };
-
+/*
 export const confirmTransferOrder = async (req, res) => {
     try {
         const orderData = req.body;
@@ -111,7 +138,7 @@ export const confirmTransferOrder = async (req, res) => {
         res.status(500).json({ message: 'Error al registrar orden', error: error.message });
     }
 };
-
+*/
 export const checkoutResult = async (req, res) => {
     try {
         if (req.type === 'payment') {
@@ -119,13 +146,12 @@ export const checkoutResult = async (req, res) => {
             const data = await payment.get({ id: req.id });
             if (data.status === 'approved') {
                 const n_factura_referencia = data.external_reference;
-                const total_pagado = data.transaction_amount;
-                // Actualizar status
                 console.log(`Pago aprobado para la factura: ${n_factura_referencia}`);
+                const total_pagado = data.transaction_amount;
+                const result = await consultaDb.actualizarEstadoVenta(n_factura_referencia, total_pagado);
             }
         }
 
-        // IMPORTANTE: Siempre responder 200 o 201 a Mercado Pago para que deje de avisar
         res.sendStatus(200);
 
     } catch (error) {
