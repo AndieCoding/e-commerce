@@ -199,7 +199,7 @@ export class MetPago extends HTMLElement {
 
             setTimeout(() => {
                 alert(`¡Gracias por tu compra! Tu pedido #${result.orderId} ha sido registrado. Envianos el comprobante por WhatsApp.`);
-                window.location.href = '/';
+                window.location.href = '/mis_compras';
             }, 500);
             return true;
         } else {
