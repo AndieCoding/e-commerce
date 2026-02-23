@@ -498,7 +498,6 @@ p.notFound {
     display: grid;
     gap: 1em;
     justify-content: start;
-    grid-template-columns: repeat(auto-fill, 170px);
 }
 
 .busquedas .resultados.grid {
@@ -507,17 +506,11 @@ p.notFound {
     @media (width<900px) {
         min-height: 80vh;
         box-sizing: border-box;
-        grid-template-columns: repeat(auto-fill, minmax(min(30%, 170px), 130px));
-        gap: 0.5em;
+        /*grid-template-columns: repeat(auto-fill, minmax(min(30%, 170px), 130px));*/
+        grid-template-columns: repeat(auto-fill, minmax(140px, 160px));
+        gap: 5px;
         width: 100%;
-        padding: 10px;
-        margin-left: 0;
-        margin: auto;
         place-content: start center;
-    }
-
-    @media (width<400px) {
-        grid-template-columns: repeat(auto-fill, 140px);
     }
 }
 

@@ -170,7 +170,7 @@ export class Card extends HTMLElement {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    gap: 1em;
+                    gap: 1.5em;
                 }
                     
                 .buttons-section input {
