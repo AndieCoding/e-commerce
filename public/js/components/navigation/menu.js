@@ -264,7 +264,7 @@ export class Menu extends HTMLElement {
                         <li>
                             <div class="contenedor-imagen-usuario">
                             ${this.user ?
-                `<img id="icono-usuario" class="nav-icons user" src="${this.user.foto}" loading="lazy" />`
+                `<img id="icono-usuario" class="nav-icons user" src="${this.user.foto ? this.user.foto : '/img/icons/sin-foto.svg'}" loading="lazy" />`
                 : `<a class="nav-item" href="/login">Ingresar</a>`}                                
                             </div>
                         </li>

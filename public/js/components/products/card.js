@@ -403,7 +403,7 @@ export class Card extends HTMLElement {
                 top: 45%;
                 right: 5px;
                 @media (width<900px) {
-                    top: 50%;
+                    right: 10px;
                 }
             }
             .card.list .product-price {                
@@ -430,8 +430,8 @@ export class Card extends HTMLElement {
             @media (width<900px) {
                 .card {
                     padding: 8px;
-                    width: 100%;
-                    max-height: 290px;
+                    padding-top: 0;
+                    width: 100%;                    
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
