@@ -1,18 +1,46 @@
 export class Ticket {
     constructor(data) {
+        this.nom_cl = data.nom_cl || 'Cliente';
+        this.id_fac = data.id_fac || null;
         this.n_fac = data.n_fac || data.N_FACTURA || null;
         this.id_cl = data.id_cl || data.ID_CL;
         this.total = data.total_compra || data.total || data.TOTAL || 0;
         this.fecha = data.fecha || data.FECHA;
         this.met_pago = data.met_pago || data.MET_PAGO;
         this.detalle = data.productos || data.detalle || [];
-        this.status = data.status || 'Pendiente';
-        this.seg = data.seg || null;
+        this.status = data.status?.toLowerCase() || 'pendiente';
+        this.env_stus = data.env_stus?.toLowerCase() || 'pendiente';
+        this.env_nro = data.env_nro || null;
     }
 
     get id() { return this.n_fac; }
     get date() { return this.fecha; }
     get items() { return this.detalle; }
+    get NumeroEnvio() {
+        if (this.env_stus.toLowerCase() === 'enviado') {
+            return this.env_nro;
+        }
+        return null;
+    }
+    get fechaFormateada() {
+        if (!this.fecha) return "Sin fecha";
+
+        try {
+            // Manejamos tanto objetos Date como strings ISO
+            const isoString = typeof this.fecha === 'string'
+                ? this.fecha
+                : this.fecha.toISOString();
+
+            const [fechaParte, horaParte] = isoString.split('T');
+            const [year, month, day] = fechaParte.split('-');
+            const horaLimpia = horaParte.split('.')[0];
+
+            return `${day}/${month}/${year.slice(-2)} ${horaLimpia}`;
+        } catch (error) {
+            console.error("Error formateando fecha en Ticket:", error);
+            return this.fecha; // Retorno de seguridad
+        }
+    }
 
     /*lógica de seguimiento
     getLinkSeguimiento() {

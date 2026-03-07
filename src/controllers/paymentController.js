@@ -1,4 +1,4 @@
-import { MercadoPagoConfig, Preference } from 'mercadopago';
+import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import consultaDb from '../config/consultas.js';
 import { Producto } from "../../public/js/models/producto.js";
 import { Ticket } from "../../public/js/models/ticket.js";
@@ -141,25 +141,40 @@ export const confirmTransferOrder = async (req, res) => {
 */
 export const checkoutResult = async (req, res) => {
     try {
-        if (req.type === 'payment') {
+        // Mercado Pago envía los datos en el body o query según la versión
+        const { type, data } = req.body;
+        const id = data ? data.id : req.query['data.id'];
+
+        if (type === 'payment') {
             const payment = new Payment(client);
-            const data = await payment.get({ id: req.id });
-            if (data.status === 'approved') {
-                const n_factura_referencia = data.external_reference;
-                console.log(`Pago aprobado para la factura: ${n_factura_referencia}`);
-                const total_pagado = data.transaction_amount;
-                const result = await consultaDb.actualizarEstadoVenta(n_factura_referencia, total_pagado);
+
+            // Obtenemos los detalles del pago usando el ID recibido
+            const paymentData = await payment.get({ id: id });
+
+            if (paymentData.status === 'approved') {
+                const n_factura_referencia = paymentData.external_reference;
+                const total_pagado = paymentData.transaction_amount;
+
+                console.log(`✅ Pago aprobado para la factura: ${n_factura_referencia}`);
+
+                // Actualizamos en la DB
+                await consultaDb.actualizarEstadoVenta(n_factura_referencia, total_pagado);
+
+                // OPCIONAL: Aquí podrías llamar a la función de stock que creamos antes
+                // await consultaDb.descontarStockPorFactura(n_factura_referencia);
             }
         }
 
+        // Siempre responder 200 para que MP no siga reintentando
         res.sendStatus(200);
 
     } catch (error) {
-        console.error('Error en el Webhook:', error);
+        console.error('❌ Error en el Webhook:', error);
+        // Aunque falle, a veces es mejor devolver 200 para evitar bucles de reintento de MP 
+        // mientras testeas, o 500 si quieres que MP reintente luego.
         res.sendStatus(500);
     }
 };
-
 export const validateMPSignature = (req, res, next) => {
     try {
         const xSignature = req.headers['x-signature'];

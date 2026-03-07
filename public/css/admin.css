@@ -23,6 +23,7 @@
      justify-content: space-between;
      align-items: center;
      margin-bottom: 2em;
+     font-family: 'Roboto Condensed', sans-serif;
 
      @media (width < 900px) {
          justify-content: center;
@@ -102,7 +103,7 @@
  .product-list {
      display: flex;
      flex-direction: column;
-     gap: 1em;
+     gap: 5px;
      height: 500px;
      overflow-y: scroll;
 
@@ -136,5 +137,90 @@
 
      @media (width < 800px) {
          gap: 0;
+     }
+ }
+
+ /*admin-tickets*/
+ * {
+     box-sizing: border-box;
+ }
+
+ .admin-filters-container {
+     background: #ffffff;
+     padding: 20px;
+     border-radius: 12px;
+     margin-bottom: 20px;
+
+ }
+
+ .filters-row {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 15px;
+     align-items: center;
+ }
+
+ .search-tickets-box {
+     flex: 1;
+     min-width: 250px;
+     position: relative;
+ }
+
+ .search-tickets-box input {
+     width: 100%;
+     padding: 10px 15px;
+     border: 1.5px solid #e2e8f0;
+     border-radius: 8px;
+     font-size: 0.95rem;
+     transition: border-color 0.2s;
+ }
+
+ .search-tickets-box input:focus {
+     outline: none;
+     border-color: #3b82f6;
+     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+ }
+
+ .select-group {
+     display: flex;
+     gap: 10px;
+ }
+
+ .select-group select {
+     padding: 10px 12px;
+     border: 1.5px solid #e2e8f0;
+     border-radius: 8px;
+     background: white;
+     font-size: 0.9rem;
+     color: #4a5568;
+     cursor: pointer;
+ }
+
+ .results-info {
+     font-size: 0.7em;
+     margin-left: 10px;
+     color: #718096;
+     padding-top: 10px;
+     font-family: 'Roboto Condensed', sans-serif;
+ }
+
+ #ticket-count {
+     font-weight: bold;
+ }
+
+ .no-results {
+     text-align: center;
+     padding: 40px;
+     color: #a0aec0;
+     font-style: italic;
+ }
+
+ @media (max-width: 600px) {
+     .select-group {
+         width: 100%;
+     }
+
+     .select-group select {
+         flex: 1;
      }
  }

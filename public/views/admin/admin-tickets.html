@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Tickets</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <script type="module" src="/js/components/admin/admin-ticket-card.js"></script>
+    <script type="module" src="/js/front/app.js"></script>
+</head>
+
+<body>
+    <menu-del-mate></menu-del-mate>
+
+    <div class="main admin">
+        <admin-nav></admin-nav>
+
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>Ver Tickets</h1>
+            </div>
+            <div class="admin-filters-container">
+                <div class="filters-row">
+                    <div class="search-tickets-box">
+                        <i class="fas fa-search"></i> <input type="text" id="filter-client"
+                            placeholder="Buscar por cliente o # factura...">
+                    </div>
+
+                    <div class="select-group">
+                        <select id="filter-pago">
+                            <option value="all">Todos los Pagos</option>
+                            <option value="pendiente">Pago Pendiente</option>
+                            <option value="aprobado">Pago Aprobado</option>
+                        </select>
+                        <select id="filter-envio">
+                            <option value="all">Todos los Envíos</option>
+                            <option value="pendiente">Envío Pendiente</option>
+                            <option value="enviado">Enviado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="results-info">
+                    Mostrando <span id="ticket-count">0</span> de <span id="total-count">0</span> tickets
+                </div>
+            </div>
+            <div id="ticketsList" class="product-list">
+                <div class="loading">Cargando tickets...</div>
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+    <footer-del-mate></footer-del-mate>
+    <admin-mobile-nav-bar></admin-mobile-nav-bar>
+</body>
+
+</html>

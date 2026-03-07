@@ -25,12 +25,32 @@
                 <!--<a href="/altas" class="btn btn-primary">Agregar producto</a>-->
             </div>
 
-            <div class="actions-bar">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Buscar por nombre...">
-                    <span class="search-icon" role="img" aria-label="search">&#9906</span>
+            <div class="admin-filters-container">
+                <div class="filters-row">
+                    <div class="search-box">
+                        <input type="text" id="filter-product" placeholder="Buscar por nombre o ID de producto...">
+                    </div>
+
+                    <div class="select-group">
+                        <select id="filter-category">
+                            <option value="all">Todas las categorías</option>
+                            <option value="General">General</option>
+                        </select>
+
+                        <select id="filter-stock">
+                            <option value="all">Todo el stock</option>
+                            <option value="low">Stock bajo (menos de 5)</option>
+                            <option value="out">Sin stock (0)</option>
+                        </select>
+                    </div>
                 </div>
-                <!-- <button class="btn btn-outline">Filtrar</button> -->
+
+                <div class="results-info">
+                    Mostrando <span id="product-count">0</span> productos
+                </div>
+            </div>
+
+            <div id="productList">
             </div>
 
             <div id="productList" class="product-list">

@@ -75,6 +75,7 @@ export class AdminNav extends HTMLElement {
 				<ul>
                     <li><a href="/panel-altas">Nuevo</a></li>
                     <li><a href="/panel-administrar">Administrar</a></li>
+                    <li><a href="/panel-tickets">Tickets</a></li>
                     <!--<li><a href="/compras">Compras</a></li>
                     <li><a href="/ventas">Ventas</a></li>
 					<li><a href="/ficha">Ficha de Stock</a></li>-->

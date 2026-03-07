@@ -156,6 +156,10 @@ app.get("/panel-administrar", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "administrar.html"));
 });
 
+app.get("/panel-tickets", isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "views", "admin", "admin-tickets.html"));
+});
+
 app.get("/panel-altas", isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "views", "admin", "alta-productos.html"));
 });

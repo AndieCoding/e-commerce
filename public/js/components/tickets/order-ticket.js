@@ -102,7 +102,7 @@ export class OrderTicket extends HTMLElement {
     render() {
         if (!this._data) return;
 
-        const { n_fac, fecha, total, detalle, status } = this._data;
+        const { n_fac, fechaFormateada, total, detalle, status } = this._data;
         console.log(detalle);
 
         this.shadowRoot.innerHTML = `
@@ -110,7 +110,7 @@ export class OrderTicket extends HTMLElement {
             <div class="ticket-container">
                 <div class="header">
                     <span class="order-id">Ticket #${n_fac}</span>
-                    <span class="date">${fecha.split('T')[0] + ' ' + fecha.split('T')[1].split('.')[0]}</span>
+                    <span class="date">${fechaFormateada}</span>
                 </div>
                 <div class="body">
                     <ul class="items-list" id="items-container">                        

@@ -873,7 +873,13 @@ router.get("/compras_usuario", async (req, res) => {
 router.get('/compras_usuario/:id', async (req, res) => {
     try {
         const id_fac = req.params.id;
-        const userId = req.user.id;
+        const user = req.user;
+        // Si es admin, userId es null para no filtrar por cliente en la consulta
+        const userId = user && user.TIPO === 'AD' ? null : (user ? user.id : null);
+
+        if (!userId && (!user || user.TIPO !== 'AD')) {
+            return res.status(401).send("No autorizado");
+        }
 
         const rows = await consultaDb.getTicketById(id_fac, userId);
         if (rows.length === 0) return res.status(404).send("Pedido no encontrado");
@@ -891,6 +897,37 @@ router.get('/compras_usuario/:id', async (req, res) => {
         res.json(ticket);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+router.get('/tickets', async (req, res) => {
+    try {
+        const rows = await consultaDb.getTickets();
+        console.log(rows);
+        res.json(rows);
+    } catch (err) {
+        console.error("Error fetching records:", err);
+        res.status(500).json({ message: "Error retrieving records" });
+    }
+});
+
+router.put('/tickets/:id/pago', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await consultaDb.actualizarStatusPago(req.params.id, status);
+        res.json({ success: true, result });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+router.put('/tickets/:id/envio', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const result = await consultaDb.actualizarStatusEnvio(req.params.id, status);
+        res.json({ success: true, result });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
     }
 });
 

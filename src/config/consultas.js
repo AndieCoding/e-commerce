@@ -323,16 +323,79 @@ async function getStockActual(producto) {
 	}
 }
 
+async function actualizarStatusPago(n_fac, status) {
+	try {
+		const [result] = await pool.query(
+			`UPDATE facturas_ventas SET status = ? WHERE n_fac = ?`,
+			[status, n_fac]
+		);
+		return result;
+	} catch (err) {
+		console.error("❌ Error al actualizar estado de pago:", err.message);
+		throw err;
+	}
+}
+
+async function actualizarStatusEnvio(n_fac, status) {
+	try {
+		const [result] = await pool.query(
+			`UPDATE facturas_ventas SET env_stus = ? WHERE n_fac = ?`,
+			[status, n_fac]
+		);
+		return result;
+	} catch (err) {
+		console.error("❌ Error al actualizar estado de envío:", err.message);
+		throw err;
+	}
+}
+
+async function getTickets() {
+	try {
+		const query = `
+			SELECT 
+				fv.id_fac,
+				fv.n_fac,
+				fv.total_compra,
+				fv.fecha,
+				fv.status,
+				fv.met_pago,
+				fv.env_stus,
+				u.NOMBRE as nom_cl,
+				u.ID_US as id_cl
+			FROM 
+				facturas_ventas fv
+			JOIN 
+				usuarios u ON fv.id_cl = u.ID_US
+			ORDER BY 
+				fv.fecha DESC;
+		`;
+		const [rows] = await pool.query(query);
+
+		return rows;
+	} catch (err) {
+		console.error("Error al obtener todos los tickets:", err.message);
+		throw err;
+	}
+}
+
 async function getTicketById(id_fac, userId) {
 	let conn = await getConn();
 	try {
-		const [pedido] = await conn.query(`
-            SELECT f.*, d.id_prod, d.nbre_hist, d.cant_ticket,d.pcio_un_pgdo, d.subtotal, p.P_IMG
+		let query = `
+            SELECT f.*, d.id_prod, d.nbre_hist, d.cant_ticket, d.pcio_un_pgdo, d.subtotal, p.P_IMG
             FROM facturas_ventas f
             JOIN detalle_factura d ON f.id_fac = d.id_fac
             JOIN productos p ON d.id_prod = p.ID_PROD
-            WHERE f.id_fac = ? AND f.id_cl = ?
-        `, [id_fac, userId]);
+            WHERE f.id_fac = ?
+        `;
+		let params = [id_fac];
+
+		if (userId) {
+			query += " AND f.id_cl = ?";
+			params.push(userId);
+		}
+
+		const [pedido] = await conn.query(query, params);
 		return [pedido];
 	}
 	catch (err) {
@@ -623,5 +686,8 @@ export default {
 	deleteProduct,
 	getProductById,
 	getTicketById,
-	updateProduct
+	updateProduct,
+	getTickets,
+	actualizarStatusPago,
+	actualizarStatusEnvio
 };

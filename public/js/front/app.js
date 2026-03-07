@@ -11,6 +11,7 @@ import { DireEnvio } from '../components/products/envio.js';
 import { MetPago } from '../components/products/metpago.js';
 import { Producto } from '../models/producto.js';
 import { initTicket } from './ticket.js';
+import { Ticket } from '../models/ticket.js';
 
 window.indexProducts = async function indexProducts() {
     const cardsContainer = document.querySelector('#destacados');
@@ -167,16 +168,33 @@ if (!window.appListenersAttached) {
         const administrar_container = document.querySelector('#productList');
         if (administrar_container) {
             cargarProductosAdmin(administrar_container);
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', filtrar);
-            }
+            const inputBusqueda = document.getElementById('filter-product');
+            const selectPago = document.getElementById('filter-category');
+            const selectEnvio = document.getElementById('filter-stock');
+
+            if (inputBusqueda) inputBusqueda.addEventListener('keyup', applyProductFilters);
+            if (selectPago) selectPago.addEventListener('change', applyProductFilters);
+            if (selectEnvio) selectEnvio.addEventListener('change', applyProductFilters);
+
         }
 
         //enviar
         const envioContainer = document.querySelector('#envio-container');
         if (envioContainer) {
             cargarEnvio(envioContainer);
+        }
+
+        //panel-tickets
+        const ticketsContainer = document.querySelector('#ticketsList');
+        if (ticketsContainer) {
+            cargarTicketsAdmin();
+            const inputBusqueda = document.getElementById('filter-client');
+            const selectPago = document.getElementById('filter-pago');
+            const selectEnvio = document.getElementById('filter-envio');
+
+            if (inputBusqueda) inputBusqueda.addEventListener('keyup', applyFilters);
+            if (selectPago) selectPago.addEventListener('change', applyFilters);
+            if (selectEnvio) selectEnvio.addEventListener('change', applyFilters);
         }
     })
 
@@ -292,10 +310,9 @@ function crearCards(container, producto, admin = false) {
     card.classList.add('fade-in-card');
     container.appendChild(card);
 }
-
+let productos = [];
 async function cargarProductosAdmin(container) {
-    //mostrarSkeletons(container, 10);
-    let productos = [];
+    //mostrarSkeletons(container, 10);    
     try {
         const categories = ['mates', 'termos', 'yerbas'];
         for (const cat of categories) {
@@ -528,6 +545,149 @@ const filtrar = (e) => {
         }
     })
 };
+
+
+let tickets = [];
+async function cargarTicketsAdmin() {
+    const container = document.getElementById('ticketsList');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/tickets');
+        const data = await response.json();
+
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+            container.innerHTML = '<div class="loading">No hay tickets registrados.</div>';
+            return;
+        }
+
+        tickets = data.map(t => new Ticket(t));
+        renderTickets(tickets);
+    } catch (error) {
+        console.error('Error cargando tickets:', error);
+        container.innerHTML = '<div class="loading">Error al cargar los tickets.</div>';
+    }
+}
+
+function applyFilters() {
+    const searchTterm = document.getElementById('filter-client').value.toLowerCase();
+    const pagoStatus = document.getElementById('filter-pago').value;
+    const envioStatus = document.getElementById('filter-envio').value;
+
+    const filtered = tickets.filter(ticket => {
+        const matchesText = ticket.nom_cl.toLowerCase().includes(searchTterm) ||
+            ticket.n_fac.toString().includes(searchTterm);
+
+        const matchesPago = pagoStatus === 'all' || ticket.status === pagoStatus;
+
+
+        const matchesEnvio = envioStatus === 'all' || ticket.env_stus === envioStatus;
+
+        return matchesText && matchesPago && matchesEnvio;
+    });
+
+    renderTickets(filtered);
+}
+
+// Función centralizada de dibujado
+function renderTickets(ticketsToRender) {
+    const container = document.getElementById('ticketsList');
+    const countSpan = document.getElementById('ticket-count');
+    const totalSpan = document.getElementById('total-count');
+
+    if (!container) return;
+
+    // Actualizar contadores
+    if (countSpan) countSpan.textContent = ticketsToRender.length;
+    if (totalSpan) totalSpan.textContent = tickets.length;
+
+    container.innerHTML = '';
+
+    if (ticketsToRender.length === 0) {
+        container.innerHTML = '<div class="no-results">No se encontraron tickets con los criterios seleccionados.</div>';
+        return;
+    }
+
+    ticketsToRender.forEach(ticket => {
+        const card = document.createElement('admin-ticket-card');
+        card.data = ticket;
+        container.appendChild(card);
+    });
+}
+
+// Funciones globales para el componente admin-ticket-card
+window.updatePagoStatus = async (id, status) => {
+    try {
+        const response = await fetch(`/api/tickets/${id}/pago`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        const result = await response.json();
+        if (!result.success) alert('Error al actualizar el estado de pago');
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+window.updateEnvioStatus = async (id, status) => {
+    try {
+        const response = await fetch(`/api/tickets/${id}/envio`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+        const result = await response.json();
+        if (!result.success) alert('Error al actualizar el estado de envío');
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+window.verTicketCompleto = (id) => {
+    window.location.href = `/mis_compras/ticket?id=${id}`;
+};
+
+function applyProductFilters() {
+    const searchTerm = document.getElementById('filter-product').value.toLowerCase();
+    const category = document.getElementById('filter-category').value;
+    const stockStatus = document.getElementById('filter-stock').value;
+
+    const filtered = productos.filter(p => {
+        // 1. Filtro por Nombre o ID (P_ID o ID_PROD según tu base de datos)
+        const matchesText = p.P_NOMBRE.toLowerCase().includes(searchTerm) ||
+            p.ID_PROD.toString().includes(searchTerm);
+
+        // 2. Filtro por Categoría
+        const matchesCategory = category === 'all' || p.P_CATEGORIA === category;
+
+        // 3. Filtro por Stock
+        let matchesStock = true;
+        if (stockStatus === 'low') matchesStock = p.P_CANTIDAD > 0 && p.P_CANTIDAD <= 5;
+        if (stockStatus === 'out') matchesStock = p.P_CANTIDAD <= 0;
+
+        return matchesText && matchesCategory && matchesStock;
+    });
+
+    renderProducts(filtered);
+}
+
+function renderProducts(productsToRender) {
+    const container = document.getElementById('productList');
+    const countSpan = document.getElementById('product-count');
+
+    if (!container) return;
+    if (countSpan) countSpan.textContent = productsToRender.length;
+
+    container.innerHTML = '';
+
+    // Aquí invocas tu lógica de creación de cards (como admin-product-card)
+    productsToRender.forEach(p => {
+        crearCards(container, p, true);   // ... tu lógica de renderizado actual ...
+    });
+}
 
 
 /*
