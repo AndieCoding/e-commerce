@@ -12,12 +12,16 @@ export class SimpleOrderTicket extends OrderTicket {
                 div.ticket-container {
                     width: 100%;
                     display: flex;
-                    justify-content: space-around;                    
+                    justify-content: space-around;    
+                    border: 1px solid #e0e0e0;                
                     box-sizing: border-box;
                     @media (max-width: 768px) {
                         flex-direction: column;
                         gap: 20px;
                     }
+                }
+                div.ticket-container:hover {
+                    border-color: #4a854d;
                 }
                 div.body {
                     display:none;
@@ -58,10 +62,8 @@ export class SimpleOrderTicket extends OrderTicket {
                 .total{
                     font-size: 14px;
                 }
-                .status-badge {
-                    background: #a6fcad5b;
-                    color: #333;
-                    outline: 1px solid #2d8b2dd2;
+                .status-badge {                    
+                    color: #333;                    
                     font-size: 10px;
                 }
             </style>

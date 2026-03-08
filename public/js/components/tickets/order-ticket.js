@@ -23,15 +23,11 @@ export class OrderTicket extends HTMLElement {
                     font-family: Roboto;
                 }
                 .ticket-container {
-                    background: #fff;
-                    border: 1px solid #e0e0e0;
+                    background: #fff;                    
                     border-radius: 8px;
-                    padding: 20px;
+                    padding: 20px 0;
                     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                     transition: transform 0.2s;
-                }
-                .ticket-container:hover {
-                    border-color: #4a854d;
                 }
                 .header {
                     display: flex;
@@ -72,7 +68,7 @@ export class OrderTicket extends HTMLElement {
                 .total {
                     font-family: Roboto;                    
                     color: #3d523eff;
-                    font-weight: 600;
+                    font-size:16px;
                 }
                 .actions button {
                     background: none;
@@ -89,11 +85,11 @@ export class OrderTicket extends HTMLElement {
                     color: white;
                 }
                 .status-badge {
-                    background: #e8f5e9;
-                    color: #2e7d32;
+                    background: #e8f5e9;                    
                     padding: 2px 8px;
                     border-radius: 12px;
                     font-size: 0.8em;
+                    text-transform: uppercase;
                 }
             </style>
         `;

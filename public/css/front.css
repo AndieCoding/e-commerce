@@ -1066,11 +1066,15 @@ dire-envio {
 }
 
 .quick-link .text {
-    flex: 1;
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: 600;
     color: #333;
     font-size: 0.9rem;
+
+    @media (width < 500px) {
+        flex: 1;
+    }
+
 }
 
 .quick-link .arrow {
@@ -1078,6 +1082,26 @@ dire-envio {
     color: #ccc;
     font-weight: 300;
     line-height: 1;
+}
+
+.user-card,
+.history-card {
+    box-sizing: border-box;
+    padding: 20px;
+    box-shadow: none;
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: block;
+    min-height: 200px;
+    width: clamp(300px, 60%, 600px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    height: fit-content;
+
+    @media (width < 700px) {
+        width: 100%;
+        padding: 0;
+    }
 }
 
 @media (width < 900px) {
@@ -1099,25 +1123,7 @@ dire-envio {
         }
     }
 
-    .user-card,
-    .history-card {
-        box-sizing: border-box;
-        padding: 20px;
-        box-shadow: none;
-        background: white;
-        border-radius: 12px;
-        margin-bottom: 20px;
-        display: block;
-        min-height: 200px;
-        width: clamp(300px, 60%, 600px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        height: fit-content;
 
-        @media (width < 700px) {
-            width: 100%;
-            padding: 0;
-        }
-    }
 
     .profile-image-section {
         background: white;

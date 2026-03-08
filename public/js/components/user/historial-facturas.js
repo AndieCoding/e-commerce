@@ -19,7 +19,7 @@ export class HistorialFacturas extends HTMLElement {
           flex-direction: column;
           width: 100%;
           align-items: center;
-          padding: 20px;
+          padding: 20px 0;
           padding-top: 0;         
           @media (max-width: 768px) {
             padding: 0;
