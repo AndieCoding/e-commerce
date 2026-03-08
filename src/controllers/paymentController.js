@@ -46,7 +46,8 @@ export const createPreference = async (req, res) => {
                 nombre: producto.nombre,
                 cantidad: item.cantidad,
                 precio: precio,
-                subtotal: subtotal
+                subtotal: subtotal,
+                imagen: producto.imagen
             });
         }
 

@@ -166,7 +166,8 @@ router.post('/registrarVenta', async (req, res) => {
                 nombre: producto.nombre,
                 cantidad: item.cantidad,
                 precio: precio,
-                subtotal: subtotal
+                subtotal: subtotal,
+                imagen: producto.imagen
             });
         }
         const { n_fac } = await consultaDb.getNFactura();
