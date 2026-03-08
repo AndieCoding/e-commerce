@@ -160,6 +160,8 @@ router.post('/registrarVenta', async (req, res) => {
             const precio = producto.precioFinal;
             const subtotal = precio * item.cantidad;
             total += subtotal;
+            const img = producto.imagen;
+            console.log(`imagen: ${img}`);
 
             productosVerificados.push({
                 id: producto.id,
@@ -167,7 +169,7 @@ router.post('/registrarVenta', async (req, res) => {
                 cantidad: item.cantidad,
                 precio: precio,
                 subtotal: subtotal,
-                imagen: producto.imagen
+                imagen: img
             });
         }
         const { n_fac } = await consultaDb.getNFactura();

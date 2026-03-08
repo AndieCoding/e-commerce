@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 
+const BASE_URL = 'https://tienda-mate.vercel.app';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -15,20 +16,26 @@ export async function resumenMail(ticket, user) {
     }
     try {
         const subject = `El Fan del Mate - Resumen de compra #${ticket.n_fac}`;
-        const detalleHtml = ticket.detalle.map(product => `
-            <div style="align-items: center; margin-bottom: 10px;">
-                <img src="${product.imagen}" alt="${product.nombre}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+        const detalleHtml = ticket.detalle.map(product => {
+            const fullImgUrl = product.imagen.startsWith('http')
+                ? product.imagen
+                : `${BASE_URL}${product.imagen}`;
+
+            return `
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <img src="${fullImgUrl}" alt="${product.nombre}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                 <span>
                     <strong>${product.nombre}</strong> x ${product.cantidad} = $${product.subtotal}
                 </span>
             </div>
-        `).join('');
+        `;
+        }).join('');
         const html = `                        
             <p>Tu número de ticket es <strong>#${ticket.n_fac}</strong>.</p>
             <p>Detalle:</p>
             ${detalleHtml}
-            <p><strong>Total a pagar:</strong> $${ticket.total}</p>
-            <hr>
+            <p style="margin-top: 20px;"><strong>Total a pagar:</strong> $${ticket.total}</p>
+            
             <a href="https://tienda-mate.vercel.app/mis_compras">Ver resumen de compra</a>
             <p>Si elegiste abonar con transferencia, por favor envía el comprobante respondiendo a este correo o por WhatsApp al +54 3462 336880.</p>
         `;
@@ -51,8 +58,8 @@ export async function resumenMail(ticket, user) {
                 <p><strong>Ticket:</strong> #${ticket.n_fac}</p>
                 <p>Detalle:</p>
                 ${detalleHtml}
-                <p><strong>Total a pagar:</strong> $${ticket.total}</p>
-                <a href="https://tienda-mate.vercel.app/panel-informes">Ir a la tienda</a>
+                <p style="margin-top: 20px;"><strong>Total a pagar:</strong> $${ticket.total}</p>
+                <a href="https://tienda-mate.vercel.app/panel-tickets">Ir a la tienda</a>
             `
         };
 
