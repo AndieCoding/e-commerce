@@ -4,6 +4,7 @@ import { Producto } from "../../public/js/models/producto.js";
 import { Ticket } from "../../public/js/models/ticket.js";
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import { resumenMail } from "../utils/mailer.js";
 
 dotenv.config();
 
@@ -86,12 +87,14 @@ export const createPreference = async (req, res) => {
             back_urls: backUrls,
             auto_return: 'approved',
             external_reference: n_fac,
-            statement_descriptor: 'FAN DEL MATE'
+            statement_descriptor: 'FAN DEL MATE',
+            notification_url: "https://tienda-mate.vercel.app/api/payments/checkout/result"
         };
 
         console.log('Preference Body:', JSON.stringify(body, null, 2));
-
         const response = await preference.create({ body });
+
+        await resumenMail(ticket, user);
 
         res.status(200).json({
             id: response.id,
