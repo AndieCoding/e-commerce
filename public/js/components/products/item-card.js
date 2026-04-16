@@ -39,6 +39,9 @@ export class ItemCard extends CartCard {
                 overflow: hidden;
                 white-space: nowrap;
                 width: 100%;
+                @media (max-width: 600px) {
+                    font-size: 12px;
+                }
             }
         }
 

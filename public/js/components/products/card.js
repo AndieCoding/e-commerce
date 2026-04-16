@@ -56,7 +56,7 @@ export class Card extends HTMLElement {
                 padding: 0.5em 1.2em;                
                 overflow: hidden;
                 box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
-                background-color: white;
+                background-color: var(--card-bg-color);
                 position: relative;
                 display: flex;
                 flex-direction: column;    
@@ -73,8 +73,8 @@ export class Card extends HTMLElement {
                 padding: 15px 5px;
             }
             .skeleton {
-                background: #eee;
-                background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+                background: var(--skeleton-bg, #eee);
+                background: linear-gradient(110deg, var(--skeleton-bg, #ececec) 8%, var(--skeleton-shine, #f5f5f5) 18%, var(--skeleton-bg, #ececec) 33%);
                 border-radius: 5px;
                 background-size: 200% 100%;
                 animation: 1.5s shine linear infinite;
@@ -128,8 +128,8 @@ export class Card extends HTMLElement {
 
     renderContent() {
         const { id, nombre, imagen, stockInfo, precioHtml, estaAgotado, stock } = this._item || {};
-        let stockClass = stockInfo.class;
-        let stockState = stockInfo.state;
+        let stockClass = stockInfo.class || '';
+        let stockState = stockInfo.state || '';
 
         this.shadowRoot.innerHTML = `
         <style>
@@ -138,22 +138,35 @@ export class Card extends HTMLElement {
                 box-sizing: border-box;
             }
             .card {
-                border-radius: 10px;
-                padding: 0.5em 1.2em;                
+            border-radius: var(--border-radius-main);
+            border: var(--card-border);
+                padding: 0 0 0.5em 0;                
                 overflow: hidden;
-                box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
-                background-color: white;
+                box-shadow: var(--card-shadow);
+                background-color: var(--card-bg-color);
                 position: relative;
-                display: flex;
+                display: flex;  
                 flex-direction: column;    
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
                 
+                &:hover {
+                    box-shadow: 0 0 15px var(--accent-color);
+                    transform: translateY(-5px);
+                }
+
                 .img {             
-                    height: 170px;
+                    height: 190px;
+                    background-color: var(--card-bg-color, white);
                 }
                 img {
                     width: 100%;
                     height: 100%;
                     object-fit: contain;
+                    transition: transform 0.4s ease;
+                }
+                
+                &:hover img {
+                    transform: scale(1.05);
                 }
 
                 p {
@@ -162,7 +175,7 @@ export class Card extends HTMLElement {
                 .buttons {                    
                     display: flex;
                     flex-direction: row;
-                    justify-content: space-between;
+                    justify-content: center;
                     gap: 1em;
                 }
 
@@ -185,9 +198,16 @@ export class Card extends HTMLElement {
                     width: clamp(100px, 100%, 200px);
                     justify-content: center;
                     align-items: center;
+                    @media (width<600px) {
+                        width: fit-content;
+                        border: 1px solid rgb(164, 181, 168, 0.35);
+                        border-radius: 25px;
+                    }
 
                     
                     input[type="number"] {
+                    background-color: var(--bg-color);
+                        border-radius: 10px;
                         -moz-appearance: textfield;
                         appearance: textfield;
                     }
@@ -199,17 +219,17 @@ export class Card extends HTMLElement {
                     input {
                         width: 30px;
                         text-align: center;
-                        font-family: Roboto;                                                
+                        font-family: var(--card-body-font);                                                
                     }
                     button {
                         background-color: transparent;
                         border: none;
                         cursor: pointer;
-                        font-family: Roboto;
+                        font-family: var(--card-body-font);
                         font-size: 16px;
-                        color: green;
+                        color: var(--accent-color);
                         &:hover {
-                            color: darkgreen;
+                            color: var(--accent-color-hover);
                         }    
                     }
                 }
@@ -224,25 +244,27 @@ export class Card extends HTMLElement {
                     width: fit-content;
                     margin: 0.5em auto;
                     cursor: pointer;
-                    font-family: Arial;
+                    font-family: var(--card-body-font);
                 }
                 .buttons a.agregar {
-                    outline: 1px solid green;
-                    color: green;
-                    transition: background-color 0.2s;
+                    outline: 1px solid var(--accent-color);
+                    color: var(--accent-color);
+                    transition: background-color 0.2s, box-shadow 0.2s, transform 0.2s;
                     font-size: 12px;
                     margin-top: 0;  
                     text-wrap: nowrap;
                     &:hover {
-                        background-color: green;
-                        color: white;
+                        background-color: var(--accent-color-hover);
+                        color: var(--navbar-items-color, white);
+                        box-shadow: 0 0 12px var(--accent-color-hover);
+                        transform: scale(1.05);
                     }
                 }
                 .confirmacion {
-                    color: #091c09;                    
+                    color: var(--accent-color);                    
                     margin-left: 10px;
                     opacity: 0;
-                    transition: opacity 0.5s;
+                    transition:S opacity 0.5s;
                     display: flex;
                     align-items: end;
                     justify-content: center;
@@ -278,7 +300,7 @@ export class Card extends HTMLElement {
             }
 
             .card.list .img {
-                height: 120px;
+                height: 100%;
                 max-width: 180px;
                 grid-row: span 2;
             }
@@ -316,36 +338,42 @@ export class Card extends HTMLElement {
                 margin: 0;
                 margin-top: 0.5em;
             }
-            .product-name {
+            .product-name  {
                 text-decoration: none;
-                font-family: Roboto Condensed;
+                font-family: var(--card-header);
                 font-size: 14px;
                 text-transform: uppercase;
-                color: #83766cff;
-                margin: 0.5em 0;      
+                color: var(--navbar-items-color);
                 text-wrap: nowrap;
                 overflow: hidden;
                 white-space: wrap;
                 height: 2.5em;                
                 text-overflow: ellipsis;
+                padding: 0 1.2em;
             }
           
+
+            .product-name p{
+                font-family: var(--card-header);
+                margin: 0 10px;
+                text-shadow: 0 0 3px var(--accent-color, transparent);
+            }
             .price {
-                //background-color: #f5cc81cc;
                 border-radius: 5px;
                 padding: 0.1em 0.5em;
-                font-family: Roboto Condensed;
+                font-family: var(--card-body-font);
                 font-size: 16px;
                 font-weight: 400;
                 text-transform: uppercase;
-                color: #2c4e3dff;                
+                color: var(--accent-color);                
                 margin: 0;                                
+                text-shadow: 0 0 5px var(--accent-color, transparent);
             }
           
             .old-price {
                 font-size: 14px;
                 text-decoration: line-through;
-                color: #526858ff;                
+                color: var(--accent-color-disabled, #526858ff);                
                 backdrop-filter: blur(5px);                
                 border-radius: 5px;
             }
@@ -361,15 +389,15 @@ export class Card extends HTMLElement {
                 align-items: center;   
                 margin:0;  
                 gap:5px;           
-                font-size: 10px;
-                font-weight: 100;
+                font-size: 12px;
+                font-weight: var(--card-font-weight-stock);
                 letter-spacing: -0.5px;                
                 color: ${stockClass};
-                background-color: white;
+                background-color: var(--card-bg-color);
                 border-radius: 10px;
-                box-shadow: 1px 1px 3px 1px white;
+                box-shadow: 0 0 3px var(--accent-color, transparent);
                 line-height: 12px;                
-                font-family: Roboto;
+                font-family: var(--card-body-font);
             }
             .stock .dot {
                 font-size: 20px;
@@ -377,14 +405,6 @@ export class Card extends HTMLElement {
 
             .product-details {
                 margin-bottom: 0.5em;
-            }
-
-            .product-marca {
-                font-family: Bebas Neue;
-                font-size: 14px;
-                color: #53585fd4;
-                margin: 0.3em 0;
-                font-weight: 100;
             }
             .card a.disabled {
                 pointer-events: none;  
@@ -398,12 +418,13 @@ export class Card extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: end;
+                align-items: start;
                 position: absolute;
-                top: 45%;
-                right: 5px;
+                right: 20px;
+                top: 38%;
+                background-color: transparent;
                 @media (width<900px) {
-                    right: 10px;
+                    left: 10px;
                 }
             }
             .card.list .product-price {                
@@ -419,12 +440,13 @@ export class Card extends HTMLElement {
                 align-items: center;
                 @media (width<900px) {
                     flex-direction: row;
+                    background-color: transparent;
                 }
             }
             .descripcion {
                 height: 80px;
                 @media (width<900px) {
-                    height: 60px;
+                    height: 40px;
                 }
             }
             @media (width<900px) {
@@ -435,8 +457,6 @@ export class Card extends HTMLElement {
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
-                    border: 1px solid #f0f0f0;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
                 }
 
                 .img {             
@@ -451,9 +471,10 @@ export class Card extends HTMLElement {
 
                 .product-name {
                     font-family: 'Roboto Condensed', sans-serif;
+                    font-weight: var(--font-weight-titleProduct);
                     font-size: 12px;
                     text-transform: uppercase; 
-                    color: #83766cff; 
+                    color: var(--card-title-color); 
                     margin: 4px 0;      
                     height: auto;
                     max-height: 3em;
@@ -467,22 +488,26 @@ export class Card extends HTMLElement {
                 }
 
                 .price {
-                    font-size: 16px;
+                    font-size: 20px;
                     font-weight: 700;
-                    color: #2c4e3d;
+                    color: var(--accent-color);
                     position: static; 
                     background: none;
                     padding: 0;
+                    text-shadow: 0 0 5px var(--accent-color, transparent);
                 }
+                    .sin-stock{
+                        font-weight: 500;
+                        color: #4d555bff;
+                    }
 
                 .stock {
                     position: static;
                     font-size: 9px;
                     color: ${stockClass};
-                    background: none;
+                    background-color: transparent;
                     box-shadow: none;
                     padding: 0;
-                    margin-bottom: 2px;
                 }
                 
                 .card.buttons {                    
@@ -492,14 +517,13 @@ export class Card extends HTMLElement {
                 .card{
                     .buttons a.agregar {
                         width: 150px;
-                        padding: 6px 0; 
+                        padding: 8px 0; 
                         margin: 0;
                         font-size: 13px;
                         display: flex;
                         justify-content: center;
                         align-items: center;
-                        background-color: transparent;                   
-                        color: green;
+                        background-color: var(--accent-color);    
                 }
                 .btn-text{
                     display: none;
@@ -508,11 +532,11 @@ export class Card extends HTMLElement {
                     display: block;
                     width: 16px;
                     height: 16px;
-                    filter: invert(24%) sepia(96%) saturate(1750%) hue-rotate(95deg) brightness(94%) contrast(104%); /* Make icon match green text */
+                    filter: invert(100%) sepia(96%) saturate(1%) hue-rotate(95deg) brightness(94%) contrast(104%); /* Make icon match green text */
                 }
                 .buttons a.agregar:hover {
-                    background-color: #5d995dff; 
-                    color: green;
+                    background-color: var(--accent-color-hover); 
+                    color: var(--accent-color);
                 }
 
                 .confirmacion {

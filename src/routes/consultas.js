@@ -465,6 +465,18 @@ router.get("/productos/:categoria", async (req, res) => {
     }
 })
 
+//filtros por categoria
+router.get("/filtros/:categoriaId", async (req, res) => {
+    try {
+        const { categoriaId } = req.params;
+        const filtros = await consultaDb.ObtenerFiltrosPorCategoria(categoriaId);
+        console.log('Filtros obtenidos correctamente.', filtros);
+        res.status(200).json({ filtros });
+    } catch (err) {
+        res.status(500).json({ message: "Error al obtener filtros" });
+    }
+});
+
 //Productos para el index
 router.get("/indexProducts", async (req, res) => {
     try {

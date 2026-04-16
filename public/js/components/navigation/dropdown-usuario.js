@@ -11,20 +11,16 @@ export class dropdownUsuario extends HTMLElement {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');  
             :host {
                 display: block;                    
-            }    
-            * {
-                --custom-green: rgba(41, 126, 49, 0.35); 
             }
             .contenedor-dropdown {
                 position: relative;
                 width:200px;
-                height: ${this.admin ? '80px' : '40px'};
             }
             .dropdown-usuario{
                 font-family: 'Roboto', Arial;                
                 width: 200px;       
                 list-style: none;
-                background-color: var(--custom-green);
+                background-color: var(--navbar-color);
                 position: absolute;
                 left: 0;
                 top: 0;                
@@ -36,7 +32,7 @@ export class dropdownUsuario extends HTMLElement {
                 overflow: hidden;         
                 backdrop-filter: blur(10px);   
                 display: grid;
-                grid-template-rows: repeat(3, 45px); 
+                grid-template-rows: repeat(${this.admin ? 3 : 2}, 45px); 
                 justify-items: center;    
                 li {                   
                     color: white;
@@ -45,7 +41,7 @@ export class dropdownUsuario extends HTMLElement {
                     cursor: pointer;                    
                     padding-left: 24px;
                     &:hover {
-                        background-color: rgba(38, 115, 38, 0.74);
+                        background-color: var(--accent-color);
                     }                    
                     a { 
                         display: flex;
@@ -59,7 +55,7 @@ export class dropdownUsuario extends HTMLElement {
                         align-items: center;
                     }
                     a:visited{
-                        color: white;
+                        color: var(--body-text);
                     }
                 }
             }                

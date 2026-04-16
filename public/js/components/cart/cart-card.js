@@ -34,7 +34,7 @@ export class CartCard extends HTMLElement {
                 overflow: hidden;
                 width: 200px;  
                 @media (max-width: 768px) {
-                    width: 120px;
+                    width: 140px;
                 }          
 
                 .carrito-item-nombre {
@@ -48,6 +48,9 @@ export class CartCard extends HTMLElement {
                     font-size: 18px;
                     margin-bottom: 5px;
                     font-weight: 100;
+                    @media (max-width: 600px) {
+                        font-size: 14px;
+                    }
                 }
             }
 
@@ -67,6 +70,9 @@ export class CartCard extends HTMLElement {
             width: 80px;
             height: 80px;
             margin-right: 10px;   
+            @media (max-width: 600px) {
+                margin-right:0;
+            }
 
             .carrito-item-imagen {            
                 width: 100%;
@@ -87,7 +93,7 @@ export class CartCard extends HTMLElement {
                 width: 100%;
                 color: #343f4d;
                 text-transform: Capitalize;
-                font-size: 14px;
+                font-size: 10px;
                 margin-bottom: 5px;
                 font-weight: 100;
             }
@@ -96,13 +102,13 @@ export class CartCard extends HTMLElement {
         .carrito-item-controles {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             gap: 2px;
-            width: 67px;
+            width: 85px;
             
             .cantidad-restar,
             .cantidad-sumar {
-                background-color: #28a745;
+                background-color: var(--accent-color);
                 color: white;
                 border: none;            
                 cursor: pointer;
@@ -155,8 +161,8 @@ export class CartCard extends HTMLElement {
             cursor: pointer;
 
             img {
-            width: 20px;
-            height: 25px;
+            width: 15px;
+            height: 20px;
             }
         }          
         </style>
@@ -172,6 +178,7 @@ export class CartCard extends HTMLElement {
         template.innerHTML = `        
         ${this.getStyles()}
         <div class="carrito-item">
+        
             <div class="img-container">
                 <img src="${imagen}" alt="${nombre}" class="carrito-item-imagen" />
             </div>
@@ -188,6 +195,7 @@ export class CartCard extends HTMLElement {
             <div class="carrito-item-subtotal">
                 <h2 class="carrito-item-precio">$ ${oferta ? oferta * this.productQuantity : precio * this.productQuantity}</h2>
             </div>
+            
             <div class="carrito-item-eliminar">
                 <button class="eliminar-item">
                     <img src="/img/icons/basura1.png" alt="Eliminar" />

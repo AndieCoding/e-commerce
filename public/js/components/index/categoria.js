@@ -33,9 +33,8 @@ export class Categoria extends HTMLElement {
            div {
                 width: 120px;
                 height: 120px;
-                background-color: #6ca3565d;
-                box-shadow: 0 0 4px 1px rgb(124, 159, 195, 0.3);
-                border-radius: 10px;
+                box-shadow: 1px 1px 1px 0px rgb(124, 159, 195, 0.3);
+                border-radius: 50%;
                 overflow: hidden;
                 cursor: pointer;
                 @media (width<900px){
@@ -50,15 +49,13 @@ export class Categoria extends HTMLElement {
             }
             h3 {
                 text-transform: uppercase;
-                font-family: Roboto;
+                font-family: Montserrat;
                 text-align: center;
                 margin-top: 5px;
                 font-weight: 100;
                 font-size: 12px;
-                @media (width<900px){
-                    font-size: 12px;
-                    margin-top: 5px;
-                }
+                letter-spacing: 1px;
+                font-weight:200;
             }
         </style>
         `;

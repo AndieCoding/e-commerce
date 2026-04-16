@@ -2,15 +2,17 @@ export class Ticket {
     constructor(data) {
         this.nom_cl = data.nom_cl || 'Cliente';
         this.id_fac = data.id_fac || null;
-        this.n_fac = data.n_fac || data.N_FACTURA || null;
-        this.id_cl = data.id_cl || data.ID_CL;
-        this.total = data.total_compra || data.total || data.TOTAL || 0;
+        this.n_fac = data.n_fac ?? data.N_FACTURA ?? null;
+        this.id_cl = data.id_cl ?? data.ID_CL;
+        this.total = data.total_compra ?? data.total ?? data.TOTAL ?? 0;
         this.fecha = data.fecha || data.FECHA;
-        this.met_pago = data.met_pago || data.MET_PAGO;
+        this.met_pago = data.met_pago ?? data.MET_PAGO;
         this.detalle = data.productos || data.detalle || [];
         this.status = data.status?.toLowerCase() || 'pendiente';
         this.env_stus = data.env_stus?.toLowerCase() || 'pendiente';
         this.env_nro = data.env_nro || null;
+        this.em_cto = data.em_cto;
+        this.nbre_cto = data.nbre_cto;
     }
 
     get id() { return this.n_fac; }

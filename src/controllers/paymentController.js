@@ -14,11 +14,19 @@ const client = new MercadoPagoConfig({
 
 export const createPreference = async (req, res) => {
     try {
-        const { items: clientItems } = req.body;
-        const user = req.user;
+        const { items: clientItems, guestUser: bodyGuestUser } = req.body;
+        let user = req.user;
+        const guestUser = (req.session && req.session.guestUser) || bodyGuestUser;
 
         if (!user) {
-            return res.status(401).json({ message: 'Usuario no autenticado o datos de usuario faltantes.' });
+            if (!guestUser || !guestUser.email) {
+                return res.status(400).json({ message: 'Se requiere información de contacto para continuar.' });
+            }
+            user = {
+                id: 9999,
+                email: guestUser.email,
+                nombre: guestUser.nombre || 'Invitado'
+            };
         }
 
         const validatedItems = [];
@@ -67,6 +75,8 @@ export const createPreference = async (req, res) => {
             n_fac: n_fac,
             id_cl: user.id,
             total_compra: total,
+            em_cto: user.email,
+            nbre_cto: user.nombre || user.name,
             fecha: new Date().toISOString(),
             met_pago: 0,
             productos: database_products

@@ -13,6 +13,11 @@ import { Producto } from '../models/producto.js';
 import { initTicket } from './ticket.js';
 import { Ticket } from '../models/ticket.js';
 
+let root = document.documentElement;
+document.addEventListener('DOMContentLoaded', () => {
+    root.setAttribute('data-theme', 'minimalista');
+});
+
 window.indexProducts = async function indexProducts() {
     const cardsContainer = document.querySelector('#destacados');
     if (!cardsContainer) return;
@@ -257,6 +262,10 @@ if (!window.appListenersAttached) {
 
         if (e.target.closest('.back-arrow')) {
             window.history.back();
+        }
+
+        if (e.target.closest('#cancelarCompra')) {
+            window.location.href = '/';
         }
     });
 
@@ -689,9 +698,10 @@ function renderProducts(productsToRender) {
     });
 }
 
-
-/*
-document.querySelector('filtros-del-mate').addEventListener('filtrar', (event) => {
-    const query = event.detail;
-    consultarProductos(localStorage.getItem('categoria'), JSON.stringify(query));
-})*/
+let filtrosProductos = document.querySelector('filtros-del-mate');
+if (filtrosProductos) {
+    filtrosProductos.addEventListener('filtrar', (event) => {
+        const query = event.detail;
+        consultarProductos(localStorage.getItem('categoria'), JSON.stringify(query));
+    })
+}

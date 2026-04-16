@@ -87,7 +87,7 @@ export class ConfirmarCompra extends HTMLElement {
       }
     }    
     .carrito-comprar {
-      background-color: #28a745;
+      background-color: var(--accent-color);
       color: white;
       border: none;
       padding: 10px 15px;
@@ -95,6 +95,10 @@ export class ConfirmarCompra extends HTMLElement {
       cursor: pointer;
       border-radius: 5px;
       box-shadow: 1px 1px 2px 1px #82b845aa;
+      @media (max-width: 600px) {
+        width: 100%;
+        padding: 15px 0;
+      }
       &:hover {
         box-shadow: 0 0 0 0;
         filter: brightness(1.1)
@@ -116,7 +120,7 @@ export class ConfirmarCompra extends HTMLElement {
       font-weight: 500; 
       text-align: center;
       margin: 0;
-      color: #78b764;
+      color: var(--accent-color);
       @media (max-width: 768px) {
         font-size: 20px;
       }
@@ -128,7 +132,9 @@ export class ConfirmarCompra extends HTMLElement {
       justify-content: space-around;      
       gap: 3em;
       @media (max-width: 768px) {
-        flex-direction: row-reverse;
+      gap: 2em;
+        flex-direction: column-reverse;
+        margin-top: 0;
       }
     }
     .back-arrow {
@@ -152,7 +158,7 @@ export class ConfirmarCompra extends HTMLElement {
         <div class="total-de-productos"><p>Total de productos: </p>
         <p id="cantidad-productos" class="cantidad-productos"></p>
         </div>
-        <p>Total: <span id="total-precio"></span></p>
+        <p>Precio final: <span id="total-precio"></span></p>
         
       </div>
       <div class="botones-inferiores">        

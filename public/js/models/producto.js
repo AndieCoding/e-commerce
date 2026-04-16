@@ -19,14 +19,14 @@ export class Producto {
         };
     }
     get precioHtml() {
-        if (this.stock <= 0) return '$ -';
+        if (this.stock <= 0) return '';
         if (this.oferta > 0) {
             return `<span class="old-price">$ ${this.precio}</span><span class="offer-price">$ ${this.oferta}</span>`;
         }
         return `$ ${this.precio}`;
     }
     get precioHtmlAdmin() {
-        if (this.stock <= 0) return '$ -';
+        if (this.stock <= 0) return '<span class="sin-stock">Sin stock</span>';
         if (this.oferta > 0) {
             return `<span class="old-price">$ ${this.precio}</span><span class="offer-price"> | Precio de oferta: $ ${this.oferta}</span>`;
         }

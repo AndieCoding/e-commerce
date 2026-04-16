@@ -31,11 +31,8 @@ export class MobileNavBar extends HTMLElement {
                 display: flex;
                 justify-content: space-around;
                 align-items: center;
-                background: #e4ffefa1;
-                backdrop-filter: blur(15px);
-                -webkit-backdrop-filter: blur(15px);
+                background-color: white;
                 border-top: 1px solid rgba(255, 255, 255, 0.3);
-                padding: 10px 0;
                 padding-bottom: calc(10px + env(safe-area-inset-bottom));
                 box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
             }
@@ -46,6 +43,7 @@ export class MobileNavBar extends HTMLElement {
                 align-items: center;
                 text-decoration: none;
                 color: #555;
+                padding: 10px 0;
                 font-family: 'Poppins', sans-serif;
                 font-size: 10px;
                 transition: all 0.3s ease;
@@ -54,11 +52,8 @@ export class MobileNavBar extends HTMLElement {
                 width: 25%;
             }
 
-            .nav-item img {
-                width: 24px;
-                height: 24px;
-                filter: grayscale(1) opacity(0.7);
-                transition: all 0.3s ease;
+            .nav-icon {
+                fill: #84c08b;
             }
 
             .nav-item.profile-img img {
@@ -79,8 +74,8 @@ export class MobileNavBar extends HTMLElement {
             .badge {
                 padding: 10px;
                 position: absolute;
-                top: -8px;
-                right: -12px;                
+                top: -20px;
+                right: -70%;                
                 color: rgb(41, 126, 49);
                 font-size: 16px;
                 font-weight: bold;
@@ -93,14 +88,13 @@ export class MobileNavBar extends HTMLElement {
             }
 
             .nav-item.active {
-                color: rgb(41, 126, 49);
+            scale: 1.2;
+                color: #03640fff;
                 font-weight: 600;
             }
 
-            .nav-item.active img {
-                filter: none;
-                opacity: 1;
-                transform: translateY(-2px);
+            .nav-item.active .nav-icon {
+                fill: #03640fff;
             }
 
             .nav-item.active::after {
@@ -133,22 +127,22 @@ export class MobileNavBar extends HTMLElement {
             ${this.getStyles()}
             <nav class="nav-container">
                 <a href="/" class="nav-item ${currentPath === '/' ? 'active' : ''}">
-                    <img src="/img/icons/home.svg" alt="Inicio">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
                     <span>Inicio</span>
                 </a>
                 <a href="/productos" class="nav-item ${currentPath === '/productos' ? 'active' : ''}">
-                    <img src="/img/icons/grid.svg" alt="Productos">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"></path></svg>
                     <span>Productos</span>
                 </a>
                 <div id="btn-carrito" class="nav-item">
                     <div class="icon-wrapper">
-                        <img src="/img/icons/cart.svg" alt="Carrito">
+                        <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M104,216a16,16,0,1,1-16-16A16,16,0,0,1,104,216Zm88-16a16,16,0,1,0,16,16A16,16,0,0,0,192,200ZM239.71,74.14l-25.64,92.28A24.06,24.06,0,0,1,191,184H92.16A24.06,24.06,0,0,1,69,166.42L33.92,40H16a8,8,0,0,1,0-16H40a8,8,0,0,1,7.71,5.86L57.19,64H232a8,8,0,0,1,7.71,10.14ZM221.47,80H61.64l22.81,82.14A8,8,0,0,0,92.16,168H191a8,8,0,0,0,7.71-5.86Z"></path></svg>
                         <span id="cart-badge" class="badge">${this.cartController.getTotalProducts()}</span>
                     </div>
                     <span>Carrito</span>
                 </div>
                 <a href="${userLink}" class="nav-item ${currentPath === userLink ? 'active' : ''} ${this.user ? 'profile-img' : ''}">
-                    <img src="${this.user && this.user.foto !== '' ? this.user.foto : '/img/icons/sin-foto.svg'}" alt="${userLabel}" loading="lazy">
+                    <svg class="nav-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24ZM74.08,197.5a64,64,0,0,1,107.84,0,87.83,87.83,0,0,1-107.84,0ZM96,120a32,32,0,1,1,32,32A32,32,0,0,1,96,120Zm97.76,66.41a79.66,79.66,0,0,0-36.06-28.75,48,48,0,1,0-59.4,0,79.66,79.66,0,0,0-36.06,28.75,88,88,0,1,1,131.52,0Z"></path></svg>
                     <span>${userLabel}</span>
                 </a>
             </nav>

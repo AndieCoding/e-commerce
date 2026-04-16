@@ -67,7 +67,7 @@ export class Carrito extends HTMLElement {
 
             .carrito-header {
                 display: grid;
-                grid-template-columns: 3fr 1fr 1fr;
+                grid-template-columns: 3fr 1fr;
                 font-weight: 500;   
                 text-align: center;
                 font-size: 10px;
@@ -87,11 +87,11 @@ export class Carrito extends HTMLElement {
 
             .carrito-cerrar {
                 position: absolute;
-                top: 10px;
+                top: -10px;
                 right: 10px;
                 background: transparent;
                 border: none;
-                font-size: 27px;
+                font-size: 24px;
                 cursor: pointer;
                 z-index: 100;
             }
@@ -126,7 +126,7 @@ export class Carrito extends HTMLElement {
                     }
                 }
                 .carrito-comprar {
-                    background-color: #28a745;
+                    background-color: var(--accent-color);
                     color: white;
                     box-shadow: 1px 1px 2px 1px #82b845aa;
                     transition: filter 0.1s;

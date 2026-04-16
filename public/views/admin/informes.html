@@ -9,11 +9,12 @@
 	<link rel="stylesheet" href="/css/props.css" />
 	<link rel="stylesheet" href="/css/ficha-de-stock.css" />
 	<link rel="stylesheet" href="/css/admin.css" />
+	<link rel="stylesheet" href="/css/front.css" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
 		rel="stylesheet">
 	<script type="module" src="/js/front/app.js"></script>
-	<script type="module" src="/js/informes.js"></script>
+	<!--<script type="module" src="/js/informes.js"></script>-->
 
 </head>
 
@@ -36,35 +37,37 @@
 					<div id="myLineChart"></div>
 				</div>
 				<h3>Por Unidad</h3>
-				<!-- Ventas mates -->
+				Ventas
 				<div style="width:100%">
 					<div id="MateVentasDiariasChart"></div>
 				</div>
-				<!-- Ventas termos -->
+				<!--
+				Ventas termos
 				<div style="width:100%">
 					<div id="TermoVentasDiariasChart"></div>
 				</div>
-				<!-- Ventas yerbas -->
+				Ventas yerbas
 				<div style="width:100%">
 					<div id="YerbaVentasDiariasChart"></div>
 				</div>
-				<!-- Ingresos-egresos mates -->
+				Ingresos-egresos mates
 				<div style="width:90%">
 					<div id="MateIng-EgresosChart"></div>
 				</div>
-				<!-- Ingresos-egresos termos -->
+				Ingresos-egresos termos
 				<div style="width:90%">
 					<div id="TermoIng-EgresosChart"></div>
 				</div>
-				<!-- Ingresos-egresos yerbas -->
+				Ingresos-egresos yerbas
 				<div style="width:90%">
 					<div id="YerbaIng-EgresosChart"></div>
 				</div>
+				-->
 				<div class="flex align-center gap-1em select-mes-informes">
 					<p class="m-bottom-15em">Mes seleccionado: </p>
 					<select class="m-bottom-1em" name="mes" id="select-impuestos-mes">
-						<option value="">Seleccione el mes</option>
-						<option value="1">Enero</option>
+						<option value="">Deshabilitado por ahora</option>
+						<!--<option value="1">Enero</option>
 						<option value="2">Febrero</option>
 						<option value="3">Marzo</option>
 						<option value="4">Abril</option>
@@ -75,7 +78,7 @@
 						<option value="9">Septiembre</option>
 						<option value="10">Octubre</option>
 						<option value="11">Noviembre</option>
-						<option value="12">Diciembre</option>
+						<option value="12">Diciembre</option>-->
 					</select>
 				</div>
 				<section id="i-brutos" class="m-bottom-4em">
@@ -130,17 +133,18 @@
 						</table>
 					</section>
 				</section>
+				<!--
 				<div class="ficha-facturas">
 					<div class="color-main">
 						<div>
 							<h3>FACTURAS</h3>
 						</div>
-						<!--<div>
-								<label for="select-producto">Tipo de documento: </label>
-								<select name="lista" id="select-producto" class="w-160px">
-									<option value="">Tipo de Documento</option>
-								</select>				
-							</div>-->
+						<div>
+							<label for="select-producto">Tipo de documento: </label>
+							<select name="lista" id="select-producto" class="w-160px">
+								<option value="">Tipo de Documento</option>
+							</select>
+						</div>
 						<label for="checkbox-facturas">Todas
 							<input type="checkbox" value="todas" id="checkbox-facturas"></label>
 
@@ -160,6 +164,7 @@
 						</div>
 					</div>
 				</div>
+				
 				<section id="ganancias-netas" class="sector-ganancias">
 					<div class="ganancias-brutas">
 						<h3 class="">GANANCIAS BRUTAS</h3>
@@ -198,7 +203,7 @@
 					</div>
 
 				</section>
-
+				-->
 			</div>
 
 

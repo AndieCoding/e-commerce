@@ -30,6 +30,9 @@ export class PortadaImg extends HTMLElement {
                     height: calc(100vh - 60px);
                     max-width: 100%;
                     margin: 0 auto;
+                    @media (width<700px) {
+                        height: 90vh;
+                    }
                 }
                 
                 #portada-image {
@@ -43,10 +46,6 @@ export class PortadaImg extends HTMLElement {
                 }
 
                 .text-overlay {
-                    border-radius: 75px;
-                    backdrop-filter: blur(3px);
-                    background-color: rgb(150, 150, 150, 0.3);
-                    box-shadow: 1px 1px 10px 1px rgb(155, 155, 155, 0.5);
                     font-family: 'Tangerine', serif;
                     position: absolute;
                     transform: translateX(-50%);
@@ -58,7 +57,8 @@ export class PortadaImg extends HTMLElement {
                     animation: slideInFromTop 1s forwards; 
                     text-shadow: 4px 4px 4px rgb(119, 169, 119);
                     @media (width<700px) {
-                        font-size: 48px;
+                        font-size: 56px;
+                        top: 40%;
                     }
                 }
                     button {

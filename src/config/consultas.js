@@ -139,6 +139,35 @@ async function getProductsByQuery(query) {
 	}
 }
 
+// config/consultas.js
+async function ObtenerFiltrosPorCategoria(categoriaId) {
+	const conn = await getConn();
+	try {
+		// Esta query busca qué Atributos tiene la categoría 
+		// y qué Valores distintos hay cargados en los productos.
+		const [rows] = await conn.query(
+			`SELECT DISTINCT a.nombre AS filtro_nombre, pa.valor
+             FROM categorias_atr ca
+             JOIN atributos a ON ca.atributo_id = a.id
+             JOIN producto_atr pa ON a.id = pa.atributo_id
+             JOIN productos p ON pa.producto_id = p.id_prod
+             WHERE ca.categoria_id = ? AND p.categoria_id = ?`,
+			[categoriaId, categoriaId]
+		);
+
+		// Agrupamos los valores por nombre de filtro para el Frontend
+		const estructuraFiltros = rows.reduce((acc, row) => {
+			if (!acc[row.filtro_nombre]) acc[row.filtro_nombre] = [];
+			acc[row.filtro_nombre].push(row.valor);
+			return acc;
+		}, {});
+
+		return estructuraFiltros;
+	} finally {
+		conn.release();
+	}
+}
+
 async function getStockTotal(product) {
 	let conn = await getConn();
 	try {
@@ -359,7 +388,6 @@ async function getTickets() {
 				fv.fecha,
 				fv.status,
 				fv.met_pago,
-				fv.env_stus,
 				u.NOMBRE as nom_cl,
 				u.ID_US as id_cl
 			FROM 
@@ -574,9 +602,9 @@ async function registrarVenta(factura) {
 		await conn.beginTransaction();
 		const [facturaInsertada] = await conn.query(
 			`INSERT INTO facturas_ventas(
-			n_fac, id_cl, total_compra, met_pago, status) 
-			VALUES (?, ?, ?, ?, ?);`,
-			[factura.n_fac, factura.id_cl, factura.total, factura.met_pago, factura.status]
+			n_fac, id_cl,nombre_contacto, email_contacto, total_compra, met_pago, status) 
+			VALUES (?, ?, ?, ?, ?, ?, ?);`,
+			[factura.n_fac, factura.id_cl, factura.nbre_cto, factura.em_cto, factura.total, factura.met_pago, factura.status]
 		);
 		const id_fac = facturaInsertada.insertId;
 		const n_fac = factura.n_fac;
@@ -677,6 +705,7 @@ export default {
 	getSuggestions,
 	productosIndex,
 	ObtenerProductosPorCategoria,
+	ObtenerFiltrosPorCategoria,
 	getProductsByQuery,
 	getNFactura,
 	getVentasTotales,

@@ -9,37 +9,40 @@ export class MetPago extends HTMLElement {
         this.total = this.cartController.getTotal();
         this.ticket = this.cartController.getProducts();
         this.selectedMethod = null;
-        this.user = window.user ? window.user : false;
+        this.user = JSON.parse(localStorage.getItem('user'));
     }
 
     getTemplate() {
         return `
         <link rel="stylesheet" href="/css/metpago.css">
         <div class="met-pago-container hidden">
-            ${this.renderCheckout()}           
-        </div>
-        `;
-    }
-
-    renderCheckout() {
-        return `
             <h3>Medio de pago</h3>
             <div class="total-summary">
             </div>
 
             <div class="payment-grid">
-                <checkout-card img="/img/icons/mercadopago.png" title="Mercado Pago" description="Tarjetas, Debito, Dinero en cuenta" data-method="mercadopago"></checkout-card>
-                <checkout-card img="/img/icons/bank-transfer.png" title="Transferencia / Efectivo" description="10% OFF pagando por transferencia" data-method="transferencia"></checkout-card>
+                <checkout-card img="mp" title="Mercado Pago" description="Tarjetas, Debito, Dinero en cuenta" data-method="mercadopago"></checkout-card>
+                <checkout-card img="ef" title="Transferencia / Efectivo" description="10% OFF pagando por transferencia" data-method="transferencia"></checkout-card>
             </div>
 
             <div id="method-details" class="hidden">
                 <div id="details-mercadopago" class="payment-details-section hidden">
-                    <p>Vas a ser redirigido a la plataforma segura de Mercado Pago para completar tu pago.</p>
+                    <div class="guest-form">
+                        <h4>Datos de facturación / contacto</h4>
+                        <p class="form-helper">Usaremos estos datos para enviarte el comprobante de pago.</p>
+                        <div class="input-group">
+                            <label for="guest-email">Email *</label>
+                            <input type="email" id="guest-email" placeholder="ejemplo@correo.com" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="guest-name">Nombre completo *</label>
+                            <input type="text" id="guest-name" placeholder="Juan Pérez" required>
+                        </div>
+                    </div>
                 </div>
-
                 <div id="details-transferencia" class="payment-details-section hidden">
                     <div class="agreement-info">
-                        <strong>Datos para la transferencia:</strong>
+                        <h5>Datos para la transferencia:</h5>
                         <ul>
                             <li><strong>Banco:</strong> Galicia</li>
                             <li><strong>Alias:</strong> fan.del.mate</li>
@@ -53,19 +56,26 @@ export class MetPago extends HTMLElement {
             <button id="btn-confirmar" class="btn-confirm" disabled>
                 <div class="spinner hidden"></div>
                 <span id="btn-text">Confirmar Compra</span>                
-            </button>
+            </button>         
+        </div>
         `;
     }
+
     connectedCallback() {
         this.render();
+        if (this.user) {
+            this.shadowRoot.querySelector('#guest-email').value = this.user.email;
+            this.shadowRoot.querySelector('#guest-name').value = this.user.nombre;
+        }
     }
 
     render() {
         this.shadowRoot.innerHTML = this.getTemplate();
-        if (window.user) {
-            this.setupListeners();
-        }
+
+        this.setupListeners();
+
         document.addEventListener('shippingConfirmed', () => {
+            console.log('shippingConfirmed');
             this.shadowRoot.querySelector('.met-pago-container').classList.remove('hidden');
         });
         document.addEventListener('shippingReset', () => {
@@ -77,6 +87,12 @@ export class MetPago extends HTMLElement {
         const cards = this.shadowRoot.querySelectorAll('checkout-card');
         const detailsContainer = this.shadowRoot.querySelector('#method-details');
         const confirmBtn = this.shadowRoot.querySelector('#btn-confirmar');
+        const emailInput = this.shadowRoot.querySelector('#guest-email');
+        const nameInput = this.shadowRoot.querySelector('#guest-name');
+
+        [emailInput, nameInput].forEach(input => {
+            input.addEventListener('input', () => this.validateForm());
+        });
 
         cards.forEach(card => {
             card.addEventListener('click', () => {
@@ -86,6 +102,14 @@ export class MetPago extends HTMLElement {
         });
 
         confirmBtn.addEventListener('click', () => this.handleConfirmation(confirmBtn));
+    }
+    validateForm() {
+        const email = this.shadowRoot.querySelector('#guest-email').value;
+        const name = this.shadowRoot.querySelector('#guest-name').value;
+        const confirmBtn = this.shadowRoot.querySelector('#btn-confirmar');
+
+        const isValid = email.includes('@') && name.trim().length > 3;
+        confirmBtn.disabled = !isValid;
     }
 
     selectMethod(method, cards, detailsContainer, confirmBtn) {
@@ -99,7 +123,7 @@ export class MetPago extends HTMLElement {
         confirmBtn.disabled = false;
         const btnText = confirmBtn.querySelector('span');
         if (method === 'mercadopago') {
-            btnText.innerHTML = '<div id="walletBrick_container">Ir a Mercado Pago</div>';
+            btnText.textContent = 'Ir a Mercado Pago';
         } else {
             btnText.textContent = 'Finalizar y Acordar';
         }
@@ -138,6 +162,9 @@ export class MetPago extends HTMLElement {
     }
 
     async procesarMercadoPago() {
+        const email = this.shadowRoot.querySelector('#guest-email').value;
+        const nombre = this.shadowRoot.querySelector('#guest-name').value;
+
         const items = this.ticket.map(item => ({
             id: item.id,
             cantidad: item.order_quantity
@@ -146,25 +173,11 @@ export class MetPago extends HTMLElement {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                items: items
+                items: items,
+                guestUser: { email, nombre }
             })
         });
         const data = await response.json();
-
-        const publicKey = "APP_USR-1c8ae308-1512-4004-a92f-9ef1454d008a";
-        const preferenceId = data.id;
-
-        const mp = new MercadoPago(publicKey);
-        const bricksBuilder = mp.bricks();
-        const renderWalletBrick = async (bricksBuilder) => {
-            await bricksBuilder.create("wallet", "walletBrick_container", {
-                initialization: {
-                    preferenceId: preferenceId,
-                }
-            });
-        };
-
-        renderWalletBrick(bricksBuilder);
 
         if (data.init_point) {
             window.location.href = data.init_point;

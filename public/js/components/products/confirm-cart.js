@@ -32,6 +32,9 @@ export class ConfirmCart extends Carrito {
             margin: 0;
             font-size: 18px;
             text-align: left;
+            @media (max-width: 600px) {
+                font-size: 12px;
+            }
         }
         .carrito-item-controles {
             display: flex;
@@ -102,14 +105,14 @@ export class ConfirmCart extends Carrito {
                 grid-column: 1 / -1;
             }
         }
-        @media (max-width: 480px) {
+        @media (max-width: 600px) {
             .carrito-item-imagen {
                 width: 50px;
                 height: 50px;
             }
 
             .carrito-item-nombre {
-                font-size: 14px;
+                font-size: 12px;
             }
 
             .cantidad-restar, .cantidad-sumar {

@@ -23,33 +23,20 @@ export class DireEnvio extends HTMLElement {
     getTemplate() {
         return `
         <link rel="stylesheet" href="/css/envio.css">
-        <style>
-            .legend {
-                font-size: 0.6em;
-                color: #666;
-            }
-        </style>
         <div class="shipment-container">         
-            ${this.user ? this.renderShipmentOptions() : this.renderRestriction()}
-        </div>
-        `;
-    }
-
-    renderShipmentOptions() {
-        return `
             <h3>Método de Envío</h3>
             <div class="shipment-grid">
-                <checkout-card img="/img/icons/sucursal.png" title="Retiro en Sucursal" description="¡Gratis! Retirá hoy mismo" data-method="sucursal"></checkout-card>
-                <checkout-card img="/img/icons/oca.png" title="Correo OCA" description="Envío a todo el país (3-5 días)" data-method="oca"></checkout-card>
+                <checkout-card img="store" title="Retiro en Sucursal" description="¡Gratis! Retirá hoy mismo" data-method="sucursal"></checkout-card>
+                <checkout-card img="truck" title="Correo OCA" description="Envío a todo el país (3-5 días)" data-method="oca"></checkout-card>
             </div>
 
             <div id="shipment-details" class="hidden">
                 <div id="details-sucursal" class="details-section hidden">
                     <div class="branch-info">
-                        <strong>Sucursal Central - Fan del Mate</strong><br>
-                        Venado Tuerto, Santa Fe.<br>
-                        Lunes a Viernes de 09:00 a 18:00 hs.<br>
-                        Sábados de 09:00 a 13:00 hs.
+                        <h5>Sucursal Central - Fan del Mate</h5>
+                        <p>Venado Tuerto, Santa Fe.</p>
+                        <p>Lunes a Viernes de 09:00 a 18:00 hs.</p>
+                        <p>Sábados de 09:00 a 13:00 hs.</p>
                     </div>
                 </div>
 
@@ -74,13 +61,14 @@ export class DireEnvio extends HTMLElement {
                     </div>
                     <div class="shipping-cost-summary">
                         <p class="costo-label">Costo de Envío:</p>
-                        <p id="cost-display" class="cost-value">$0.00</p>
+                        <p id="cost-display" class="cost-value">Ingrese su CP</p>
                     </div>
                 </div>
                 <button id="btn-continue" class="btn-confirm hidden">
                     CONTINUAR
                 </button>
-            </div>
+            </div>  
+        </div>
         `;
     }
 
@@ -88,22 +76,9 @@ export class DireEnvio extends HTMLElement {
         this.render();
     }
 
-    renderRestriction() {
-        return `
-        <div class="restriction-container">
-            <h3>Debe iniciar sesión para continuar</h3>
-            <img src="../../img/banner/imagen-necesita-login.jpg" alt="Login required">
-            <br>
-            <a href="/login" class="btn-login">Iniciar Sesión</a>
-        </div>
-        `;
-    }
-
     render() {
         this.shadowRoot.innerHTML = this.getTemplate();
-        if (this.user) {
-            this.setupListeners();
-        }
+        this.setupListeners();
     }
 
     setupListeners() {
@@ -130,8 +105,11 @@ export class DireEnvio extends HTMLElement {
     selectMethod(method, cards, detailsContainer) {
         this.selectedMethod = method;
         cards.forEach(c => c.classList.remove('active'));
+
         this.shadowRoot.querySelector(`checkout-card[data-method="${method}"]`).classList.add('active');
         detailsContainer.classList.remove('hidden');
+        console.log(this.selectedMethod);
+        console.log(detailsContainer);
 
         this.shadowRoot.querySelectorAll('.details-section').forEach(s => s.classList.add('hidden'));
         this.shadowRoot.querySelector(`#details-${method}`).classList.remove('hidden');
@@ -190,7 +168,7 @@ export class DireEnvio extends HTMLElement {
                 }
             } else {
                 cost = 0;
-                display.textContent = 'Ingrese CP para calcular';
+                display.textContent = 'Ingrese su CP';
                 display.classList.add('cost-pending');
             }
         }
@@ -218,11 +196,9 @@ export class DireEnvio extends HTMLElement {
         const cardsContainer = this.shadowRoot.querySelector('.shipment-grid');
         const title = this.shadowRoot.querySelector('h3');
 
-        // Hide selection UI
         cardsContainer.classList.add('hidden');
         detailsContainer.classList.add('hidden');
 
-        // Show Summary
         const summary = document.createElement('div');
         summary.className = 'shipment-summary';
         summary.innerHTML = `

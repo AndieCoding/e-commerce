@@ -1,8 +1,70 @@
-@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans+Narrow:wght@400;700&family=Big+Shoulders+Stencil:opsz,wght@10..72,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Jost:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Parkinsans:wght@300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 @font-face {
     font-family: "Roboto";
     src: url("./font/Roboto/Roboto-Regular.ttf") format("truetype");
+}
+
+:root[data-theme="minimalista"] {
+    --bg-color: #F8F9FA;
+    --accent-color: #0a9d10;
+    --accent-color-hover: #1fbe29;
+    --accent-color-active: #06760e;
+    --accent-color-disabled: #9ac19d;
+    --navbar-color: #ffffff;
+    --navbar-items-color: #000000;
+    --header-bg: #ffffff;
+    --header-text: #198754;
+    --body-text: #2D3436;
+    --text-shadow: 1px 1px white;
+    --menu-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --card-header: 'Roboto Condensed';
+    --card-title-color: #83766cff;
+    --card-body-font: 'Roboto';
+    --card-bg-color: white;
+    --footer-gradient: linear-gradient(rgb(41, 126, 49, 0), rgb(41, 126, 49, 0) 30%, rgb(41, 126, 49, 0.8) 50%);
+    --banner-conoce-background: linear-gradient(to right, #0a9d10, #1fbe29);
+    --banner-conoce-font: 'Tangerine', cursive;
+    --banner-conoce-font-weight: 500;
+    --font-weight-titleProduct: 600;
+    --border-radius-main: 4px;
+    --card-border: 0;
+    --card-font-weight-stock: 100;
+    --usermenu-opText-color: #4c4275;
+    --usermenu-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme="techno"] {
+    --banner-conoce-background: linear-gradient(to right, #110c37, #2b1870);
+    --banner-conoce-font: 'Big Shoulders Stencil', cursive;
+    --banner-conoce-font-weight: 500;
+    --bg-color: #0a0b10;
+    --accent-color: #027dbb;
+    --accent-color-hover: #0596fe;
+    --accent-color-active: #030b40;
+    --accent-color-disabled: #9ac19d;
+    --sommelier-border: 1px solid #688faa;
+    --navbar-color: #0b0351;
+    --navbar-items-color: #ffffff;
+    --´eader-bg: #ffffff;
+    --header-text: #198754;
+    --body-text: #f5fcfd;
+    --text-shadow: 0;
+    --card-bg-color: #151829;
+    --card-header: 'Big Shoulders Stencil-';
+    --card-body-font: 'Roboto Mono';
+    --card-shadow: 0 0 8px rgba(35, 236, 250, 0.6);
+    --card-title-color: rgb(218, 246, 249);
+    --card-border: 1px solid rgb(35, 236, 250);
+    --card-font-weight-stock: 600;
+    --font-weight-titleProduct: 600;
+    --border-radius-main: 15px;
+    --footer-gradient: linear-gradient(rgb(41, 126, 49, 0), rgba(3, 17, 95, 0) 30%, rgba(14, 2, 42, 0.8) 50%);
+    --skeleton-bg: #1e2235;
+    --skeleton-shine: #2a3047;
+    --usermenu-opText-color: #4c4275;
+    --usermenu-box-shadow: 6px 7px 6px rgba(62, 234, 255, 0.7);
 }
 
 html {
@@ -17,6 +79,7 @@ body {
     scrollbar-color: #0a9d10 #3a713c70;
     scrollbar-width: thin;
     overflow-x: hidden;
+    background-color: var(--bg-color);
 }
 
 @media (max-width: 800px) {
@@ -56,10 +119,6 @@ html::-webkit-scrollbar-thumb {
     background-color: #0a9d10;
     border-radius: 6px;
     border: 3px solid transparent;
-}
-
-body {
-    background-color: rgb(242, 252, 255);
 }
 
 menu-del-mate:not(:defined) {
@@ -137,7 +196,8 @@ portada-img:defined {
     margin: 1em 0;
     margin-bottom: 2em;
     position: relative;
-    background: no-repeat url('../img/banner/conoce.jpg');
+    background: var(--banner-conoce-background);
+    padding: 1em 0;
     background-size: cover;
     background-position: right;
     width: 100%;
@@ -147,14 +207,14 @@ portada-img:defined {
     justify-content: center;
 
     @media (width<900px) {
-        margin-bottom: 2em;
+        margin-bottom: 0.5em;
         height: 100px;
     }
 
     h1 {
         color: white;
-        font-family: 'Tangerine', cursive;
-        font-weight: 500;
+        font-family: var(--banner-conoce-font);
+        font-weight: var(--banner-conoce-font-weight);
         font-size: 5em;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 
@@ -165,10 +225,6 @@ portada-img:defined {
     }
 }
 
-.main {
-    width: 95%;
-    margin: auto;
-}
 
 section.destacados {
     display: grid;
@@ -220,7 +276,7 @@ section.destacados::-webkit-scrollbar {
     display: flex;
     gap: 2em;
     width: 100%;
-    margin-top: 1.5em;
+    margin-top: 0.5em;
     margin-bottom: 0;
     justify-content: center;
 }
@@ -305,8 +361,7 @@ section.contacto {
 
 .tipo-vista-icon {
     border-radius: 0;
-    width: 20px;
-    height: 20px;
+    fill: #84c08b;
 }
 
 .contacto-titular {
@@ -321,9 +376,10 @@ section.contacto {
     width: 100%;
     overflow: hidden;
     height: 260px;
+    backdrop-filter: blur(10px);
 
-    @media (width<900px) {
-        height: 200px;
+    @media (width<700px) {
+        height: 235px;
     }
 
     img {
@@ -373,7 +429,8 @@ p.notFound {
 
     @media(width<900px) {
         display: block;
-        width: 25px;
+        fill: #84c08b;
+
     }
 }
 
@@ -485,8 +542,8 @@ p.notFound {
     margin: 1em auto;
     min-height: 450px;
     grid-template-columns: 1fr 5fr;
-
-    max-width: 1100px;
+    max-width: 1200px;
+    gap: 10px;
 
     @media (width<700px) {
         grid-template-columns: 1fr;
@@ -517,13 +574,18 @@ p.notFound {
 
 .busquedas .resultados.list {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(auto-fill, 150px);
+    grid-template-rows: repeat(auto-fill, 185px);
+    gap: 0.2em
 }
 
 main {
+    min-height: 55vh;
+    width: 95%;
     max-width: 1200px;
     margin: 0 auto;
 }
+
+.main {}
 
 /* producto detalle*/
 .ubicacion-producto {
@@ -634,6 +696,7 @@ body.registro,
 body.login {
     background-size: cover;
     background-position: center;
+    height: 100vh;
 }
 
 body.registro {
@@ -758,24 +821,41 @@ form.registro {
 
 main.login {
     height: calc(100vh - 60px);
-    max-width: 850px;
+    max-width: 1050px;
     height: 100%;
     display: flex;
     justify-content: end;
     align-items: center;
     background-color: transparent;
 
+    .back-container {
+        display: none;
+
+        @media (width < 600px) {
+            display: block;
+        }
+    }
+
     @media (width > 900px) {
         min-height: 100vh;
+
     }
 
     @media (max-width: 700px) {
+        flex-direction: column;
         margin: 0;
         justify-content: center;
         width: 100%;
-        margin: 50px auto;
+
+        .back-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
     }
 }
+
+
 
 form.login {
     background-color: white;
@@ -787,10 +867,12 @@ form.login {
     justify-content: center;
     align-items: center;
     gap: 15px;
+    position: relative;
 
     @media (width < 900px) {
         padding: 2em 1.5em;
         border-radius: 5px;
+        height: auto;
     }
 
     input {
@@ -808,20 +890,17 @@ form.login {
 
     button {
         width: 100%;
-        background-color: green;
+        background-color: var(--accent-color);
         color: white;
         border-radius: 5px;
         border: 0;
         padding: 5px 1em;
-        font-weight: 500;
-        letter-spacing: 1px;
-        font-family: 'Poppins';
+        font-family: 'Google Sans', sans-serif;
         transition:
             all 0.1s ease-in;
 
         &:hover {
-            color: #d3e0d4;
-            background-color: #3b913e;
+            background-color: var(--accent-color-hover);
         }
     }
 
@@ -840,7 +919,7 @@ form.login {
 }
 
 .decoration-span {
-    width: 20%;
+    width: 10px;
     height: 1px;
     background-color: rgb(67, 138, 67);
 }
@@ -951,8 +1030,9 @@ dire-envio {
     max-width: 1200px;
     height: 80vh;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     justify-items: center;
+    align-items: center;
     gap: 30px;
     box-sizing: border-box;
     padding: 0 20px;
@@ -973,8 +1053,8 @@ dire-envio {
     display: flex;
     overflow: hidden;
     padding: 0;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     outline: 0;
 
     @media (width < 900px) {
@@ -1040,19 +1120,17 @@ dire-envio {
 
 .quick-links-mobile {
     display: none;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 25px;
 }
 
 .quick-link {
     display: flex;
     align-items: center;
+    gap: 30px;
     background: white;
     padding: 15px 20px;
     border-radius: 12px;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    box-shadow: 0 4px 15px rgba(67, 182, 239, 0.7);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1060,16 +1138,10 @@ dire-envio {
     transform: scale(0.98);
 }
 
-.quick-link .icon {
-    font-size: 1.1rem;
-    margin-right: 15px;
-}
-
 .quick-link .text {
     font-family: 'Roboto Condensed', sans-serif;
-    font-weight: 600;
-    color: #333;
-    font-size: 0.9rem;
+    color: var(--usermenu-opText-color);
+    width: 200px;
 
     @media (width < 500px) {
         flex: 1;
@@ -1094,13 +1166,15 @@ dire-envio {
     margin-bottom: 20px;
     display: block;
     min-height: 200px;
-    width: clamp(300px, 60%, 600px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    width: clamp(300px, 100%, 600px);
+    box-shadow: var(--usermenu-box-shadow);
     height: fit-content;
+
 
     @media (width < 700px) {
         width: 100%;
         padding: 0;
+        overflow-y: scroll;
     }
 }
 
@@ -1113,9 +1187,6 @@ dire-envio {
     .quick-links-mobile {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        max-width: 800px;
-        height: 100%;
 
         @media (width < 500px) {
             gap: 1.5em;
@@ -1164,24 +1235,22 @@ dire-envio {
 @media (min-width: 900px) {
     .quick-links-mobile {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: 1fr;
         gap: 20px;
-        max-width: 800px;
-        margin: 40px auto;
+        width: 100%;
         padding: 0 20px;
     }
 
     .quick-link {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
         background-color: white;
-        padding: 30px 20px;
+        padding: 15px 30px;
         border-radius: 12px;
         text-decoration: none;
         color: #333;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        box-shadow: 6px 7px 6px rgba(62, 234, 255, 0.7);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: 1px solid #eee;
     }
@@ -1192,15 +1261,7 @@ dire-envio {
         border-color: #ddd;
     }
 
-    .quick-link .icon {
-        font-size: 3em;
-        margin-bottom: 15px;
-        color: #4CAF50;
-    }
-
     .quick-link .text {
-        font-size: 1.25em;
-        font-weight: 600;
         font-family: 'Roboto Condensed', sans-serif;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -1220,10 +1281,23 @@ dire-envio {
     }
 }
 
+.botones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px auto;
+    width: clamp(300px, 80%, 400px);
+}
+
+.cancelarEnvio {
+    fill: rgb(184 125 125);
+}
+
 .back-arrow {
     width: 25px;
     height: 25px;
     cursor: pointer;
+    fill: #0a9d10;
 }
 
 .user-header h2 {
@@ -1730,21 +1804,27 @@ remito-del-mate {
 }
 
 .sommelier {
+    border: var(--sommelier-border);
+    border-radius: var(--border-radius-main);
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 130px;
-    margin-top: 100px;
     position: relative;
+    padding: 10px;
+    background-color: var(--card-bg-color);
+    max-width: 1100px;
+    margin: 100px auto;
 
-    @media (width< 900px) {
-        height: 300px;
+    @media (width< 600px) {
+        height: 185px;
         align-items: end;
+        flex-direction: row-reverse;
+        margin-top: 0px;
     }
 }
 
 .sommelier:first-child {
-    margin-top: 50px;
+    margin-top: 30px;
 }
 
 .contenedor-imagen-sommelier {
@@ -1753,8 +1833,9 @@ remito-del-mate {
     overflow: hidden;
     position: relative;
 
-    @media (width<900px) {
-        position: absolute;
+    @media (width<600px) {
+        max-width: 150px;
+        max-height: 150px;
     }
 }
 
@@ -1776,12 +1857,8 @@ remito-del-mate {
 
 .tip {
     width: clamp(280px, 70%, 650px);
-    box-shadow: 1px 1px 5px 1px gray;
     position: relative;
-    border-radius: 15px;
-    padding: 10px 30px;
     max-height: 290px;
-    background-color: rgba(209, 241, 212, 0.43);
 
     @media (width<900px) {
         padding: 5px;
@@ -1792,10 +1869,9 @@ remito-del-mate {
         bottom: -35px;
         right: 40px;
         border-radius: 10px;
-        backdrop-filter: blur(8px);
         text-transform: uppercase;
         font-size: 16px;
-        font-family: 'Roboto Condensed';
+        font-family: var(--card-header);
         font-weight: 300;
 
         @media (max-width: 900px) {
@@ -1804,22 +1880,24 @@ remito-del-mate {
     }
 
     h3 {
-        font-family: 'Parkinsans';
+        font-family: var(--card-header);
+        text-transform: uppercase;
+        color: var(--body-text);
 
         @media (max-width: 900px) {
-            text-shadow: 1px 1px white;
+            font-size: 14px;
         }
     }
 
     p {
-        font-family: 'Roboto Condensed';
-        color: rgb(82, 81, 81);
+        font-family: var(--card-body-font);
+        color: var(--body-text);
         font-size: 20px;
         line-height: 1.5em;
+        text-shadow: var(--text-shadow);
 
         @media (max-width: 900px) {
-            color: black;
-            text-shadow: 1px 1px 5px white;
+
             backdrop-filter: blur(5px);
             font-size: 12px;
         }
