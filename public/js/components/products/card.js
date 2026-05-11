@@ -386,8 +386,7 @@ export class Card extends HTMLElement {
             .stock {
                 display: flex;
                 align-items: center;   
-                margin:0;
-                margin-right: 0;  
+                margin:0;  
                 gap:5px;           
                 font-size: 12px;
                 font-weight: var(--card-font-weight-stock);
@@ -421,14 +420,15 @@ export class Card extends HTMLElement {
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: start;
+                align-items: end;
                 position: absolute;
                 right: 20px;
                 top: 45%;
                 background-color: transparent;
-                @media (width<900px) {
+                @media (width<600px) {
                     left: 10px;
                     top: 53%;
+                    align-items: start;
                 }
             }
             .card.list .product-price {                
