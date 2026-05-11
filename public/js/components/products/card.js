@@ -387,7 +387,7 @@ export class Card extends HTMLElement {
                 display: flex;
                 align-items: center;   
                 margin:0;
-                margin-left: -50%;  
+                margin-right: 0;  
                 gap:5px;           
                 font-size: 12px;
                 font-weight: var(--card-font-weight-stock);
