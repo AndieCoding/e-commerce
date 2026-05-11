@@ -23,40 +23,38 @@ async function actualizarEstadoVenta(n_factura, total_pagado) {
 }
 async function AltaProductos(product) {
 	let producto = JSON.parse(product);
+	const conn = await getConn();
 	try {
-		await pool.beginTransaction();
+		await conn.beginTransaction();
 		console.log('Transacción iniciada.')
 
-		await pool.query(
+		const [rows] = await conn.query(
 			`INSERT INTO productos
-			(p_tipo, p_nombre, p_marca, p_descripcion, p_img, p_precio, p_pr_oferta, p_cantidad) 
+			(P_TIPO, P_NOMBRE, P_MARCA, P_DESCRIPCION, P_IMG, P_PRECIO, P_PR_OFERTA, P_CANTIDAD) 
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?);`,
 			[producto.tipo, producto.nombre, producto.marca, producto.descripcion, producto.image, producto.precio, producto.oferta, producto.stock]
 		);
-		const [rows] = await pool.query(
-			`SELECT * FROM productos WHERE id_prod = LAST_INSERT_ID();`
-		)
-		producto.id_prod = rows[0].ID_PROD;
+		producto.id_prod = rows.insertId;
 		console.log(`Alta registrada en MySQL. \n`);
-		await pool.commit();
+		await conn.commit();
 		return [producto];
 
 	} catch (err) {
-		await pool.rollback();
+		await conn.rollback();
 		console.log("Error saving sell invoice");
 		console.log(err);
+	} finally {
+		conn.release();
 	}
 };
 
 
 async function GenerarInforme(month) {
-	let conn = await getConn();
 	try {
-		const [montoMensual] = await conn.query(
-			`SELECT SUM(total) as total_facturado 
-			FROM facturas 
-			WHERE month(fecha) = ? AND tipo = 'duplicado';`,
-			[month]
+		const [montoMensual] = await pool.query(
+			`SELECT SUM(total_compra) as total_facturado 
+			FROM facturas_ventas
+			WHERE month(fecha) = MONTH(CURRENT_DATE()) AND status = 'aprobado';`
 		);
 		console.log('Informe cargado.');
 		return [montoMensual];
@@ -64,9 +62,6 @@ async function GenerarInforme(month) {
 	catch (err) {
 		console.log("Error updating bill");
 		console.log(err);
-	}
-	finally {
-		conn.release();
 	}
 }
 
@@ -230,7 +225,7 @@ async function getSuggestions(tipo, value) {
 	}
 }
 
-/*async function getVentasDiarias() {
+/*sync function getVentasDiarias() {
 	let conn = await getConn();
 	try {
 		const [rows] = await conn.query(
@@ -256,6 +251,32 @@ async function getSuggestions(tipo, value) {
 		}));
 		console.log('Consulta de ventas realizada. Rows -> ', formattedRows)
 		return [formattedRows];
+	}
+	catch (err) {
+		console.log("Error updating bill");
+		console.log(err);
+	}
+	finally {
+		conn.release();
+	}
+}*/
+
+async function getVentasTotales() {
+	let conn = await getConn();
+	try {
+		const [rows] = await conn.query(
+			`SELECT 
+				p.p_tipo AS etiqueta, 
+				SUM(d.cant_ticket) AS total_vendido
+			FROM productos p
+			JOIN detalle_factura d ON p.id_prod = d.id_prod
+			JOIN facturas_ventas v ON d.id_fac = v.id_fac
+			WHERE MONTH(v.fecha) = MONTH(CURRENT_DATE()) 
+			AND YEAR(v.fecha) = YEAR(CURRENT_DATE())
+			GROUP BY p.p_tipo
+			ORDER BY total_vendido DESC;`);
+		console.log('Consulta de ventas realizada. Rows -> ', rows)
+		return [rows];
 	}
 	catch (err) {
 		console.log("Error updating bill");
@@ -435,7 +456,7 @@ async function getTicketById(id_fac, userId) {
 	}
 }
 
-async function getVentasTotales(nombre_id_producto) {
+async function getVentasTotalesProducto(nombre_id_producto) {
 	try {
 		const queryVentas = `
             SELECT 
@@ -709,6 +730,7 @@ export default {
 	getProductsByQuery,
 	getNFactura,
 	getVentasTotales,
+	getVentasTotalesProducto,
 	getStockActual,
 	AltaProductos,
 	//guardarRemito,

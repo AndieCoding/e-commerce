@@ -78,9 +78,9 @@ export class AdminProductRow extends HTMLElement {
                 gap: 0.2em;
             }
             .name {
-                font-weight: 600;
-                font-size: 1.1rem;
-                color: #333;
+                font-weight: 500;
+                text-transform: uppercase;
+                color: #232c4aff;
             }
             .details {
                 font-size: 0.9rem;

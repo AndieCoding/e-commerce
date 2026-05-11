@@ -12,6 +12,8 @@ import { MetPago } from '../components/products/metpago.js';
 import { Producto } from '../models/producto.js';
 import { initTicket } from './ticket.js';
 import { Ticket } from '../models/ticket.js';
+import { ProductChart } from '../components/admin/product-chart.js';
+
 
 let root = document.documentElement;
 document.addEventListener('DOMContentLoaded', () => {
@@ -166,7 +168,7 @@ if (!window.appListenersAttached) {
         //panel-informes
         const informesContainer = document.getElementById('informes-container');
         if (informesContainer) {
-            //cargarInformes();
+            cargarInformes();
         }
 
         //panel-administrar 
@@ -270,6 +272,65 @@ if (!window.appListenersAttached) {
     });
 
     window.appListenersAttached = true;
+}
+async function fetchTo(url) {
+    const response = await fetch(url);
+    let data = await response.json();
+    return data;
+}
+
+
+async function cargarInformes() {
+    const contenedorCircular = document.getElementById('ventasTotalesChart');
+    let dataTipo = await fetchTo(`/api/ventasTotales`);
+    const coloresPaleta = [
+        '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', '#e67e22', '#e74c3c'
+    ];
+
+    crearGrafico(
+        contenedorCircular,
+        'pie',
+        'Ventas por Categoría',
+        ['Termos', 'Mates'],
+        [20, 50],
+        coloresPaleta // Array de colores
+    );
+
+    const mesEnPantalla = document.getElementById('mes-en-pantalla');
+    mesEnPantalla.textContent = 'Ventas de ' + new Date().toLocaleDateString('es-AR', { month: 'long' }).toUpperCase();
+
+    const $total_recaudado = document.getElementById('total-recaudado');
+    const td_ingresos = document.querySelector("#ingresos-pagar");
+    const td_dri = document.querySelector("#dri-pagar");
+    const response = await fetch(`/api/informes/1`)
+    const data = await response.json();
+    console.log(data);
+    const total_facturado = data.montoMensual[0].total_facturado;
+    $total_recaudado.innerText = new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(
+        total_facturado,
+    );
+    const monto_ing_brutos = (total_facturado * 2.76) / 100;
+    td_ingresos.innerText = monto_ing_brutos < 4000 ? 4000 : monto_ing_brutos.toFixed(2);
+    //document.querySelector('#gastos-ingresos-brutos').value = monto_ing_brutos < 4000 ? 4000 : monto_ing_brutos.toFixed(2);
+    const monto_dri = (total_facturado * 0.63) / 100;
+    td_dri.innerText = monto_ing_brutos < 3200 ? 3200 : monto_dri.toFixed(2);
+    //document.querySelector('#gastos-dri').value = monto_ing_brutos < 3200 ? 3200 : monto_dri.toFixed(2);
+    /* console.clear();
+     limpiarTabla();
+     setTimeout(() => {
+         llamarRegistros(this.value)
+     }, 500);*/
+
+}
+
+function crearGrafico(contenedor, tipo_grafico, product, labels, data, colors) {
+    let stockChart = document.createElement('product-chart');
+    stockChart.setAttribute('type', tipo_grafico);
+    stockChart.setAttribute('product', product);
+    stockChart.labels = labels;
+    stockChart.data = data;
+    stockChart.colors = colors;
+    contenedor.appendChild(stockChart);
 }
 
 function cargarEnvio(container) {

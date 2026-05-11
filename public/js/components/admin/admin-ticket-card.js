@@ -65,15 +65,15 @@ export class AdminTicketCard extends HTMLElement {
                     margin: 0;
                 }
                 .info-sub {
-                    font-size: 0.9rem;
+                    font-size: 16px;
                     color: #718096;
                     margin: 0;
                 }
                 .price-tag {
-                    font-size: 1.25rem;
-                    font-weight: 700;
+                    font-size: 1rem;
+                    font-weight: 600;
                     color: #2d3748;
-                    margin: 0.5rem 0 0 0;
+                    margin: 2px 0 0 0;
                 }
                 .actions {
                     display: flex;

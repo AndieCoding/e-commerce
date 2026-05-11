@@ -95,25 +95,26 @@ document.addEventListener("turbo:load", function () {
 		});
 	}
 	const form = document.getElementById("nfacturaForm");
+	const inputs = form.querySelectorAll('input, select, textarea');
+	const submitBtn = document.querySelector('.formButton.enviar');
+
+	function isCompleted() {
+		const tipo = document.getElementById('tipo').value;
+		const nombre = document.getElementById('nombre').value;
+		const marca = document.getElementById('marca').value;
+		const precio = document.getElementById('precio').value;
+		const stock = document.getElementById('stock').value;
+		const file = document.getElementById('imagen').files[0];
+
+		const editId = new URLSearchParams(window.location.search).get('edit');
+		const isFileValid = editId || file;
+
+		const isValid = tipo !== "" && nombre.trim() !== '' && marca.trim() !== '' && precio !== "" && stock !== "" && isFileValid;
+		submitBtn.disabled = !isValid;
+	}
+
+
 	if (form) {
-		const inputs = form.querySelectorAll('input, select, textarea');
-		const submitBtn = document.querySelector('.formButton.enviar');
-
-		function isCompleted() {
-			const tipo = document.getElementById('tipo').value;
-			const nombre = document.getElementById('nombre').value;
-			const marca = document.getElementById('marca').value;
-			const precio = document.getElementById('precio').value;
-			const stock = document.getElementById('stock').value;
-			const file = document.getElementById('imagen').files[0];
-
-			const editId = new URLSearchParams(window.location.search).get('edit');
-			const isFileValid = editId || file;
-
-			const isValid = tipo !== "" && nombre.trim() !== '' && marca.trim() !== '' && precio !== "" && stock !== "" && isFileValid;
-			submitBtn.disabled = !isValid;
-		}
-
 		if (inputs) {
 			inputs.forEach(input => {
 				input.addEventListener('input', isCompleted);

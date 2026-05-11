@@ -7,7 +7,6 @@
 	<title>Informes</title>
 	<link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
 	<link rel="stylesheet" href="/css/props.css" />
-	<link rel="stylesheet" href="/css/ficha-de-stock.css" />
 	<link rel="stylesheet" href="/css/admin.css" />
 	<link rel="stylesheet" href="/css/front.css" />
 	<link
@@ -29,19 +28,19 @@
 			</div>
 
 			<div class="informes-y-tabla grid maxw-85porc m-auto" id="informes-container">
-				<h3>General</h3>
-				<div style="width:100%">
-					<div id="myBarChart"></div>
-				</div>
+
+				<!--
 				<div style="width:100%">
 					<div id="myLineChart"></div>
-				</div>
-				<h3>Por Unidad</h3>
-				Ventas
+				</div>-->
+				<h4 class="mes-en-pantalla" id="mes-en-pantalla"></h4>
 				<div style="width:100%">
+					<div id="ventasTotalesChart"></div>
+				</div>
+				<!--<div style="width:100%">
 					<div id="MateVentasDiariasChart"></div>
 				</div>
-				<!--
+				
 				Ventas termos
 				<div style="width:100%">
 					<div id="TermoVentasDiariasChart"></div>
@@ -62,12 +61,12 @@
 				<div style="width:90%">
 					<div id="YerbaIng-EgresosChart"></div>
 				</div>
-				-->
+				
 				<div class="flex align-center gap-1em select-mes-informes">
 					<p class="m-bottom-15em">Mes seleccionado: </p>
 					<select class="m-bottom-1em" name="mes" id="select-impuestos-mes">
 						<option value="">Deshabilitado por ahora</option>
-						<!--<option value="1">Enero</option>
+						<option value="1">Enero</option>
 						<option value="2">Febrero</option>
 						<option value="3">Marzo</option>
 						<option value="4">Abril</option>
@@ -78,16 +77,13 @@
 						<option value="9">Septiembre</option>
 						<option value="10">Octubre</option>
 						<option value="11">Noviembre</option>
-						<option value="12">Diciembre</option>-->
+						<option value="12">Diciembre</option>
 					</select>
-				</div>
+				</div>-->
 				<section id="i-brutos" class="m-bottom-4em">
-					<h3>INGRESOS BRUTOS - DRI</h3>
-
-
 					<div class="div-total mw-380px flex align-center">
-						<p>Total facturado: </p>
-						<span class="p-left-02em" id="total-facturado"></span>
+						<p>Ingresos brutos: </p>
+						<span class="p-left-02em" id="total-recaudado"></span>
 					</div>
 
 					<table class="mw-380px informes">
@@ -115,7 +111,7 @@
 					<section id="monotributo" class="">
 						<div class="categoria-monotributo">
 							<h3 class="">CATEGORIA DE MONOTRIBUTO</h3>
-							<p class="self-start">1/7/2024 hasta 30/6/2025</p>
+							<p class="self-start">1/7/2025 hasta 30/6/2026</p>
 						</div>
 						<table class="monotributo">
 							<thead class="impuestos">

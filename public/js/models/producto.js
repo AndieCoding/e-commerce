@@ -1,3 +1,12 @@
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('es-AR', {
+        style: 'currency',
+        currency: 'ARS',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(amount);
+}
+
 export class Producto {
     constructor(dbRow = {}) {
         this.id = dbRow.ID_PROD || dbRow.id;
@@ -21,16 +30,16 @@ export class Producto {
     get precioHtml() {
         if (this.stock <= 0) return '';
         if (this.oferta > 0) {
-            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price">$ ${this.oferta}</span>`;
+            return `<span class="old-price">${formatCurrency(this.precio)}</span><span class="offer-price">${formatCurrency(this.oferta)}</span>`;
         }
-        return `$ ${this.precio}`;
+        return `${formatCurrency(this.precio)}`;
     }
     get precioHtmlAdmin() {
         if (this.stock <= 0) return '<span class="sin-stock">Sin stock</span>';
         if (this.oferta > 0) {
-            return `<span class="old-price">$ ${this.precio}</span><span class="offer-price"> | Precio de oferta: $ ${this.oferta}</span>`;
+            return `<span class="old-price">${formatCurrency(this.precio)}</span><span class="offer-price"> | Precio de oferta: ${formatCurrency(this.oferta)}</span>`;
         }
-        return `$ ${this.precio}`;
+        return `${formatCurrency(this.precio)}`;
     }
     get estaAgotado() {
         return this.stock <= 0;

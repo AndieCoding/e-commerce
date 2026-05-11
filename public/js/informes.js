@@ -29,7 +29,6 @@ document.addEventListener("turbo:load", () => {
 
 	const informes_container = document.querySelector("#informes-container");
 	if (informes_container) {
-
 		crearGraficos();
 	}
 	selectMes.onchange = async function () {
@@ -129,16 +128,13 @@ document.addEventListener("turbo:load", () => {
 	}
 	//tipo
 	async function crearGraficos() {
-		const LineChart = document.getElementById('myLineChart');
-		const BarChart = document.getElementById('myBarChart');
+		//const LineChart = document.getElementById('myLineChart');
+		//let stockData = await fetchTo(`/api/stockActual`);
+		//let gananciasBrutasData = await fetchTo(`/api/ganancias-brutas`);
+		//let ganancias_brutas = gananciasBrutasData.ventas_totales;
+		//document.querySelector('#ganancias-brutas-valor').innerText = '$ ' + ganancias_brutas;
 
-		let data = await fetchTo(`/api/ventasDiarias`);
-		let stockData = await fetchTo(`/api/stockActual`);
-		let gananciasBrutasData = await fetchTo(`/api/ganancias-brutas`);
-		let ganancias_brutas = gananciasBrutasData.ventas_totales;
-		document.querySelector('#ganancias-brutas-valor').innerText = '$ ' + ganancias_brutas;
-
-		let button = document.querySelector('#calcula-ganancias');
+		/*let button = document.querySelector('#calcula-ganancias');
 		if (button) {
 			button.addEventListener('click', () => {
 				let p_ganancias_netas = document.querySelector('#ganancias-netas-valor');
@@ -176,7 +172,7 @@ document.addEventListener("turbo:load", () => {
 		crearGrafico(LineChart, 'line', 'Ventas Totales', fechas, total_diario, ['#025811b3']);
 		//stock
 		crearGrafico(BarChart, 'bar', 'Stock', productos_stock, stock, ['#f5cf5ed9', '#025811b3', '#582e02c7']);
-
+		*/
 	}
 });
 

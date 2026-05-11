@@ -165,5 +165,6 @@ app.get("/panel-altas", isAdmin, (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`\nApp listening on port ${port} \n`);
+    console.log(`\nApp listening on port ${port} \n ${port === 3000 ? 'http://localhost:3000' : 'https://tienda-mate.vercel.app'}`);
+    console.log('Directorio de ejecución: ', __dirname);
 });

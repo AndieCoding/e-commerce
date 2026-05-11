@@ -1130,7 +1130,7 @@ dire-envio {
     padding: 15px 20px;
     border-radius: 12px;
     text-decoration: none;
-    box-shadow: 0 4px 15px rgba(67, 182, 239, 0.7);
+    box-shadow: var(--usermenu-box-shadow);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -1250,7 +1250,6 @@ dire-envio {
         border-radius: 12px;
         text-decoration: none;
         color: #333;
-        box-shadow: 6px 7px 6px rgba(62, 234, 255, 0.7);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: 1px solid #eee;
     }

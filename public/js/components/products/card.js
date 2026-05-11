@@ -367,7 +367,6 @@ export class Card extends HTMLElement {
                 text-transform: uppercase;
                 color: var(--accent-color);                
                 margin: 0;                                
-                text-shadow: 0 0 5px var(--accent-color, transparent);
             }
           
             .old-price {
@@ -378,7 +377,7 @@ export class Card extends HTMLElement {
                 border-radius: 5px;
             }
             .offer-price {                
-                color: #4e595cff;
+                color: var(--accent-color);
                 background-color: #ffffffdd;
                 width: fit-content;
                 border-radius: 10px;
@@ -421,7 +420,7 @@ export class Card extends HTMLElement {
                 align-items: start;
                 position: absolute;
                 right: 20px;
-                top: 38%;
+                top: 53%;
                 background-color: transparent;
                 @media (width<900px) {
                     left: 10px;
@@ -494,7 +493,6 @@ export class Card extends HTMLElement {
                     position: static; 
                     background: none;
                     padding: 0;
-                    text-shadow: 0 0 5px var(--accent-color, transparent);
                 }
                     .sin-stock{
                         font-weight: 500;

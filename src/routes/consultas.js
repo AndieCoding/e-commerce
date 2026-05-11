@@ -25,6 +25,12 @@ const storage = new CloudinaryStorage({
         allowed_formats: ['jpg', 'png', 'jpeg']
     }
 });
+const productStorage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: { folder: 'productos' }
+});
+const uploadProducto = multer({ storage: productStorage });
+
 
 const upload = multer({ storage: storage });
 
@@ -273,12 +279,13 @@ router.post("/images", upload.array('product_image', 5), async (req, res, next) 
     }
 });
 
-router.post("/alta-productos", upload.single('image'), async (req, res, next) => {
+router.post("/alta-productos", uploadProducto.single('image'), async (req, res, next) => {
     try {
         let producto = JSON.parse(req.body.producto);
         console.log('Petición de alta de nuevo producto: ', JSON.stringify(producto));
 
         if (req.file) {
+            /*
             const timestamp = new Date().getTime();
             const targetDir = path.join(__dirname, `../../public/img/products/${producto.tipo.toLowerCase().trim()}`);
             const fileName = `${timestamp}.png`;
@@ -295,7 +302,10 @@ router.post("/alta-productos", upload.single('image'), async (req, res, next) =>
 
             const baseDir = path.join(__dirname, '../../public');
             const image = path.relative(baseDir, targetPath).replace(/\\/g, '/');
-            producto.image = '/' + image;
+            producto.image = '/' + image;*/
+            producto.image = req.file.path;
+            console.log('La URL de la foto en Cloudinary es: ' + producto.image);
+
         } else {
             producto.image = null;
         }
@@ -331,7 +341,7 @@ router.get('/nfactura', async (req, res) => {
 });
 
 //monto mensual de ventas
-router.get("/Informes/:month", async (req, res) => {
+router.get("/informes/:month", async (req, res) => {
     let month = req.params.month;
     try {
         const [rows] = await consultaDb.GenerarInforme(month);
@@ -404,6 +414,16 @@ router.get("/ventasDiarias", async (req, res) => {
         res.status(500).json({ message: "Error retrieving records" });
     }
 });
+router.get("/ventasTotales", async (req, res) => {
+    try {
+        const [rows] = await consultaDb.getVentasTotales();
+        if (rows) console.log('Endpoint de Ventas Totales. Rows -> ', rows)
+        res.json(rows);
+    } catch (err) {
+        console.error("Error fetching records:", err);
+        res.status(500).json({ message: "Error retrieving records" });
+    }
+});
 router.get("/ventasDiarias/:prod", async (req, res) => {
     const tipo = req.params.prod;
     try {
@@ -430,7 +450,7 @@ router.get("/stockActual", async (req, res) => {
 router.get("/ingresos-egresos", async (req, res) => {
     const producto = req.query.prod;
     try {
-        const rows = await consultaDb.getVentasTotales(producto);
+        const rows = await consultaDb.getVentasTotalesProducto(producto);
         if (rows) console.log('Endpoint de Ingresos-egresos. Rows -> ', rows)
         res.json(rows);
     } catch (err) {
@@ -821,10 +841,11 @@ router.get('/compras_usuario/:id', async (req, res) => {
     try {
         const id_fac = req.params.id;
         const user = req.user;
+        console.log('user', user)
         // Si es admin, userId es null para no filtrar por cliente en la consulta
-        const userId = user && user.TIPO === 'AD' ? null : (user ? user.id : null);
+        const userId = user && user.rol === 'ad' ? null : (user ? user.id : null);
 
-        if (!userId && (!user || user.TIPO !== 'AD')) {
+        if (!userId && !user) {
             return res.status(401).send("No autorizado");
         }
 

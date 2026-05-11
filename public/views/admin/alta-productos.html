@@ -8,6 +8,7 @@
 	<link rel="icon" type="image/x-icon" href="/img/icons/favicon.png">
 	<link rel="stylesheet" href="/css/ficha-de-stock.css" />
 	<link rel="stylesheet" href="/css/admin.css" />
+	<link rel="stylesheet" href="/css/front.css" />
 	<link
 		href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap"
 		rel="stylesheet">
@@ -23,7 +24,14 @@
 			<div class="admin-header">
 				<h1>Alta de Productos</h1>
 			</div>
-			<form autocomplete="off" class="form-alta-producto shadow-lg" id="nfacturaForm">
+			<form autocomplete="off" id="nfacturaForm">
+				<div class="form-section upload-section">
+					<label for="imagen" class="upload-label">
+						<span id="upload-text">Subir Imagen</span>
+						<img id="image-preview" class="hidden" alt="Vista previa">
+					</label>
+					<input type="file" name="imagen" id="imagen" accept="image/*" required>
+				</div>
 
 				<div class="form-section">
 					<div class="input-group">
@@ -72,13 +80,7 @@
 					</div>
 				</div>
 
-				<div class="form-section upload-section">
-					<label for="imagen" class="upload-label">
-						<span id="upload-text">Subir Imagen</span>
-						<img id="image-preview" class="hidden" alt="Vista previa">
-					</label>
-					<input type="file" name="imagen" id="imagen" accept="image/*" required>
-				</div>
+
 
 				<div class="form-actions flex column align-center">
 					<div class="guardar"></div>

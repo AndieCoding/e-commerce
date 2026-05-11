@@ -59,21 +59,62 @@ export class ProductChart extends HTMLElement {
         if (!canvas || !this.data) return;
         if (this.chart) this.chart.destroy();
 
+        // Determinamos si es un gráfico que usa escalas
+        const isCartesian = ['bar', 'line', 'scatter'].includes(this.type);
+        const isMobile = window.innerWidth < 768;
         this.chart = new Chart(canvas, {
             type: this.type || 'bar',
             data: {
                 labels: this._labels,
                 datasets: [{
-                    label: `${this.product || ''}`,
+                    label: this.product || '',
                     data: this.data || [],
-                    backgroundColor: this.colors || '#316767',
-                    borderWidth: 2
+                    backgroundColor: this.colors, // Aquí pasaremos un array
+                    borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: typeof window.commonScales !== 'undefined' ? window.commonScales : {}
+                plugins: {
+                    legend: {
+                        display: true,          // Activamos la leyenda
+                        position: 'right',
+
+
+                        // Dentro de options.plugins.legend:
+                        position: isMobile ? 'bottom' : 'right',     // En desktop, a la derecha es más elegante
+                        align: 'center',
+                        labels: {
+                            usePointStyle: true,
+                            // Aquí personalizamos el texto de la leyenda
+                            generateLabels: (chart) => {
+                                const data = chart.data;
+                                if (data.labels.length && data.datasets.length) {
+                                    return data.labels.map((label, i) => {
+                                        const value = data.datasets[0].data[i];
+                                        const backgroundColor = data.datasets[0].backgroundColor[i];
+
+                                        return {
+                                            text: `${label}: ${value}`, // Aquí unimos Nombre + Cantidad
+                                            fillStyle: backgroundColor,
+                                            strokeStyle: backgroundColor,
+                                            lineWidth: 0,
+                                            pointStyle: 'circle',
+                                            index: i
+                                        };
+                                    });
+                                }
+                                return [];
+                            }
+                        }
+                    },
+                    datalabels: {
+                        display: false // Ya que ahora el dato está en la leyenda
+                    }
+                },
+                // Solo aplicamos escalas si el gráfico las soporta
+                scales: isCartesian ? (window.commonScales || {}) : {}
             }
         });
     }
